@@ -22,7 +22,7 @@ export default function AddGroupsHeader({searchValue, setSearchValue, isPrevVisi
             forceSearchOpen={isPrevVisible}
             LeftComponent={() => (
                 <Button
-                    size="s"
+                    size="l"
                     mode="plain"
                     onClick={onPrev}
                     className={classNames({
@@ -34,7 +34,7 @@ export default function AddGroupsHeader({searchValue, setSearchValue, isPrevVisi
             )}
             RightComponent={() => (
                 <Button
-                    size="s"
+                    size="l"
                     mode="plain"
                     onClick={onNext}
                     disabled={isNextDisabled}

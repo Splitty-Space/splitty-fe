@@ -31,7 +31,7 @@ export default function AddGroup() {
     const [step, setStep] = useState(STEPS.GroupSettings);
 
     const [searchValue, setSearchValue] = useState<string>("");
-    const {data, loading} = useFriends(searchValue);
+    const {data, loadingFriends} = useFriends(searchValue);
     const [selectedUserIds, setSelectedUserIds] = useState<Array<number>>([]);
 
     const isGroupSettings = step === STEPS.GroupSettings;
@@ -61,7 +61,7 @@ export default function AddGroup() {
             />
             <main className={classNames({
                 "p-4": isGroupSettings,
-                "flex items-center justify-center": loading
+                "flex items-center justify-center": loadingFriends
             })}>
                 {isGroupSettings && (
                     <>
@@ -105,7 +105,7 @@ export default function AddGroup() {
                 {isGroupUserSettings && (
                     <>
                         {
-                            loading ?
+                            loadingFriends ?
                                 (<Spinner size="l"/>) :
                                 (<List className="mb-8">
                                     {data?.data?.map(({id, name, photo_url}: {

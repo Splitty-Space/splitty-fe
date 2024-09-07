@@ -4,16 +4,35 @@ import {useState} from "react";
 import {subPageConst} from "@/const/subPageConst";
 import FriendsList from "@/app/main/friends/friendsList/friendsList";
 import AddFriend from "@/app/main/friends/addFriend/addFriend";
-import useFriends from "@/services/useFriends";
 import FriendPage from "@/app/main/friends/friend/friendPage";
 import FriendSettings from "@/app/main/friends/friendSettings/friendSettings";
+import {Snackbar} from "@telegram-apps/telegram-ui";
+import {Icon28Bin} from "@/Icons";
+import {Friend} from "@/entities";
+import {RefetchFunction} from "axios-hooks";
 
-export default function Friends({subpage, setSubpage}: { subpage: number, setSubpage: Function }) {
-    const [searchValue, setSearchValue] = useState("");
-    const [selectedUserId, setSelectedUserId] = useState(null);
-    const {data, loading} = useFriends(searchValue);
-
-    const selectedFriend = data?.data?.find(friend => friend.id === selectedUserId);
+export default function Friends({
+                                    subpage,
+                                    setSubpage,
+                                    searchValue,
+                                    setSearchValue,
+                                    setSelectedUserId,
+                                    friends,
+                                    loadingFriends,
+                                    refetchFriends,
+                                    selectedFriend
+                                }: {
+    subpage: number,
+    setSubpage: Function,
+    searchValue: string,
+    setSearchValue: Function,
+    setSelectedUserId: Function,
+    friends: Friend[],
+    loadingFriends: boolean,
+    refetchFriends: RefetchFunction<any, any>,
+    selectedFriend?: Friend
+}) {
+    const [isDeleteSnackbarShown, setIsDeleteSnackbarShown] = useState(false);
 
     return (
         <>
@@ -23,8 +42,8 @@ export default function Friends({subpage, setSubpage}: { subpage: number, setSub
                     searchValue={searchValue}
                     setSearchValue={setSearchValue}
                     setSelectedUserId={setSelectedUserId}
-                    data={data}
-                    loading={loading}
+                    friends={friends}
+                    loadingFriends={loadingFriends}
                 />}
             {subpage === subPageConst.AddFriend && <AddFriend/>}
             {subpage === subPageConst.Friend &&
@@ -35,8 +54,21 @@ export default function Friends({subpage, setSubpage}: { subpage: number, setSub
             {subpage === subPageConst.FriendSettings &&
                 <FriendSettings
                     friend={selectedFriend}
-                    friends={data?.data}
+                    friends={friends}
+                    refetchFriends={refetchFriends}
+                    setSubpage={setSubpage}
+                    setIsDeleteSnackbarShown={setIsDeleteSnackbarShown}
                 />}
+
+            {isDeleteSnackbarShown && (
+                <Snackbar
+                    className="mb-20"
+                    before={<Icon28Bin/>}
+                    onClose={() => setIsDeleteSnackbarShown(false)}
+                >
+                    Friend deleted
+                </Snackbar>
+            )}
         </>
     );
 }

@@ -2,7 +2,7 @@
 
 import {subPageConst} from "@/const/subPageConst";
 import HeaderWithSearch from "@/app/main/header/headerWithSearch";
-import {Icon28SPersonAdd} from "@/Icons";
+import {Icon28PersonAdd} from "@/Icons";
 import {IconButton} from "@telegram-apps/telegram-ui";
 
 export default function FriendsHeader({searchValue, setSearchValue, setSubpage}: {
@@ -20,7 +20,7 @@ export default function FriendsHeader({searchValue, setSearchValue, setSubpage}:
                     mode="bezeled"
                     onClick={() => setSubpage(subPageConst.AddFriend)}
                 >
-                    <Icon28SPersonAdd/>
+                    <Icon28PersonAdd/>
                 </IconButton>)
             }
         />

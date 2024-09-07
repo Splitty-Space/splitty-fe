@@ -8,13 +8,13 @@ export interface UseFriends {
         data: Friend[];
         meta: object;
     },
-    loading: boolean;
+    loadingFriends: boolean;
     error: AxiosError<any, any> | null;
-    refetch: RefetchFunction<any, any>;
+    refetchFriends: RefetchFunction<any, any>;
 }
 
 const useFriends = (searchValue: string): UseFriends => {
-    const [{data, loading, error}, refetch] = useAxios({
+    const [{data, loading, error}, refetchFriends] = useAxios({
         url: "/friends",
         params: {
             user_id: getCurrentUserId(),
@@ -30,9 +30,9 @@ const useFriends = (searchValue: string): UseFriends => {
 
     return {
         data: filteredData,
-        loading,
+        loadingFriends: loading,
         error,
-        refetch
+        refetchFriends
     };
 };
 

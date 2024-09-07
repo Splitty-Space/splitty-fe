@@ -1,18 +1,45 @@
 "use client"
 
 import {useTranslation} from "react-i18next";
+import {RefetchFunction} from "axios-hooks";
 import {Friend} from "@/entities";
 import Header from "@/app/main/header/header";
 import Logo from "@/app/main/header/logo";
 import {Avatar, Cell, Divider, List, Text, Title} from "@telegram-apps/telegram-ui";
-import "./friendSettings.css";
 import {addFriend} from "@/services/addFriend";
 import {deleteFriend} from "@/services/deleteFriend";
+import {subPageConst} from "@/const/subPageConst";
+import "./friendSettings.css";
 
-export default function FriendSettings({friend, friends}: { friend?: Friend, friends: Friend[] }) {
+export default function FriendSettings({friend, friends, refetchFriends, setSubpage, setIsDeleteSnackbarShown}: {
+    friend?: Friend,
+    friends: Friend[],
+    refetchFriends: RefetchFunction<any, any>,
+    setSubpage: Function,
+    setIsDeleteSnackbarShown: Function,
+}) {
     const {t} = useTranslation();
 
     const isFriend = !!friends.find(x => x.id === friend?.id);
+
+    const openDeleteConfirmPopup = () => {
+        Telegram?.WebApp?.showPopup({
+                title: t("friendSettings.ConfirmDelete"),
+                message: t("friendSettings.ConfirmMessage"),
+                buttons: [
+                    {type: "cancel", text: t("friendSettings.CancelButton")},
+                    {id: "confirm", type: "destructive", text: t("friendSettings.DeleteButton")},
+                ]
+            },
+            function (buttonId: string) {
+                if (buttonId === "confirm") {
+                    deleteFriend(friend?.id)
+                        .then(() => setIsDeleteSnackbarShown(true))
+                        .then(() => refetchFriends())
+                        .then(() => setSubpage(subPageConst.FriendsList));
+                }
+            });
+    }
 
     return (
         <>
@@ -45,9 +72,7 @@ export default function FriendSettings({friend, friends}: { friend?: Friend, fri
                     (<>
                         <Cell
                             className="friendSettings_delete"
-                            onClick={() => {
-                                deleteFriend(friend?.id);
-                            }}
+                            onClick={openDeleteConfirmPopup}
                         >
                             Delete from friends
                         </Cell>

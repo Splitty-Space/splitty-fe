@@ -3,6 +3,7 @@ export enum subPageConst {
     AddFriend,
     Friend,
     FriendSettings,
+    AddExpense,
     GroupsList,
     AddGroup,
 }

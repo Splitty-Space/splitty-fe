@@ -2,7 +2,7 @@
 
 import {useCallback, FC} from "react";
 import {Avatar, Tabbar} from "@telegram-apps/telegram-ui";
-import {Icon24Group, Icon24Person, Icon24Stats, AddIcon, PlusIcon} from "@/Icons";
+import {Icon24Group, Icon24Person, Icon24Stats, PlusIcon} from "@/Icons";
 import {useTranslation} from "react-i18next";
 import {TabIds} from "@/const/tabIds";
 import "./footer.css";
@@ -36,18 +36,13 @@ export default function Footer({currentTab, setCurrentTab, setSubpage}: {
             Icon: ({fill}: { fill: string }) => <Icon24Group fill={fill}/>
         },
         {
-            id: TabIds.AddExpense,
+            id: TabIds.AddExpenseParticipants,
             Icon: ({fill}: { fill: string }) =>
                 <>
-                    <AddIcon fill={fill} style={{
-                        scale: "1.5",
+                    <PlusIcon style={{
                         position: "absolute",
-                        top: "0"
-                    }}/>
-                    <PlusIcon fill={fill} style={{
-                        scale: "1.5",
-                        position: "absolute",
-                        top: "1rem"
+                        scale: "0.7",
+                        top: "-2rem",
                     }}/>
                 </>
         },

@@ -3,7 +3,6 @@
 import React, {useState} from "react";
 import classNames from "classnames";
 import {useTranslation} from "react-i18next";
-import Image from "next/image"
 import {Avatar, Cell, Input, List, Placeholder, Spinner, Tappable} from "@telegram-apps/telegram-ui";
 import {Icon24Close, Icon24Search} from "@/Icons";
 import {useSearchFriends} from "@/services/useSearchFriends";
@@ -70,10 +69,11 @@ export default function AddFriend() {
                     (<Placeholder
                         header={t("addFriends.NoResults")}
                     >
-                        <Image
-                            src="https://xelene.me/telegram.gif" // TODO make another img
-                            alt="Picture of no results"
-                        />
+                        {/*<Image*/}
+                        {/*    src="https://xelene.me/telegram.gif" // TODO make another img*/}
+                        {/*    alt="Picture of no results"*/}
+                        {/*    width={100}*/}
+                        {/*/>*/}
                     </Placeholder>)}
         </div>
     );

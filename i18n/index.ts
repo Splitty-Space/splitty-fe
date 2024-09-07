@@ -36,6 +36,12 @@ i18n
                         SettleUp: "Settle up",
                         AddFirstExpense: "Add first expense"
                     },
+                    friendSettings: {
+                        ConfirmDelete: "Confirm Delete",
+                        ConfirmMessage: "Are you sure you want to delete this friend?",
+                        DeleteButton: "Delete",
+                        CancelButton: "Cancel",
+                    },
                     addFriends: {
                         Search: "Search for a user",
                         NoResults: "No results",
@@ -55,6 +61,21 @@ i18n
                             COUPLE: "couple",
                             OTHER: "other"
                         }
+                    },
+                    expenses: {
+                        AddAnExpense: "Add an Expense",
+                        Next: "Next",
+                        Prev: "Prev",
+                        Friends: "Friends",
+                        Groups: "Groups",
+                        Save: "Save",
+                        ExpenseName: "Expense Name",
+                        MoneySpent: "Money Spent",
+                        Currency: "Currency",
+                        Date: "Date",
+                        FullyPaidByYou: "Fully paid by you",
+                        SplitEquallyBetweenAll: "Split equally between all",
+                        Split: "Split"
                     },
                     account: {
                         ContactUs: "Contact Us",
@@ -81,6 +102,12 @@ i18n
                     friend: {
                         SettleUp: "Рассчитаться"
                     },
+                    friendSettings: {
+                        ConfirmDelete: "Подтвердить удаление",
+                        ConfirmMessage: "Вы уверены, что хотите удалить этого друга?",
+                        DeleteButton: "Удалить",
+                        CancelButton: "Отмена",
+                    },
                     addFriends: {
                         Search: "Поиск пользователя",
                         NoResults: "Нет результатов",
@@ -100,6 +127,20 @@ i18n
                             COUPLE: "пара",
                             OTHER: "другие"
                         }
+                    },
+                    expenses: {
+                        AddAnExpense: "Добавить расход",
+                        Next: "Далее",
+                        Prev: "Назад",
+                        Friends: "Друзья",
+                        Groups: "Группы",
+                        Save: "Сохранить",
+                        ExpenseName: "Название расхода",
+                        MoneySpent: "Потраченные деньги",
+                        Currency: "Валюта",
+                        Date: "Дата",
+                        FullyPaidByYou: "Полностью оплачено вами",
+                        SplitEquallyBetweenAll: "Разделить поровну между всеми"
                     },
                     account: {
                         ContactUs: "Связаться с нами",
@@ -126,6 +167,12 @@ i18n
                     friend: {
                         SettleUp: "Розраховуватися"
                     },
+                    friendSettings: {
+                        ConfirmDelete: "Підтвердьте видалення",
+                        ConfirmMessage: "Ви впевнені, що хочете видалити цього друга?",
+                        DeleteButton: "Видалити",
+                        CancelButton: "Скасувати",
+                    },
                     addFriends: {
                         Search: "Пошук користувача",
                         NoResults: "Результатів немає",
@@ -145,6 +192,20 @@ i18n
                             COUPLE: "пара",
                             OTHER: "інші"
                         }
+                    },
+                    expenses: {
+                        AddAnExpense: "Додайте витрати",
+                        Next: "Далі",
+                        Prev: "Назад",
+                        Friends: "Друзі",
+                        Groups: "Групи",
+                        Save: "Зберегти",
+                        ExpenseName: "Назва витрат",
+                        MoneySpent: "Витрачені гроші",
+                        Currency: "Валюта",
+                        Date: "Дата",
+                        FullyPaidByYou: "Повністю оплачено вами",
+                        SplitEquallyBetweenAll: "Розділити порівну між усіма"
                     },
                     account: {
                         ContactUs: "Зв'язатися з нами",

@@ -83,6 +83,7 @@ export default function Account() {
                             <div className="flex items-center">
                                 <span>{t("account.DefaultCurrency")}</span>
 
+                                {/*TODO заменить на CurrencySelect component */}
                                 {!isCurrencyLoading ?
                                     <Select
                                         defaultValue={data.default_currency}

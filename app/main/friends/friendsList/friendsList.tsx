@@ -1,27 +1,27 @@
 "use client"
 
 import classNames from "classnames";
+import {useTranslation} from "react-i18next";
 import {Avatar, Cell, List, Placeholder, Spinner, Divider} from "@telegram-apps/telegram-ui";
 import FriendsHeader from "@/app/main/friends/friendsList/friendsHeader/friendsHeader";
-import {Arrow} from "@/Icons";
-import {UseFriends} from "@/services/useFriends";
 import {subPageConst} from "@/const/subPageConst";
-import {useTranslation} from "react-i18next";
+import {Friend} from "@/entities";
+import {Arrow} from "@/Icons";
 
 export default function FriendsList({
                                         setSubpage,
                                         searchValue,
                                         setSearchValue,
                                         setSelectedUserId,
-                                        data,
-                                        loading
+                                        friends,
+                                        loadingFriends
                                     }: {
     setSubpage: Function,
     searchValue: string,
     setSearchValue: Function,
     setSelectedUserId: Function,
-    data: UseFriends["data"],
-    loading: boolean
+    friends: Friend[],
+    loadingFriends: boolean
 }) {
     const {t} = useTranslation();
 
@@ -29,19 +29,19 @@ export default function FriendsList({
         <>
             <FriendsHeader searchValue={searchValue} setSearchValue={setSearchValue} setSubpage={setSubpage}/>
             <main className={classNames({
-                "flex items-center justify-center": loading
+                "flex items-center justify-center": loadingFriends
             })}>
                 {
-                    loading ?
+                    loadingFriends ?
                         (<Spinner size="l"/>) :
-                        searchValue === "" && data?.data.length === 0 ?
+                        searchValue === "" && friends?.length === 0 ?
                             (<Placeholder header={t("friendsList.AddFirstFriend")}>
                                 <Arrow/>
                             </Placeholder>) :
-                            data?.data?.length > 0 ?
+                            friends?.length > 0 ?
                                 (
                                     <List className="mb-8">
-                                        {data?.data?.map(({id, amount, name, photo_url}) =>
+                                        {friends?.map(({id, amount, name, photo_url}) =>
                                             <div key={id}>
                                                 <Cell
                                                     subtitle={amount}

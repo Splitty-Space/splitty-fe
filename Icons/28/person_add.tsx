@@ -1,4 +1,4 @@
-export const Icon28SPersonAdd = ({...restProps}) => (
+export const Icon28PersonAdd = ({...restProps}) => (
     <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" {...restProps}>
         <path
             fillRule="evenodd"
@@ -7,5 +7,4 @@ export const Icon28SPersonAdd = ({...restProps}) => (
             fill="currentColor"
         />
     </svg>
-
 );

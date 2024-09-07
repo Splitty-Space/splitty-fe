@@ -19,12 +19,6 @@ import i18next from "i18next";
 //     description: "",
 // };
 
-declare global {
-    interface Window {
-        Telegram: any;
-    }
-}
-
 export default function RootLayout({children}: Readonly<{
     children: React.ReactNode;
 }>) {

@@ -7,6 +7,7 @@ import "./header.css";
 
 function Header({
                     className,
+                    layoutClassName,
                     subHeaderClassName,
                     LeftComponent,
                     CentralComponent,
@@ -14,6 +15,7 @@ function Header({
                     AfterComponent
                 }: {
     className?: string,
+    layoutClassName?: string,
     subHeaderClassName?: string,
     LeftComponent?: FC,
     CentralComponent?: FC,
@@ -22,7 +24,7 @@ function Header({
 }) {
     return (
         <header className={classNames("h-20", className)}>
-            <FixedLayout vertical="top" className="header_layout p-4 z-10">
+            <FixedLayout vertical="top" className={classNames("header_layout p-4 z-10", layoutClassName)}>
                 <div className={classNames("flex shrink items-center justify-between mb-3", subHeaderClassName)}>
                     {LeftComponent && <LeftComponent/>}
 
