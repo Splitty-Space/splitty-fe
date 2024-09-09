@@ -39,7 +39,13 @@ export default function FriendSettings({friend, friends, refetchFriends, setSubp
                         .then(() => setSubpage(subPageConst.FriendsList));
                 }
             });
-    }
+    };
+
+    const onAddFriend = () => {
+        addFriend(friend?.id)
+            .then(() => refetchFriends())
+            .then(() => setSubpage(subPageConst.FriendsList));
+    };
 
     return (
         <>
@@ -81,9 +87,7 @@ export default function FriendSettings({friend, friends, refetchFriends, setSubp
                     :
                     (<>
                         <Cell
-                            onClick={() => {
-                                addFriend(friend?.id);
-                            }}
+                            onClick={onAddFriend}
                         >
                             Add friend
                         </Cell>
@@ -91,21 +95,22 @@ export default function FriendSettings({friend, friends, refetchFriends, setSubp
                     </>)
                 }
 
-                <Cell onClick={() => {
+                {/* TODO */}
+                {/*<Cell onClick={() => {*/}
 
-                }}
-                >
-                    Block user
-                </Cell>
-                <Divider/>
+                {/*}}*/}
+                {/*>*/}
+                {/*    Block user*/}
+                {/*</Cell>*/}
+                {/*<Divider/>*/}
 
-                <Cell onClick={() => {
+                {/*<Cell onClick={() => {*/}
 
-                }}
-                >
-                    Report
-                </Cell>
-                <Divider/>
+                {/*}}*/}
+                {/*>*/}
+                {/*    Report*/}
+                {/*</Cell>*/}
+                {/*<Divider/>*/}
             </List>
         </>
     );

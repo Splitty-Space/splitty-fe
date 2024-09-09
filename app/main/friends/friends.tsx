@@ -45,7 +45,11 @@ export default function Friends({
                     friends={friends}
                     loadingFriends={loadingFriends}
                 />}
-            {subpage === subPageConst.AddFriend && <AddFriend/>}
+            {subpage === subPageConst.AddFriend &&
+                <AddFriend
+                    refetchFriends={refetchFriends}
+                    setSubpage={setSubpage}
+                />}
             {subpage === subPageConst.Friend &&
                 <FriendPage
                     friend={selectedFriend}

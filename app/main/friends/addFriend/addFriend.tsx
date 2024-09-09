@@ -7,8 +7,13 @@ import {Avatar, Cell, Input, List, Placeholder, Spinner, Tappable} from "@telegr
 import {Icon24Close, Icon24Search} from "@/Icons";
 import {useSearchFriends} from "@/services/useSearchFriends";
 import {addFriend} from "@/services/addFriend";
+import {subPageConst} from "@/const/subPageConst";
+import {RefetchFunction} from "axios-hooks";
 
-export default function AddFriend() {
+export default function AddFriend({refetchFriends, setSubpage}: {
+    refetchFriends: RefetchFunction<any, any>,
+    setSubpage: Function
+}) {
     const {t} = useTranslation();
     const [searchValue, setSearchValue] = useState("");
 
@@ -23,7 +28,9 @@ export default function AddFriend() {
     }
 
     const onAddFriend = (userId: number) => () =>
-        addFriend(userId);
+        addFriend(userId)
+            .then(() => refetchFriends())
+            .then(() => setSubpage(subPageConst.FriendsList));
 
     return (
         <div>
