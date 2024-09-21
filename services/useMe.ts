@@ -1,7 +1,24 @@
-import useAxios from "axios-hooks";
+import useAxios, {RefetchFunction} from "axios-hooks";
 import getCurrentUserId from "@/utils/getCurrentUserId";
+import {AxiosError} from "axios";
 
-const useMe = () => {
+export interface Me {
+    id: number;
+    name: string;
+    language: string;
+    default_currency: string;
+    photo_url: string;
+    username: string;
+}
+
+export interface useMe {
+    data: Me
+    loading: boolean,
+    error: AxiosError<any, any> | null;
+    refetch: RefetchFunction<any, any>;
+}
+
+const useMe = (): useMe => {
     const [{data, loading, error}, refetch] = useAxios({
         url: "/me",
         params: {

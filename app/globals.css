@@ -16,3 +16,11 @@ body {
 .app-root {
     height: 100%;
 }
+
+.red {
+    color: var(--tgui--destructive_text_color);
+}
+
+.blue {
+    color: var(--tgui--link_color);
+}

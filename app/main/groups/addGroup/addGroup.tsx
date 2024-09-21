@@ -47,8 +47,6 @@ export default function AddGroup() {
         }
     }
 
-    console.log("selectedUserIds = ", selectedUserIds);
-
     return (
         <>
             <AddGroupsHeader

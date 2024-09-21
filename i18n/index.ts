@@ -75,7 +75,8 @@ i18n
                         Date: "Date",
                         FullyPaidByYou: "Fully paid by you",
                         SplitEquallyBetweenAll: "Split equally between all",
-                        Split: "Split"
+                        Split: "Split",
+                        PaidBy: "Paid by"
                     },
                     account: {
                         ContactUs: "Contact Us",

@@ -74,7 +74,7 @@ export default function Footer({currentTab, setCurrentTab, setSubpage}: {
 
     return (
         <footer className="h-8">
-            <Tabbar style={{backgroundColor: "var(--tgui--bg_color)", paddingBottom: "1rem", marginBottom: "-0.25rem"}}>
+            <Tabbar style={{backgroundColor: "var(--tgui--bg_color)", paddingBottom: "1.5rem", marginBottom: "-1rem"}}>
                 {tabs.map(({
                                id,
                                text,

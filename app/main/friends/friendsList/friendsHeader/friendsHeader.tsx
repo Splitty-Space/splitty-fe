@@ -1,9 +1,9 @@
 "use client"
 
-import {subPageConst} from "@/const/subPageConst";
 import HeaderWithSearch from "@/app/main/header/headerWithSearch";
 import {Icon28PersonAdd} from "@/Icons";
 import {IconButton} from "@telegram-apps/telegram-ui";
+import {initUtils} from "@telegram-apps/sdk-react";
 
 export default function FriendsHeader({searchValue, setSearchValue, setSubpage}: {
     searchValue: string,
@@ -18,7 +18,13 @@ export default function FriendsHeader({searchValue, setSearchValue, setSubpage}:
                 <IconButton
                     size="l"
                     mode="bezeled"
-                    onClick={() => setSubpage(subPageConst.AddFriend)}
+                    onClick={() => {
+                        const utils = initUtils();
+                        utils.shareURL(
+                            "https://t.me/splitty_fe_bot/app?start", // TODO change to prod bot
+                            // TODO app?startapp=ref_AfNBc8hfdY ???
+                            "Join me on Splitty and let's split together! Use my invite link to join. 🌟"); // TODO localize text
+                    }}
                 >
                     <Icon28PersonAdd/>
                 </IconButton>)

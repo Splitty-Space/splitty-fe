@@ -3,7 +3,6 @@
 import {useState} from "react";
 import {subPageConst} from "@/const/subPageConst";
 import FriendsList from "@/app/main/friends/friendsList/friendsList";
-import AddFriend from "@/app/main/friends/addFriend/addFriend";
 import FriendPage from "@/app/main/friends/friend/friendPage";
 import FriendSettings from "@/app/main/friends/friendSettings/friendSettings";
 import {Snackbar} from "@telegram-apps/telegram-ui";
@@ -45,11 +44,11 @@ export default function Friends({
                     friends={friends}
                     loadingFriends={loadingFriends}
                 />}
-            {subpage === subPageConst.AddFriend &&
+            {/*{subpage === subPageConst.AddFriend && TODO remove
                 <AddFriend
                     refetchFriends={refetchFriends}
                     setSubpage={setSubpage}
-                />}
+                />}*/}
             {subpage === subPageConst.Friend &&
                 <FriendPage
                     friend={selectedFriend}

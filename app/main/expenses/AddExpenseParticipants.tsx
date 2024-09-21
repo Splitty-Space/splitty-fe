@@ -9,11 +9,13 @@ import {
     Avatar,
     Button,
     Cell,
-    Divider, Input,
+    Divider,
+    Input,
     List,
     Placeholder,
-    SegmentedControl,
-    Spinner, Switch, Tappable,
+    Spinner,
+    Switch,
+    Tappable,
     Title
 } from "@telegram-apps/telegram-ui";
 import {TabIds} from "@/const/tabIds";
@@ -106,29 +108,27 @@ export default function AddExpenseParticipants({
                         {t("expenses.Next")}
                     </Button>
                 )}
-            />
+                AfterComponent={<>
+                    {/* TODO add groups
+                    <div className="m-4">
+                        <SegmentedControl>
+                            <SegmentedControl.Item
+                                key={SEGMENTS.FRIENDS}
+                                onClick={() => setSelectedSegment(SEGMENTS.FRIENDS)}
+                                selected={selectedSegment === SEGMENTS.FRIENDS}
+                            >
+                                {t("expenses.Friends")}
+                            </SegmentedControl.Item>
+                            <SegmentedControl.Item
+                                key={SEGMENTS.GROUPS}
+                                onClick={() => setSelectedSegment(SEGMENTS.GROUPS)}
+                                selected={selectedSegment === SEGMENTS.GROUPS}
+                            >
+                                {t("expenses.Groups")}
+                            </SegmentedControl.Item>
+                        </SegmentedControl>
+                    </div>*/}
 
-            <main>
-                <div className="m-4">
-                    <SegmentedControl>
-                        <SegmentedControl.Item
-                            key={SEGMENTS.FRIENDS}
-                            onClick={() => setSelectedSegment(SEGMENTS.FRIENDS)}
-                            selected={selectedSegment === SEGMENTS.FRIENDS}
-                        >
-                            {t("expenses.Friends")}
-                        </SegmentedControl.Item>
-                        <SegmentedControl.Item
-                            key={SEGMENTS.GROUPS}
-                            onClick={() => setSelectedSegment(SEGMENTS.GROUPS)}
-                            selected={selectedSegment === SEGMENTS.GROUPS}
-                        >
-                            {t("expenses.Groups")}
-                        </SegmentedControl.Item>
-                    </SegmentedControl>
-                </div>
-
-                <div>
                     <Input
                         value={searchValue}
                         onChange={onSearchChange}
@@ -144,32 +144,36 @@ export default function AddExpenseParticipants({
                                 <Icon24Close/>
                             </Tappable>}
                     />
-                </div>
+                </>
+                }
+            />
 
+            <main className="mt-16">
                 {
                     selectedSegment === SEGMENTS.FRIENDS ? (loadingFriends ?
-                        (<Spinner size="l"/>) :
-                        filteredFriends?.length > 0 ?
-                            (
-                                <List>
-                                    {filteredFriends?.map(({id, amount, name, photo_url}) =>
-                                        <div key={id}>
-                                            <Cell
-                                                subtitle={amount}
-                                                before={<Avatar size={48} src={photo_url}/>}
-                                                after={<Switch
-                                                    defaultChecked={selectedUserIds.includes(id)}
-                                                    onChange={onUserChange(id)}
-                                                />}
-                                            >
-                                                {name}
-                                            </Cell>
-                                            <Divider className="ml-20"/>
-                                        </div>
-                                    )
-                                    }
-                                </List>)
-                            : (<Placeholder header={t("friendsList.FriendNotFound")}/>)) : <span>Group TODO</span>
+                            (<Spinner size="l"/>) :
+                            filteredFriends?.length > 0 ?
+                                (
+                                    <List>
+                                        {filteredFriends?.map(({id, amount, name, photo_url}) =>
+                                            <div key={id}>
+                                                <Cell
+                                                    subtitle={amount}
+                                                    before={<Avatar size={48} src={photo_url}/>}
+                                                    after={<Switch
+                                                        defaultChecked={selectedUserIds.includes(id)}
+                                                        onChange={onUserChange(id)}
+                                                    />}
+                                                >
+                                                    {name}
+                                                </Cell>
+                                                <Divider className="ml-20"/>
+                                            </div>
+                                        )
+                                        }
+                                    </List>)
+                                : (<Placeholder header={t("friendsList.FriendNotFound")}/>)) :
+                        <span>Group TODO</span>
                 }
             </main>
         </>

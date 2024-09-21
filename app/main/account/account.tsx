@@ -20,8 +20,6 @@ export default function Account() {
     const [isCurrencyLoading, setIsCurrencyLoading] = useState(false);
     const [isLanguageLoading, setIsLanguageLoading] = useState(false);
 
-    console.log(data);
-
     const onContactUs = () => {
         window.location.replace("https://t.me/Eoller");
     };

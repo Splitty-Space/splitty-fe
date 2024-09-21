@@ -2,11 +2,12 @@
 
 import classNames from "classnames";
 import {useTranslation} from "react-i18next";
-import {Avatar, Cell, List, Placeholder, Spinner, Divider} from "@telegram-apps/telegram-ui";
+import {Avatar, Cell, List, Placeholder, Spinner, Divider, Caption} from "@telegram-apps/telegram-ui";
 import FriendsHeader from "@/app/main/friends/friendsList/friendsHeader/friendsHeader";
 import {subPageConst} from "@/const/subPageConst";
 import {Friend} from "@/entities";
 import {Arrow} from "@/Icons";
+import "./friendsList.css";
 
 export default function FriendsList({
                                         setSubpage,
@@ -41,15 +42,22 @@ export default function FriendsList({
                             friends?.length > 0 ?
                                 (
                                     <List className="mb-8">
-                                        {friends?.map(({id, amount, name, photo_url}) =>
+                                        {friends?.map(({id, amount, name, photo_url, total}) =>
                                             <div key={id}>
                                                 <Cell
+                                                    className="friends-list_shrink-0"
                                                     subtitle={amount}
                                                     before={<Avatar size={48} src={photo_url}/>}
-                                                    // titleBadge={<Badge type="dot"/>}
-                                                    // subhead={`Subhead`}
-                                                    // description={`Description`}
-                                                    // after={<Badge type="number">{x}</Badge>}
+                                                    after={<div className="flex flex-col">
+                                                        {total.slice(0, 2).map(({amount, currency}, index) =>
+                                                            <Caption
+                                                                key={index}
+                                                                weight="3"
+                                                                className={Number(amount) > 0 ? "red" : "blue"}>
+                                                                {`${Number(amount) > 0 ? "owes you" : "you owe"} ${amount} ${currency}`}
+                                                            </Caption>)
+                                                        }
+                                                    </div>}
                                                     onClick={() => {
                                                         setSelectedUserId(id);
                                                         setSubpage(subPageConst.Friend);

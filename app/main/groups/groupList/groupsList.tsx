@@ -15,7 +15,7 @@ export default function GroupsList({setSubpage}: { setSubpage: Function }) {
         <>
             <GroupsHeader searchValue={searchValue} setSearchValue={setSearchValue} setSubpage={setSubpage}/>
             <main className={classNames({
-                " flex items-center justify-center": loading
+                "flex items-center justify-center": loading
             })}>
                 {
                     !!data && data?.data?.length > 0 ? (

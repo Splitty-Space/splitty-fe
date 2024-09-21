@@ -1,0 +1,8 @@
+.MuiInputBase-root {
+    border-radius: 1rem !important;
+    height: 2.5rem;
+}
+
+.addExpense__cell {
+    margin-bottom: 0.25rem !important;
+}
