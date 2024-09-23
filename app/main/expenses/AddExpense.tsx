@@ -12,7 +12,6 @@ import {
     Divider, Headline,
     Input,
     List,
-    SegmentedControl,
     Switch,
     Text,
     Title
@@ -49,7 +48,6 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
 
     const participants = [me, ...selectedFriends];
 
-    const [isSaveVisible, setIsSaveVisible] = useState(true);
     const [isSaveDisabled, setIsSaveDisabled] = useState(true);
 
     const [expenseName, setExpenseName] = useState("");
@@ -60,7 +58,7 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
     const [date, setDate] = useState(new Date());
 
     const [isFullyPaidByYou, setIsFullyPaidByYou] = useState(true);
-    const [paidBy, setPaidBy] = useState<Payment[]>(participants.map((x, index) => ({
+    const [paidBy, setPaidBy] = useState<Payment[]>(participants.map((x) => ({
         id: x.id,
         isSelected: true,
         amount: 0,
@@ -68,14 +66,12 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
     })));
 
     const [isSplitEquallyBetweenAll, setIsSplitEquallyBetweenAll] = useState(true);
-    const [splitBetween, setSplitBetween] = useState<Payment[]>(participants.map((x, index) => ({
+    const [splitBetween, setSplitBetween] = useState<Payment[]>(participants.map((x) => ({
         id: x.id,
         isSelected: true,
         amount: 0,
         isDirty: false,
     })));
-
-    const [selectedSegment, setSelectedSegment] = useState(SEGMENTS.NUMERIC);
 
     useEffect(() => {
         if (expenseName.length > 0 &&
@@ -240,9 +236,6 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
                         size="l"
                         mode="plain"
                         onClick={onPrev}
-                        className={classNames({
-                            "invisible": !isSaveVisible
-                        })}
                     >
                         {t("expenses.Prev")}
                     </Button>
@@ -275,9 +268,9 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
 
                 <div>
                     <Input
+                        autoFocus
                         value={expenseName}
                         onChange={onExpenseNameChange}
-                        status="focused"
                         placeholder={t("expenses.ExpenseName")}
                         className="mb-2"
                     />
@@ -349,7 +342,7 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
                         </div>
                         <Divider className="mt-2"/>
 
-                        <List className="mt-4 w-full rounded-3xl">
+                        <List className="mt-4 w-full rounded-3xl px-0">
                             {participants.map(({id, name, photo_url}) =>
                                 (<div key={id} className="flex items-center justify-between">
                                     <div className="flex items-center w-2/3">
@@ -409,7 +402,7 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
                         </div>
                         <Divider className="mt-2"/>
 
-                        <List className="mt-4 w-full rounded-3xl">
+                        <List className="mt-4 w-full rounded-3xl px-0">
                             {participants.map(({id, name, photo_url}) =>
                                 <div key={id} className="flex items-center justify-between">
                                     <div className="flex items-center w-2/3">

@@ -1,6 +1,6 @@
 "use client"
 
-import React, {FC, useCallback, useState} from "react";
+import React, {FC, useCallback, useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import Header from "@/app/main/header/header";
 import {Icon24Search, Icon24Close, Icon28Search} from "@/Icons";
@@ -12,17 +12,27 @@ export default function HeaderWithSearch({
                                              searchValue,
                                              setSearchValue,
                                              LeftComponent,
+                                             CentralComponent,
                                              RightComponent
                                          }: {
                                              forceSearchOpen?: boolean,
                                              searchValue?: string,
                                              setSearchValue?: Function,
                                              LeftComponent?: FC,
+                                             CentralComponent?: FC,
                                              RightComponent?: FC,
                                          }
 ) {
     const {t} = useTranslation();
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+    const HEADER_SEARCH_ID = "HEADER_SEARCH_ID";
+
+    useEffect(() => {
+        if (isSearchOpen) {
+            document.getElementById(HEADER_SEARCH_ID)?.focus()
+        }
+    }, [isSearchOpen]);
 
     const clearSearch = useCallback(() => {
         setSearchValue && setSearchValue("");
@@ -52,23 +62,24 @@ export default function HeaderWithSearch({
         <Header
             className={isOpen ? "h-32" : "h-20"}
             LeftComponent={_LeftComponent}
-            CentralComponent={Logo}
+            CentralComponent={CentralComponent ? CentralComponent : Logo}
             RightComponent={RightComponent}
-            AfterComponent={<Input
-                status={isOpen ? "focused" : "default"}
-                placeholder={t("header.Search")}
-                className={isOpen ? "header_input" : "header_input__hide"}
-                value={searchValue}
-                onChange={onChange}
-                before={<Icon24Search/>}
-                after={
-                    <Tappable
-                        Component="div"
-                        onClick={clearSearch}
-                    >
-                        <Icon24Close/>
-                    </Tappable>}
-            />}
+            AfterComponent={() =>
+                <Input
+                    id={HEADER_SEARCH_ID}
+                    placeholder={t("header.Search")}
+                    className={isOpen ? "header_input" : "header_input__hide"}
+                    value={searchValue}
+                    onChange={onChange}
+                    before={<Icon24Search/>}
+                    after={
+                        <Tappable
+                            Component="div"
+                            onClick={clearSearch}
+                        >
+                            <Icon24Close/>
+                        </Tappable>}
+                />}
         />
     );
 }

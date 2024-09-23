@@ -42,11 +42,10 @@ export default function FriendsList({
                             friends?.length > 0 ?
                                 (
                                     <List className="mb-8">
-                                        {friends?.map(({id, amount, name, photo_url, total}) =>
+                                        {friends?.map(({id, name, photo_url, total}) =>
                                             <div key={id}>
                                                 <Cell
                                                     className="friends-list_shrink-0"
-                                                    subtitle={amount}
                                                     before={<Avatar size={48} src={photo_url}/>}
                                                     after={<div className="flex flex-col">
                                                         {total.slice(0, 2).map(({amount, currency}, index) =>

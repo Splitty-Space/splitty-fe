@@ -1,30 +1,21 @@
 "use client"
 
 import React, {useEffect, useState} from "react";
-import classNames from "classnames";
 import {useTranslation} from "react-i18next";
 import {Friend} from "@/entities";
-import Header from "@/app/main/header/header";
 import {
     Avatar,
     Button,
     Cell,
     Divider,
-    Input,
     List,
     Placeholder,
     Spinner,
     Switch,
-    Tappable,
     Title
 } from "@telegram-apps/telegram-ui";
 import {TabIds} from "@/const/tabIds";
-import {Icon24Close, Icon24Search} from "@/Icons";
-
-enum SEGMENTS {
-    FRIENDS,
-    GROUPS
-}
+import HeaderWithSearch from "@/app/main/header/headerWithSearch";
 
 export default function AddExpenseParticipants({
                                                    selectedFriends,
@@ -41,22 +32,11 @@ export default function AddExpenseParticipants({
 }) {
     const {t} = useTranslation();
 
-    const [isPrevVisible, setIsPrevVisible] = useState(false);
     const [isNextDisabled, setIsNextDisabled] = useState(true);
-
-    const [selectedSegment, setSelectedSegment] = useState<SEGMENTS>(SEGMENTS.FRIENDS);
 
     const [selectedUserIds, setSelectedUserIds] = useState<Array<number>>(selectedFriends.map(({id}) => id));
 
     const [searchValue, setSearchValue] = useState("");
-
-    const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchValue(e.target.value);
-    }
-
-    const clearSearch = () => {
-        setSearchValue("");
-    }
 
     const onNext = () => {
         setCurrentTab(TabIds.AddExpense);
@@ -84,23 +64,11 @@ export default function AddExpenseParticipants({
 
     return (
         <>
-            <Header
-                layoutClassName="p-0 py-4"
-                LeftComponent={() => (
-                    <Button
-                        size="l"
-                        mode="plain"
-                        className={classNames({
-                            "invisible": !isPrevVisible
-                        })}
-                    >
-                        {t("expenses.Prev")}
-                    </Button>
-                )}
+            <HeaderWithSearch
                 CentralComponent={() => <Title>{t("expenses.AddAnExpense")}</Title>}
                 RightComponent={() => (
                     <Button
-                        size="l"
+                        size="m"
                         mode="plain"
                         onClick={onNext}
                         disabled={isNextDisabled}
@@ -108,72 +76,34 @@ export default function AddExpenseParticipants({
                         {t("expenses.Next")}
                     </Button>
                 )}
-                AfterComponent={<>
-                    {/* TODO add groups
-                    <div className="m-4">
-                        <SegmentedControl>
-                            <SegmentedControl.Item
-                                key={SEGMENTS.FRIENDS}
-                                onClick={() => setSelectedSegment(SEGMENTS.FRIENDS)}
-                                selected={selectedSegment === SEGMENTS.FRIENDS}
-                            >
-                                {t("expenses.Friends")}
-                            </SegmentedControl.Item>
-                            <SegmentedControl.Item
-                                key={SEGMENTS.GROUPS}
-                                onClick={() => setSelectedSegment(SEGMENTS.GROUPS)}
-                                selected={selectedSegment === SEGMENTS.GROUPS}
-                            >
-                                {t("expenses.Groups")}
-                            </SegmentedControl.Item>
-                        </SegmentedControl>
-                    </div>*/}
-
-                    <Input
-                        value={searchValue}
-                        onChange={onSearchChange}
-                        status="focused"
-                        placeholder={t("header.Search")}
-                        className="mx-4 header_color"
-                        before={<Icon24Search/>}
-                        after={
-                            <Tappable
-                                Component="div"
-                                onClick={clearSearch}
-                            >
-                                <Icon24Close/>
-                            </Tappable>}
-                    />
-                </>
-                }
+                searchValue={searchValue}
+                setSearchValue={setSearchValue}
             />
 
-            <main className="mt-16">
+            <main>
                 {
-                    selectedSegment === SEGMENTS.FRIENDS ? (loadingFriends ?
-                            (<Spinner size="l"/>) :
-                            filteredFriends?.length > 0 ?
-                                (
-                                    <List>
-                                        {filteredFriends?.map(({id, amount, name, photo_url}) =>
-                                            <div key={id}>
-                                                <Cell
-                                                    subtitle={amount}
-                                                    before={<Avatar size={48} src={photo_url}/>}
-                                                    after={<Switch
-                                                        defaultChecked={selectedUserIds.includes(id)}
-                                                        onChange={onUserChange(id)}
-                                                    />}
-                                                >
-                                                    {name}
-                                                </Cell>
-                                                <Divider className="ml-20"/>
-                                            </div>
-                                        )
-                                        }
-                                    </List>)
-                                : (<Placeholder header={t("friendsList.FriendNotFound")}/>)) :
-                        <span>Group TODO</span>
+                    loadingFriends ?
+                        (<Spinner size="l"/>) :
+                        filteredFriends?.length > 0 ?
+                            (
+                                <List>
+                                    {filteredFriends?.map(({id, name, photo_url}) =>
+                                        <div key={id}>
+                                            <Cell
+                                                before={<Avatar size={48} src={photo_url}/>}
+                                                after={<Switch
+                                                    defaultChecked={selectedUserIds.includes(id)}
+                                                    onChange={onUserChange(id)}
+                                                />}
+                                            >
+                                                {name}
+                                            </Cell>
+                                            <Divider className="ml-20"/>
+                                        </div>
+                                    )
+                                    }
+                                </List>)
+                            : (<Placeholder header={t("friendsList.FriendNotFound")}/>)
                 }
             </main>
         </>

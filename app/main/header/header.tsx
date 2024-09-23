@@ -1,6 +1,6 @@
 "use client"
 
-import React, {FC, memo, ReactElement} from "react";
+import React, {FC, memo} from "react";
 import classNames from "classnames";
 import {FixedLayout} from "@telegram-apps/telegram-ui";
 import "./header.css";
@@ -20,7 +20,7 @@ function Header({
     LeftComponent?: FC,
     CentralComponent?: FC,
     RightComponent?: FC,
-    AfterComponent?: ReactElement,
+    AfterComponent?: FC,
 }) {
     return (
         <header className={classNames("h-20", className)}>
@@ -33,7 +33,7 @@ function Header({
                     {RightComponent && <RightComponent/>}
                 </div>
 
-                {AfterComponent && <>{AfterComponent}</>}
+                {AfterComponent && <AfterComponent/>}
             </FixedLayout>
         </header>
     );
