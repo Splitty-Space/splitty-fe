@@ -1,7 +1,6 @@
 "use client"
 
 import React, {useEffect, useState} from "react";
-import classNames from "classnames";
 import {useTranslation} from "react-i18next";
 import Header from "@/app/main/header/header";
 import {
@@ -25,11 +24,6 @@ import dayjs, {Dayjs} from "dayjs";
 import {splitNumberIntoParts} from "@/utils/splitNumberIntoParts";
 import {addExpense} from "@/services/addExpense";
 import "./AddExpense.css";
-
-enum SEGMENTS {
-    NUMERIC,
-    PERCENT
-}
 
 interface Payment {
     id: number;
