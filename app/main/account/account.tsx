@@ -1,14 +1,16 @@
 import React, {useState} from "react";
 import {useTranslation} from "react-i18next";
-import {Avatar, Cell, IconContainer, List, Select, Spinner, Title} from "@telegram-apps/telegram-ui";
+import {Avatar, Button, Cell, Divider, IconContainer, List, Select, Spinner, Title} from "@telegram-apps/telegram-ui";
 import {Icon28Chat} from "@telegram-apps/telegram-ui/dist/icons/28/chat";
 import {Icon28Devices} from "@telegram-apps/telegram-ui/dist/icons/28/devices";
 import {Icon28Stats} from "@telegram-apps/telegram-ui/dist/icons/28/stats";
-import {CURRENCIES} from "@/const/currencies";
 import {LANGUAGES} from "@/const/languages";
 import useMe from "@/services/useMe";
 import useUpdateUserSettings from "@/services/useUpdateUserSettings";
 import i18next from "i18next";
+import {CurrencySelect} from "@/components/CurrencySelect";
+import Header from "@/app/main/header/header";
+import Logo from "@/app/main/header/logo";
 
 export default function Account() {
     const {t} = useTranslation();
@@ -46,80 +48,88 @@ export default function Account() {
     };
 
     return (
-        <main className="mt-40 flex flex-col items-center justify-center">
-            {data ?
-                <>
-                    <div className="flex flex-col items-center mb-10">
-                        <Avatar
-                            size={96}
-                            src={data.photo_url}
-                        />
+        <>
+            <Header
+                CentralComponent={Logo}
+                subHeaderClassName="justify-content-center"
+            />
 
-                        <Title
-                            level="1"
-                            weight="1"
+            <main className="mt-4 mx-4 flex flex-col items-center justify-center">
+                {data ?
+                    <>
+                        <div className="flex flex-col items-center mb-16">
+                            <Avatar
+                                size={96}
+                                src={data.photo_url}
+                            />
+
+                            <Title
+                                className="mt-4"
+                                level="1"
+                                weight="1"
+                            >
+                                {data.name}
+                            </Title>
+                        </div>
+
+                        <List
+                            className="w-full rounded-3xl"
+                            style={{
+                                background: "var(--tgui--bg_color)",
+                            }}
                         >
-                            {data.name}
-                        </Title>
-                    </div>
+                            <Cell
+                                className="p-0 max-h-12"
+                                before={<IconContainer><Icon28Chat/></IconContainer>}
+                                onClick={onContactUs}
+                            >
+                                {t("account.ContactUs")}
+                            </Cell>
+                            <Divider/>
 
-                    <List
-                        className="w-full"
-                        style={{
-                            background: "var(--tgui--secondary_bg_color)",
-                        }}
-                    >
-                        <Cell
-                            before={<IconContainer><Icon28Chat/></IconContainer>}
-                            onClick={onContactUs}
-                        >
-                            {t("account.ContactUs")}
-                        </Cell>
-                        <Cell
-                            before={<IconContainer><Icon28Stats/></IconContainer>}
-                        >
-                            <div className="flex items-center">
-                                <span>{t("account.DefaultCurrency")}</span>
+                            <Cell
+                                className="p-0 max-h-12"
+                                before={<IconContainer><Icon28Stats/></IconContainer>}
+                            >
+                                <div className="flex items-center">
+                                    <span>{t("account.DefaultCurrency")}</span>
 
-                                {/*TODO заменить на CurrencySelect component */}
-                                {!isCurrencyLoading ?
-                                    <Select
-                                        defaultValue={data.default_currency}
-                                        className="ml-8"
-                                        onChange={onCurrencyChange}
-                                    >
-                                        {CURRENCIES.map((currency) => (
-                                            <option key={currency}>{currency}</option>
-                                        ))}
-                                    </Select>
-                                    :
-                                    <Spinner size="s" className="ml-8 my-2.5"/>
-                                }
-                            </div>
-                        </Cell>
-                        <Cell before={<IconContainer><Icon28Devices/></IconContainer>}>
-                            <div className="flex items-center">
-                                <span>{t("account.Language")}</span>
+                                    <div className="ml-8">
+                                        <CurrencySelect
+                                            isLoading={isCurrencyLoading}
+                                            defaultCurrency={data.default_currency}
+                                            onChange={onCurrencyChange}
+                                        />
+                                    </div>
+                                </div>
+                            </Cell>
+                            <Divider/>
 
-                                {!isLanguageLoading ?
-                                    <Select
-                                        defaultValue={data.language.toUpperCase()}
-                                        className="ml-8"
-                                        onChange={onLanguageChange}
-                                    >
-                                        {LANGUAGES.map((language) => (
-                                            <option key={language}>{language}</option>
-                                        ))}
-                                    </Select>
-                                    :
-                                    <Spinner size="s" className="ml-8 my-2.5"/>
-                                }
-                            </div>
-                        </Cell>
-                    </List>
-                </>
-                :
-                <Spinner size="l"/>
-            }
-        </main>);
+                            <Cell className="p-0 max-h-12" before={<IconContainer><Icon28Devices/></IconContainer>}>
+                                <div className="flex items-center">
+                                    <span>{t("account.Language")}</span>
+
+                                    {!isLanguageLoading ?
+                                        <Select
+                                            defaultValue={data.language.toUpperCase()}
+                                            className="ml-8"
+                                            onChange={onLanguageChange}
+                                        >
+                                            {LANGUAGES.map((language) => (
+                                                <option key={language}>{language}</option>
+                                            ))}
+                                        </Select>
+                                        :
+                                        <Spinner size="s" className="ml-8 my-2.5"/>
+                                    }
+                                </div>
+                            </Cell>
+                        </List>
+                    </>
+                    :
+                    <Spinner size="l"/>
+                }
+            </main>
+        </>
+    );
 }

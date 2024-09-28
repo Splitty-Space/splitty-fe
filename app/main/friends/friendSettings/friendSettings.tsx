@@ -50,8 +50,8 @@ export default function FriendSettings({friend, friends, refetchFriends, setSubp
     return (
         <>
             <Header
-                subHeaderClassName="friendSettings_header"
                 CentralComponent={Logo}
+                subHeaderClassName="justify-content-center"
             />
 
             <div className="flex flex-col items-center justify-center p-4">

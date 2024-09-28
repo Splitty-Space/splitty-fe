@@ -24,3 +24,7 @@ body {
 .blue {
     color: var(--tgui--link_color);
 }
+
+.justify-content-center {
+    justify-content: center;
+}
