@@ -21,10 +21,11 @@ import Activity from "@/app/main/activity/activity";
 import useMe from "@/services/useMe";
 import {initClosingBehavior, initSwipeBehavior} from "@telegram-apps/sdk-react";
 import "@/utils/mockTelegramEnv";
+import {DEFAULT_THEME} from "@/const/theme";
 
 const darkTheme = createTheme({
     palette: {
-        mode: "dark",
+        mode: DEFAULT_THEME,
     },
 });
 

@@ -3,15 +3,18 @@
 import Script from "next/script";
 import {useRouter} from "next/navigation";
 import {useEffect, useState} from "react";
+import i18next from "i18next";
+import "@/i18n";
 import {AppRoot} from "@telegram-apps/telegram-ui";
 import "@telegram-apps/telegram-ui/dist/styles.css";
 import classNames from "classnames";
 import {main} from "@/const/urls";
 import "@/API/axiosConfig";
-import "@/i18n";
-import "./globals.css";
 import useMe from "@/services/useMe";
-import i18next from "i18next";
+import {DARK, DEFAULT_THEME, LIGHT} from "@/const/theme";
+import {DEFAULT_PLATFORM, IOS, BASE} from "@/const/platform";
+import {AppRootContext} from "./AppRootContext";
+import "./globals.css";
 
 // import type {Metadata} from "next";
 // export const metadata: Metadata = {
@@ -23,8 +26,8 @@ export default function RootLayout({children}: Readonly<{
     children: React.ReactNode;
 }>) {
 
-    const [platform, setPlatform] = useState<"base" | "ios">("ios");
-    const [appearance, setAppearance] = useState<"light" | "dark">("dark");
+    const [platform, setPlatform] = useState<BASE | IOS>(DEFAULT_PLATFORM);
+    const [appearance, setAppearance] = useState<LIGHT | DARK>(DEFAULT_THEME);
 
     const {data} = useMe();
 
@@ -41,12 +44,12 @@ export default function RootLayout({children}: Readonly<{
             setTimeout(() => {
 
                 if (window?.Telegram) {
-                    setPlatform(window.Telegram?.WebApp?.platform === "ios" ? "ios" : "base");
+                    setPlatform(window.Telegram?.WebApp?.platform === IOS ? IOS : BASE);
                     setAppearance(window.Telegram.WebApp.colorScheme);
 
                     // TODO for test
-                    setAppearance("dark");
-                    setPlatform("ios");
+                    setAppearance(DARK);
+                    setPlatform(IOS);
 
                     window.Telegram.WebApp.expand();
 
@@ -65,16 +68,18 @@ export default function RootLayout({children}: Readonly<{
         <Script src="https://telegram.org/js/telegram-web-app.js"/>
 
         <body className={classNames({
-            "body_dark": appearance === "dark"
+            "body_dark": appearance === DARK
         })}>
         {platform && appearance && (
-            <AppRoot
-                platform={platform}
-                appearance={appearance}
-                className="app-root"
-            >
-                {data && children}
-            </AppRoot>)
+            <AppRootContext.Provider value={{platform, appearance}}>
+                <AppRoot
+                    platform={platform}
+                    appearance={appearance}
+                    className="app-root"
+                >
+                    {data && children}
+                </AppRoot>
+            </AppRootContext.Provider>)
         }
         </body>
         </html>

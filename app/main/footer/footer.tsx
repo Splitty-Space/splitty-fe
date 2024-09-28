@@ -1,13 +1,15 @@
 "use client"
 
-import {useCallback, FC} from "react";
+import {useCallback, FC, useContext} from "react";
 import {Avatar, Tabbar} from "@telegram-apps/telegram-ui";
 import {Icon24Group, Icon24Person, Icon24Stats, PlusIcon} from "@/Icons";
 import {useTranslation} from "react-i18next";
 import {TabIds} from "@/const/tabIds";
-import "./footer.css";
 import useMe from "@/services/useMe";
 import {subPageConst} from "@/const/subPageConst";
+import {AppRootContext} from "@/app/AppRootContext";
+import {DARK} from "@/const/theme";
+import "./footer.css";
 
 interface Tab {
     id: number;
@@ -21,6 +23,8 @@ export default function Footer({currentTab, setCurrentTab, setSubpage}: {
     setSubpage: Function
 }) {
     const {t} = useTranslation();
+
+    const appRootContext = useContext(AppRootContext);
 
     const {data} = useMe();
 
@@ -74,7 +78,12 @@ export default function Footer({currentTab, setCurrentTab, setSubpage}: {
 
     return (
         <footer className="h-8">
-            <Tabbar style={{backgroundColor: "var(--tgui--bg_color)", paddingBottom: "1.5rem", marginBottom: "-1rem"}}>
+            <Tabbar
+                style={{
+                    backgroundColor: appRootContext.appearance === DARK ? "var(--tgui--black)" : "var(--tgui--white)",
+                    paddingBottom: "1.5rem",
+                    marginBottom: "-1rem"
+                }}>
                 {tabs.map(({
                                id,
                                text,
