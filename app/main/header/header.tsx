@@ -33,7 +33,7 @@ function Header({
                     {RightComponent && <RightComponent/>}
                 </div>
 
-                {AfterComponent && <AfterComponent/>}
+                {AfterComponent && <>{AfterComponent}</>}
             </FixedLayout>
         </header>
     );

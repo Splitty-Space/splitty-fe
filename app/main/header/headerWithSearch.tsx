@@ -64,22 +64,21 @@ export default function HeaderWithSearch({
             LeftComponent={_LeftComponent}
             CentralComponent={CentralComponent ? CentralComponent : Logo}
             RightComponent={RightComponent}
-            AfterComponent={() =>
-                <Input
-                    id={HEADER_SEARCH_ID}
-                    placeholder={t("header.Search")}
-                    className={isOpen ? "header_input" : "header_input__hide"}
-                    value={searchValue}
-                    onChange={onChange}
-                    before={<Icon24Search/>}
-                    after={
-                        <Tappable
-                            Component="div"
-                            onClick={clearSearch}
-                        >
-                            <Icon24Close/>
-                        </Tappable>}
-                />}
+            AfterComponent={<Input
+                id={HEADER_SEARCH_ID}
+                placeholder={t("header.Search")}
+                className={isOpen ? "header_input" : "header_input__hide"}
+                value={searchValue}
+                onChange={onChange}
+                before={<Icon24Search/>}
+                after={
+                    <Tappable
+                        Component="div"
+                        onClick={clearSearch}
+                    >
+                        <Icon24Close/>
+                    </Tappable>}
+            />}
         />
     );
 }
