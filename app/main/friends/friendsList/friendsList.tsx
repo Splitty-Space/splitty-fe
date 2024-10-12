@@ -41,7 +41,7 @@ export default function FriendsList({
                             </Placeholder>) :
                             friends?.length > 0 ?
                                 (
-                                    <List className="mb-8">
+                                    <List className="mb-8 px-0">
                                         {friends?.map(({id, name, photo_url, total}) =>
                                             <div key={id}>
                                                 <Cell
@@ -53,7 +53,7 @@ export default function FriendsList({
                                                                 key={index}
                                                                 weight="3"
                                                                 className={Number(amount) > 0 ? "red" : "blue"}>
-                                                                {`${Number(amount) > 0 ? "owes you" : "you owe"} ${amount} ${currency}`}
+                                                                {`${Number(amount) > 0 ? "owes you" : "you owe"} ${Number(amount)} ${currency}`}
                                                             </Caption>)
                                                         }
                                                     </div>}

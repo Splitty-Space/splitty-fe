@@ -19,7 +19,7 @@ export default function GroupsList({setSubpage}: { setSubpage: Function }) {
             })}>
                 {
                     !!data && data?.data?.length > 0 ? (
-                            <List className="mb-8">
+                            <List className="mb-8 px-0">
                                 {data?.data?.map(({id, amount, name, photo_url}: {
                                     id: number, amount: string, name: string, photo_url: string
                                 }) =>

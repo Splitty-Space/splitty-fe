@@ -86,7 +86,7 @@ export default function AddExpenseParticipants({
                         (<Spinner size="l"/>) :
                         filteredFriends?.length > 0 ?
                             (
-                                <List>
+                                <List className="mb-8 px-0">
                                     {filteredFriends?.map(({id, name, photo_url}) =>
                                         <div key={id}>
                                             <Cell

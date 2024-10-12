@@ -105,7 +105,7 @@ export default function AddGroup() {
                         {
                             loadingFriends ?
                                 (<Spinner size="l"/>) :
-                                (<List className="mb-8">
+                                (<List className="mb-8 px-0">
                                     {data?.data?.map(({id, name, photo_url}: {
                                             id: number, name: string, photo_url: string
                                         }) =>

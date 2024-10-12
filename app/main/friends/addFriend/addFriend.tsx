@@ -52,7 +52,7 @@ export default function AddFriend({refetchFriends, setSubpage}: {
             </div>
 
             {searchValue !== "" && data && data?.data?.length > 0 && !error ?
-                (<List className="mb-8">
+                (<List className="mb-8 px-0">
                     {data?.data?.map(({id, name, username, photo_url}: {
                         id: number, name: string, username: string, photo_url: string
                     }) =>

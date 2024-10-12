@@ -10,6 +10,7 @@ export default interface Expense {
     owe: number;
     created_at: string;
     owes: number;
+    currency: string;
     payment: boolean;
     settled: boolean;
     group: Group;

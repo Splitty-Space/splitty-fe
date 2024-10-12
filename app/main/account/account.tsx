@@ -73,56 +73,52 @@ export default function Account() {
                         </div>
 
                         <List
-                            className="w-full rounded-3xl"
+                            className="w-full rounded-xl py-0"
                             style={{
                                 background: "var(--tgui--bg_color)",
                             }}
                         >
                             <Cell
-                                className="p-0 max-h-12"
+                                className="p-0 margin-0 max-h-12"
                                 before={<IconContainer><Icon28Chat/></IconContainer>}
                                 onClick={onContactUs}
                             >
                                 {t("account.ContactUs")}
                             </Cell>
-                            <Divider/>
+                            <Divider className="ml-10 margin-bottom-0-125"/>
 
                             <Cell
-                                className="p-0 max-h-12"
+                                className="p-0 margin-0"
                                 before={<IconContainer><Icon28Stats/></IconContainer>}
+                                after={<CurrencySelect
+                                    isLoading={isCurrencyLoading}
+                                    defaultCurrency={data.default_currency}
+                                    onChange={onCurrencyChange}
+                                    className="h-10"
+                                />}
                             >
-                                <div className="flex items-center">
-                                    <span>{t("account.DefaultCurrency")}</span>
-
-                                    <div className="ml-8">
-                                        <CurrencySelect
-                                            isLoading={isCurrencyLoading}
-                                            defaultCurrency={data.default_currency}
-                                            onChange={onCurrencyChange}
-                                        />
-                                    </div>
-                                </div>
+                                {t("account.DefaultCurrency")}
                             </Cell>
-                            <Divider/>
+                            <Divider className="ml-10 margin-bottom-0-125"/>
 
-                            <Cell className="p-0 max-h-12" before={<IconContainer><Icon28Devices/></IconContainer>}>
-                                <div className="flex items-center">
-                                    <span>{t("account.Language")}</span>
-
-                                    {!isLanguageLoading ?
-                                        <Select
-                                            defaultValue={data.language.toUpperCase()}
-                                            className="ml-8"
-                                            onChange={onLanguageChange}
-                                        >
-                                            {LANGUAGES.map((language) => (
-                                                <option key={language}>{language}</option>
-                                            ))}
-                                        </Select>
-                                        :
-                                        <Spinner size="s" className="ml-8 my-2.5"/>
-                                    }
-                                </div>
+                            <Cell
+                                className="p-0 margin-0"
+                                before={<IconContainer><Icon28Devices/></IconContainer>}
+                                after={!isLanguageLoading ?
+                                    <Select
+                                        defaultValue={data.language.toUpperCase()}
+                                        className="ml-8"
+                                        onChange={onLanguageChange}
+                                    >
+                                        {LANGUAGES.map((language) => (
+                                            <option key={language}>{language}</option>
+                                        ))}
+                                    </Select>
+                                    :
+                                    <Spinner size="s" className="ml-8 my-2.5"/>
+                                }
+                            >
+                                {t("account.Language")}
                             </Cell>
                         </List>
                     </>

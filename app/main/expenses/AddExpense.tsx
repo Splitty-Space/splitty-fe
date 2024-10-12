@@ -13,7 +13,8 @@ import {
     List,
     Switch,
     Text,
-    Title
+    Title,
+    Snackbar
 } from "@telegram-apps/telegram-ui";
 import {TabIds} from "@/const/tabIds";
 import {Friend} from "@/entities";
@@ -23,6 +24,8 @@ import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import dayjs, {Dayjs} from "dayjs";
 import {splitNumberIntoParts} from "@/utils/splitNumberIntoParts";
 import {addExpense} from "@/services/addExpense";
+import {Icon28Archive} from "@telegram-apps/telegram-ui/dist/icons/28/archive";
+import useViewportSize from "@/utils/useViewportSize";
 import "./AddExpense.css";
 
 interface Payment {
@@ -67,20 +70,26 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
         isDirty: false,
     })));
 
+    const [isSnackbarShown, setIsSnackbarShown] = useState(false);
+
+    const currentPaidMoneyAmount = paidBy.reduce((acc, value) => value.isSelected && value.amount ? acc + value.amount : acc, 0);
+
+    const Size = useViewportSize();
+
+    console.log(Size);
+
     useEffect(() => {
         if (expenseName.length > 0 &&
             moneySpent && moneySpent > 0 &&
             (isFullyPaidByYou || paidBy.some(x => x.isSelected)) &&
-            paidBy.reduce((acc, value) =>
-                    value.isSelected && value.amount ? acc + value.amount : acc,
-                0) === moneySpent &&
+            currentPaidMoneyAmount === moneySpent &&
             (isSplitEquallyBetweenAll || splitBetween.some(x => x.isSelected))
         ) {
             setIsSaveDisabled(false);
         } else {
             setIsSaveDisabled(true);
         }
-    }, [expenseName, isFullyPaidByYou, isSplitEquallyBetweenAll, moneySpent, paidBy, splitBetween]);
+    }, [expenseName, isFullyPaidByYou, isSplitEquallyBetweenAll, moneySpent, paidBy, splitBetween, currentPaidMoneyAmount]);
 
     const onPrev = () => {
         setCurrentTab(TabIds.AddExpenseParticipants);
@@ -267,6 +276,7 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
                         onChange={onExpenseNameChange}
                         placeholder={t("expenses.ExpenseName")}
                         className="mb-2"
+                        status={expenseName.length < 3 && "error"}
                     />
 
                     <div className="flex items-center justify-between">
@@ -276,6 +286,7 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
                                 value={moneySpent}
                                 onChange={onMoneySpentChange}
                                 placeholder={t("expenses.MoneySpent")}
+                                status={(moneySpent && moneySpent > 0) || "error"}
                             />
                         </div>
                         <CurrencySelect
@@ -354,8 +365,12 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
                                     <Input
                                         value={paidBy.find(x => x.id === id)?.amount}
                                         onChange={onPaidByAmountChange(id)}
+                                        onFocus={() => setIsSnackbarShown(true)}
+                                        onBlur={() => setIsSnackbarShown(false)}
                                         type="number"
                                         className="w-28 ml-auto"
+                                        status={currentPaidMoneyAmount !== moneySpent ? "error" : null}
+                                        disabled={!paidBy.find(x => x.id === id)?.isSelected}
                                         after={
                                             <Caption
                                                 level="1"
@@ -373,24 +388,6 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
                     <>
                         <div className="mt-4 flex items-center justify-between">
                             <Headline weight="3">{t("expenses.Split")}:</Headline>
-
-                            {/* TODO Add %
-                   <SegmentedControl className="w-1/2">
-                        <SegmentedControl.Item
-                            key={SEGMENTS.NUMERIC}
-                            onClick={() => setSelectedSegment(SEGMENTS.NUMERIC)}
-                            selected={selectedSegment === SEGMENTS.NUMERIC}
-                        >
-                            1.23
-                        </SegmentedControl.Item>
-                        <SegmentedControl.Item
-                            key={SEGMENTS.PERCENT}
-                            onClick={() => setSelectedSegment(SEGMENTS.PERCENT)}
-                            selected={selectedSegment === SEGMENTS.PERCENT}
-                        >
-                            %
-                        </SegmentedControl.Item>
-                    </SegmentedControl>*/}
 
                             <Headline weight="3" className="invisible">{t("expenses.Split")}:</Headline>
                         </div>
@@ -428,6 +425,21 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
                             )}
                         </List>
                     </>
+                }
+
+                {/* TODO доделать snackbar для сплита */}
+                {/* TODO переделать со Snackbar на */}
+                {isSnackbarShown &&
+                    <Snackbar
+                        // className="sticky bottom-1/3 top-0"
+                        className="top-0"
+                        style={{bottom: Size[1] / 100 * 50}}
+                        before={<Icon28Archive/>}
+                        duration={99999999}
+                        description={`${moneySpent - currentPaidMoneyAmount} USD left`}
+                    >
+                        {currentPaidMoneyAmount} of {moneySpent} USD filled
+                    </Snackbar>
                 }
             </main>
         </>
