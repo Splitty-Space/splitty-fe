@@ -14,7 +14,6 @@ import {
     Switch,
     Text,
     Title,
-    Snackbar
 } from "@telegram-apps/telegram-ui";
 import {TabIds} from "@/const/tabIds";
 import {Friend} from "@/entities";
@@ -24,8 +23,6 @@ import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import dayjs, {Dayjs} from "dayjs";
 import {splitNumberIntoParts} from "@/utils/splitNumberIntoParts";
 import {addExpense} from "@/services/addExpense";
-import {Icon28Archive} from "@telegram-apps/telegram-ui/dist/icons/28/archive";
-import useViewportSize from "@/utils/useViewportSize";
 import "./AddExpense.css";
 
 interface Payment {
@@ -70,11 +67,8 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
         isDirty: false,
     })));
 
-    const [isSnackbarShown, setIsSnackbarShown] = useState(false);
-
     const currentPaidMoneyAmount = paidBy.reduce((acc, value) => value.isSelected && value.amount ? acc + value.amount : acc, 0);
-
-    const Size = useViewportSize();
+    const currentSplitBetweenMoneyAmount = splitBetween.reduce((acc, value) => value.isSelected && value.amount ? acc + value.amount : acc, 0);
 
     useEffect(() => {
         if (expenseName.length > 0 &&
@@ -363,8 +357,6 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
                                     <Input
                                         value={paidBy.find(x => x.id === id)?.amount}
                                         onChange={onPaidByAmountChange(id)}
-                                        onFocus={() => setIsSnackbarShown(true)}
-                                        onBlur={() => setIsSnackbarShown(false)}
                                         type="number"
                                         className="w-28 ml-auto"
                                         status={currentPaidMoneyAmount !== moneySpent ? "error" : null}
@@ -380,6 +372,13 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
 
                                 </div>))}
                         </List>
+
+                        <Text
+                            weight="3"
+                            className="flex justify-end"
+                        >
+                            {currentPaidMoneyAmount} of {moneySpent} USD filled. {`${moneySpent - currentPaidMoneyAmount} USD left.`}
+                        </Text>
                     </>}
 
                 {!isSplitEquallyBetweenAll &&
@@ -422,22 +421,14 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
                                 </div>
                             )}
                         </List>
-                    </>
-                }
 
-                {/* TODO доделать snackbar для сплита */}
-                {/* TODO переделать со Snackbar на */}
-                {isSnackbarShown &&
-                    <Snackbar
-                        // className="sticky bottom-1/3 top-0"
-                        className="top-0"
-                        style={{bottom: Size[1] / 100 * 50}}
-                        before={<Icon28Archive/>}
-                        duration={99999999}
-                        description={`${moneySpent - currentPaidMoneyAmount} USD left`}
-                    >
-                        {currentPaidMoneyAmount} of {moneySpent} USD filled
-                    </Snackbar>
+                        <Text
+                            weight="3"
+                            className="flex justify-end"
+                        >
+                            {currentSplitBetweenMoneyAmount} of {moneySpent} USD filled. {`${moneySpent - currentSplitBetweenMoneyAmount} USD left.`}
+                        </Text>
+                    </>
                 }
             </main>
         </>
