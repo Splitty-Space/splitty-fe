@@ -25,7 +25,6 @@ import "./globals.css";
 export default function RootLayout({children}: Readonly<{
     children: React.ReactNode;
 }>) {
-
     const [platform, setPlatform] = useState<BASE | IOS>(DEFAULT_PLATFORM);
     const [appearance, setAppearance] = useState<LIGHT | DARK>(DEFAULT_THEME);
 

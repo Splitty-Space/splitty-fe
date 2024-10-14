@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {useTranslation} from "react-i18next";
-import {Avatar, Button, Cell, Divider, IconContainer, List, Select, Spinner, Title} from "@telegram-apps/telegram-ui";
+import {Avatar, Cell, Divider, IconContainer, List, Select, Spinner, Title} from "@telegram-apps/telegram-ui";
 import {Icon28Chat} from "@telegram-apps/telegram-ui/dist/icons/28/chat";
 import {Icon28Devices} from "@telegram-apps/telegram-ui/dist/icons/28/devices";
 import {Icon28Stats} from "@telegram-apps/telegram-ui/dist/icons/28/stats";
@@ -51,7 +51,7 @@ export default function Account() {
         <>
             <Header
                 CentralComponent={Logo}
-                subHeaderClassName="justify-content-center"
+                subHeaderClassName="justify-content-center mt-6"
             />
 
             <main className="mt-4 mx-4 flex flex-col items-center justify-center">
