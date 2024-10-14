@@ -36,6 +36,13 @@ i18n
                         SettleUp: "Settle up",
                         AddFirstExpense: "Add first expense"
                     },
+                    friendPage: {
+                        YouBorrowed: "You borrowed",
+                        OwesYou: "owes you",
+                        YouOwe: "you owe",
+                        Paid: "paid",
+                        YouLent: "You lent",
+                    },
                     friendSettings: {
                         ConfirmDelete: "Confirm Delete",
                         ConfirmMessage: "Are you sure you want to delete this friend?",
@@ -103,6 +110,13 @@ i18n
                     friend: {
                         SettleUp: "Рассчитаться"
                     },
+                    friendPage: {
+                        YouBorrowed: "Вы одолжили",
+                        OwesYou: "должны тебе",
+                        YouOwe: "ты должен",
+                        Paid: "заплатил",
+                        YouLent: "Вы одолжили",
+                    },
                     friendSettings: {
                         ConfirmDelete: "Подтвердить удаление",
                         ConfirmMessage: "Вы уверены, что хотите удалить этого друга?",
@@ -167,6 +181,13 @@ i18n
                     },
                     friend: {
                         SettleUp: "Розраховуватися"
+                    },
+                    friendPage: {
+                        YouBorrowed: "Ви позичили",
+                        OwesYou: "винен тобі",
+                        YouOwe: "ти винен",
+                        Paid: "заплатив",
+                        YouLent: "Ви позичили",
                     },
                     friendSettings: {
                         ConfirmDelete: "Підтвердьте видалення",

@@ -11,12 +11,11 @@ import {
     Divider,
     IconButton,
     LargeTitle,
-    List,
     Spinner,
     Skeleton,
     Title
 } from "@telegram-apps/telegram-ui";
-import {AutoSizer, InfiniteLoader, List as VList} from "react-virtualized";
+import {AutoSizer, InfiniteLoader, List} from "react-virtualized";
 import {Icon28Edit} from "@telegram-apps/telegram-ui/dist/icons/28/edit";
 import {subPageConst} from "@/const/subPageConst";
 import getExpenses from "@/services/getExpenses";
@@ -42,7 +41,7 @@ export default function FriendPage({friend, setSubpage}: { friend?: Friend, setS
 
     useEffect(() => {
         setHeight(refContainer.current.clientHeight - refHeader.current.clientHeight);
-    });
+    }, []);
 
     useEffect(() => {
         const controller = new AbortController();
@@ -68,13 +67,13 @@ export default function FriendPage({friend, setSubpage}: { friend?: Friend, setS
         return () => {
             controller.abort();
         }
-    }, []);
+    }, [friend]);
 
     const isRowLoaded = ({index}) => {
         return expenses && !!expenses[index];
     };
 
-    const loadMoreRows = ({startIndex, stopIndex}) => {
+    const loadMoreRows = ({startIndex}: { startIndex: number }) => {
         if (!Number.isInteger(startIndex / limit)) {
             return;
         }
@@ -105,7 +104,6 @@ export default function FriendPage({friend, setSubpage}: { friend?: Friend, setS
         }
 
         const {
-            id,
             description,
             transactions,
             owe,
@@ -184,7 +182,7 @@ export default function FriendPage({friend, setSubpage}: { friend?: Friend, setS
                                         key="N people paid"
                                         weight="3"
                                     >
-                                        {`${whoPaid} paid ${_amount} ${currency}`}
+                                        {`${whoPaid} ${t("friendPage.Paid")} ${_amount} ${currency}`}
                                     </Caption>
 
                                     {_owe !== 0 &&
@@ -193,7 +191,7 @@ export default function FriendPage({friend, setSubpage}: { friend?: Friend, setS
                                             weight="3"
                                             className="red"
                                         >
-                                            {`You borrowed ${_owe} ${currency}`}
+                                            {`${t("friendPage.YouBorrowed")} ${_owe} ${currency}`}
                                         </Caption>
                                     }
                                     {_owes !== 0 &&
@@ -202,7 +200,7 @@ export default function FriendPage({friend, setSubpage}: { friend?: Friend, setS
                                             weight="3"
                                             className="blue"
                                         >
-                                            {`You lent ${_owes} ${currency}`}
+                                            {`${t("friendPage.YouLent")} ${_owes} ${currency}`}
                                         </Caption>
                                     }
                                 </>
@@ -255,7 +253,7 @@ export default function FriendPage({friend, setSubpage}: { friend?: Friend, setS
                         weight="3"
                         className={`mt-1 ${Number(amount) > 0 ? "blue" : "red"}`}
                     >
-                        {`${amount} ${currency} ${Number(amount) > 0 ? "owes you" : "you owe"}`}
+                        {`${amount} ${currency} ${Number(amount) > 0 ? t("friendPage.OwesYou") : t("friendPage.YouOwe")}`}
                     </Caption>
                 )}
 
@@ -278,7 +276,7 @@ export default function FriendPage({friend, setSubpage}: { friend?: Friend, setS
                         {({onRowsRendered, registerChild}) => (
                             <AutoSizer>
                                 {({width}) => (
-                                    <VList
+                                    <List
                                         ref={registerChild}
                                         width={width}
                                         height={height}

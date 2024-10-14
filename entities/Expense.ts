@@ -14,5 +14,6 @@ export default interface Expense {
     payment: boolean;
     settled: boolean;
     group: Group;
-    first_transaction: Transaction;
+    date: Date,
+    transactions: Transaction[];
 }

@@ -76,8 +76,6 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
 
     const Size = useViewportSize();
 
-    console.log(Size);
-
     useEffect(() => {
         if (expenseName.length > 0 &&
             moneySpent && moneySpent > 0 &&
