@@ -43,6 +43,7 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
     const participants = [me, ...selectedFriends];
 
     const [isSaveDisabled, setIsSaveDisabled] = useState(true);
+    const [isSaveInProgress, setIsSaveInProgress] = useState(false);
 
     const [expenseName, setExpenseName] = useState("");
 
@@ -88,6 +89,12 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
     };
 
     const onSave = () => {
+        if (isSaveInProgress){
+            return;
+        }
+
+        setIsSaveInProgress(true);
+
         addExpense({
             payers: paidBy
                 .filter(x => x.isSelected)
@@ -242,6 +249,7 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
                         mode="plain"
                         onClick={onSave}
                         disabled={isSaveDisabled}
+                        loading={isSaveInProgress}
                     >
                         {t("expenses.Save")}
                     </Button>
