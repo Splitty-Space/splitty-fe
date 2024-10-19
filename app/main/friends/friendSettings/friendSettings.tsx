@@ -69,7 +69,7 @@ export default function FriendSettings({friend, friends, refetchFriends, setSubp
                 </Title>
 
                 <Text weight="3" className="opacity-50">
-                    {friend?.username}
+                    {"@" + friend?.username}
                 </Text>
             </div>
 

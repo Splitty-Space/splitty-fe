@@ -58,7 +58,7 @@ export default function AddFriend({refetchFriends, setSubpage}: {
                     }) =>
                         <Cell
                             key={id}
-                            subtitle={username}
+                            subtitle={"@" + username}
                             onClick={onAddFriend(id)}
                             before={<Avatar size={48} src={photo_url}/>}
                         >
