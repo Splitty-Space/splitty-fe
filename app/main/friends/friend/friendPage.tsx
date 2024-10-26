@@ -25,7 +25,7 @@ import useMe from "@/services/useMe";
 import {EN} from "@/const/languages";
 
 
-export default function FriendPage({friend, setSubpage}: { friend?: Friend, setSubpage: Function }) {
+export default function FriendPage({friend, setSubpage}: { friend: Friend, setSubpage: Function }) {
     const {t} = useTranslation();
 
     const {data: me} = useMe();
@@ -95,7 +95,7 @@ export default function FriendPage({friend, setSubpage}: { friend?: Friend, setS
         });
     };
 
-    const rowRenderer = ({index, key, style}) => {
+    const rowRenderer = ({index, key, style}: { index: number, key: string, style: object }) => {
         if (!expenses[index]) {
             return (
                 <Skeleton visible withoutAnimation key={key} style={style} className="red">
@@ -160,6 +160,13 @@ export default function FriendPage({friend, setSubpage}: { friend?: Friend, setS
                     before={
                         <AvatarStack>
                             {transactions
+                                .reduce((trans, currentValue)=> {
+                                    if (trans.every(({id}) => id !== currentValue.id)){
+                                        trans.push(currentValue);
+                                    }
+
+                                    return trans;
+                                }, [])
                                 .slice(0, 2)
                                 .map(transaction =>
                                     <Avatar

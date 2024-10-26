@@ -13,7 +13,7 @@ const getExpenses = async ({
     limit: number,
     friend_id?: number,
     group_id?: number,
-    signal: AbortSignal
+    signal?: AbortSignal
 }) => {
     return await axios.get(`${SERVER_URL}/expenses`, {
         params: {
