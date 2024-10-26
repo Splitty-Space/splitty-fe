@@ -23,7 +23,7 @@ import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import dayjs, {Dayjs} from "dayjs";
 import {splitNumberIntoParts} from "@/utils/splitNumberIntoParts";
 import {addExpense} from "@/services/addExpense";
-import "./AddExpense.css";
+import "./addExpense.css";
 
 interface Payment {
     id: number;
