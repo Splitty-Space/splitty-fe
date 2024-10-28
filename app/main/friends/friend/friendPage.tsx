@@ -95,6 +95,10 @@ export default function FriendPage({friend, setSubpage}: { friend: Friend, setSu
         });
     };
 
+    const onSettleUp = () => {
+        setSubpage(subPageConst.SettleUp);
+    };
+
     const rowRenderer = ({index, key, style}: { index: number, key: string, style: object }) => {
         if (!expenses[index]) {
             return (
@@ -110,7 +114,6 @@ export default function FriendPage({friend, setSubpage}: { friend: Friend, setSu
             owes,
             amount,
             currency,
-            payment,
             settled,
             date
         } = expenses[index];
@@ -160,8 +163,8 @@ export default function FriendPage({friend, setSubpage}: { friend: Friend, setSu
                     before={
                         <AvatarStack>
                             {transactions
-                                .reduce((trans, currentValue)=> {
-                                    if (trans.every(({id}) => id !== currentValue.id)){
+                                .reduce((trans, currentValue) => {
+                                    if (trans.every(({id}) => id !== currentValue.id)) {
                                         trans.push(currentValue);
                                     }
 
@@ -268,6 +271,7 @@ export default function FriendPage({friend, setSubpage}: { friend: Friend, setSu
                     size="s"
                     mode="filled"
                     className="mt-4"
+                    onClick={onSettleUp}
                 >
                     {t("friend.SettleUp")}
                 </Button>

@@ -25,7 +25,7 @@ export const addExpense = async ({
     payment: boolean,
     currency: typeof CURRENCIES[number],
     date: Date,
-    description: string,
+    description?: string,
 }) => {
     await axios.post(`${SERVER_URL}/expenses`, {
         user_id: getCurrentUserId(),

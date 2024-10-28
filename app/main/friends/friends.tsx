@@ -5,6 +5,8 @@ import {subPageConst} from "@/const/subPageConst";
 import FriendsList from "@/app/main/friends/friendsList/friendsList";
 import FriendPage from "@/app/main/friends/friend/friendPage";
 import FriendSettings from "@/app/main/friends/friendSettings/friendSettings";
+import SettleUp from "@/app/main/settleUp/settleUp";
+import SettleUpPayment from "@/app/main/settleUp/settleUpPayment";
 import {Snackbar} from "@telegram-apps/telegram-ui";
 import {Icon28Bin} from "@/Icons";
 import {Friend} from "@/entities";
@@ -29,9 +31,10 @@ export default function Friends({
     friends: Friend[],
     loadingFriends: boolean,
     refetchFriends: RefetchFunction<any, any>,
-    selectedFriend?: Friend
+    selectedFriend: Friend
 }) {
     const [isDeleteSnackbarShown, setIsDeleteSnackbarShown] = useState(false);
+    const [settleUpPaymentInfo, setSettleUpPaymentInfo] = useState<{friend: Friend, currency: string}>();
 
     return (
         <>
@@ -61,6 +64,20 @@ export default function Friends({
                     refetchFriends={refetchFriends}
                     setSubpage={setSubpage}
                     setIsDeleteSnackbarShown={setIsDeleteSnackbarShown}
+                />}
+            {subpage === subPageConst.SettleUp &&
+                <SettleUp
+                    friends={[selectedFriend]}
+                    setSubpage={setSubpage}
+                    setSettleUpPaymentInfo={setSettleUpPaymentInfo}
+
+                />}
+            {subpage === subPageConst.SettleUpPayment &&
+                <SettleUpPayment
+                    friend={settleUpPaymentInfo.friend}
+                    defaultCurrency={settleUpPaymentInfo.currency}
+                    setSubpage={setSubpage}
+                    refetchFriends={refetchFriends}
                 />}
 
             {isDeleteSnackbarShown && (

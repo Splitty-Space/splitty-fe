@@ -52,8 +52,8 @@ export default function FriendsList({
                                                             <Caption
                                                                 key={index}
                                                                 weight="3"
-                                                                className={Number(amount) > 0 ? "red" : "blue"}>
-                                                                {`${Number(amount) > 0 ? "owes you" : "you owe"} ${Number(amount)} ${currency}`}
+                                                                className={Number(amount) > 0 ? "blue" : "red"}>
+                                                                {`${Number(amount) > 0 ? "owes you" : "you owe"} ${Math.abs(Number(amount))} ${currency}`}
                                                             </Caption>)
                                                         }
                                                     </div>}

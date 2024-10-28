@@ -53,6 +53,13 @@ i18n
                         Search: "Search for a user",
                         NoResults: "No results",
                     },
+                    settleUp: {
+                        SettleUp: "Settle Up",
+                        PaymentInfo: "Payment Info",
+                        YouPaid: "YOU PAID",
+                        PaidYou: "PAID YOU",
+                        Save: "Save",
+                    },
                     addGroup: {
                         Next: "Next",
                         Prev: "Prev",
@@ -127,6 +134,13 @@ i18n
                         Search: "Поиск пользователя",
                         NoResults: "Нет результатов",
                     },
+                    settleUp: {
+                        SettleUp: "Рассчитаться",
+                        PaymentInfo: "Платежная информация",
+                        YouPaid: "ВЫ ЗАПЛАТИЛИ",
+                        PaidYou: "ЗАПЛАТИЛ ВАМ",
+                        Save: "Сохранить",
+                    },
                     addGroup: {
                         Next: "Далее",
                         Prev: "Назад",
@@ -198,6 +212,13 @@ i18n
                     addFriends: {
                         Search: "Пошук користувача",
                         NoResults: "Результатів немає",
+                    },
+                    settleUp: {
+                        SettleUp: "Розраховуватися",
+                        PaymentInfo: "Платіжна інформація",
+                        YouPaid: "ВИ ЗАПЛАТИЛИ",
+                        PaidYou: "ЗАПЛАТИВ ВАМ",
+                        Save: "Зберегти",
                     },
                     addGroup: {
                         Next: "Далі",

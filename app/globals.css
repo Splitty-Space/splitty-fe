@@ -50,3 +50,11 @@ body {
 .m--12 {
     margin: -3rem !important;
 }
+
+.padding-0 {
+    padding: 0 !important;
+}
+
+.scale-25 {
+    scale: 0.25;
+}
