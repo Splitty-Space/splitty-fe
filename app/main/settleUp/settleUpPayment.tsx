@@ -50,6 +50,10 @@ export default function SettleUpPayment({friend, defaultCurrency, setSubpage, re
         }
     };
 
+    const description = isYouAreDebtor ?
+        `${t("settleUp.YouPaid")} ${friend.name}` :
+        `${friend.name} ${t("settleUp.PaidYou")}`;
+
     const onSave = () => {
         setIsSaveInProgress(true);
 
@@ -71,6 +75,7 @@ export default function SettleUpPayment({friend, defaultCurrency, setSubpage, re
             payment: true,
             currency,
             date,
+            description,
         }).then(() => {
             refetchFriends();
             setSubpage(subPageConst.FriendsList);
@@ -132,13 +137,13 @@ export default function SettleUpPayment({friend, defaultCurrency, setSubpage, re
                         </div>
                     </div>
 
-                    <Section header={isYouAreDebtor ?
-                        `${t("settleUp.YouPaid")} ${friend.name.toUpperCase()}` :
-                        `${friend.name.toUpperCase()} ${t("settleUp.PaidYou")}`}>
+                    <Section header={description.toUpperCase()}>
                         <Input
                             placeholder="Amount Paid"
                             value={amountPaid}
                             type="number"
+                            pattern="[0-9]*"
+                            inputMode="numeric"
                             onChange={onAmountPaidChange}
                             status={amountPaid > 0 ? "default" : "error"}
                         />

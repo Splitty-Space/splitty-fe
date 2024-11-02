@@ -13,7 +13,8 @@ import {
     LargeTitle,
     Spinner,
     Skeleton,
-    Title
+    Title,
+    Text
 } from "@telegram-apps/telegram-ui";
 import {AutoSizer, InfiniteLoader, List} from "react-virtualized";
 import {Icon28Edit} from "@telegram-apps/telegram-ui/dist/icons/28/edit";
@@ -114,7 +115,7 @@ export default function FriendPage({friend, setSubpage}: { friend: Friend, setSu
             owes,
             amount,
             currency,
-            settled,
+            payment,
             date
         } = expenses[index];
 
@@ -180,13 +181,14 @@ export default function FriendPage({friend, setSubpage}: { friend: Friend, setSu
                         </AvatarStack>}
                     after={
                         <div className="flex flex-col items-end">
-                            {settled ?
-                                <Caption
-                                    key="settled"
+                            {payment ?
+                                <Text
+                                    key="payment"
                                     weight="3"
+                                    className={_owe === 0 ? "green" : "red"}
                                 >
-                                    {`${_amount} ${currency}`}
-                                </Caption> :
+                                    {`${_owe === 0 ? "+" : "-"}${_amount} ${currency}`}
+                                </Text> :
                                 <>
                                     <Caption
                                         key="N people paid"
@@ -263,7 +265,7 @@ export default function FriendPage({friend, setSubpage}: { friend: Friend, setSu
                         weight="3"
                         className={`mt-1 ${Number(amount) > 0 ? "blue" : "red"}`}
                     >
-                        {`${amount} ${currency} ${Number(amount) > 0 ? t("friendPage.OwesYou") : t("friendPage.YouOwe")}`}
+                        {`${Math.abs(Number(amount))} ${currency} ${Number(amount) > 0 ? t("friendPage.OwesYou") : t("friendPage.YouOwe")}`}
                     </Caption>
                 )}
 

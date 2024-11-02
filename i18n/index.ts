@@ -56,8 +56,8 @@ i18n
                     settleUp: {
                         SettleUp: "Settle Up",
                         PaymentInfo: "Payment Info",
-                        YouPaid: "YOU PAID",
-                        PaidYou: "PAID YOU",
+                        YouPaid: "You paid",
+                        PaidYou: "paid you",
                         Save: "Save",
                     },
                     addGroup: {
@@ -90,7 +90,10 @@ i18n
                         FullyPaidByYou: "Fully paid by you",
                         SplitEquallyBetweenAll: "Split equally between all",
                         Split: "Split",
-                        PaidBy: "Paid by"
+                        PaidBy: "Paid by",
+                        Of: "of",
+                        Filled: "filled",
+                        Left: "left",
                     },
                     account: {
                         ContactUs: "Contact Us",
@@ -137,8 +140,8 @@ i18n
                     settleUp: {
                         SettleUp: "Рассчитаться",
                         PaymentInfo: "Платежная информация",
-                        YouPaid: "ВЫ ЗАПЛАТИЛИ",
-                        PaidYou: "ЗАПЛАТИЛ ВАМ",
+                        YouPaid: "Вы заплатили",
+                        PaidYou: "заплатил вам",
                         Save: "Сохранить",
                     },
                     addGroup: {
@@ -169,7 +172,12 @@ i18n
                         Currency: "Валюта",
                         Date: "Дата",
                         FullyPaidByYou: "Полностью оплачено вами",
-                        SplitEquallyBetweenAll: "Разделить поровну между всеми"
+                        SplitEquallyBetweenAll: "Разделить поровну между всеми",
+                        Split: "Разделить",
+                        PaidBy: "Заплатил",
+                        Of: "из",
+                        Filled: "заполнено",
+                        Left: "осталось",
                     },
                     account: {
                         ContactUs: "Связаться с нами",
@@ -216,8 +224,8 @@ i18n
                     settleUp: {
                         SettleUp: "Розраховуватися",
                         PaymentInfo: "Платіжна інформація",
-                        YouPaid: "ВИ ЗАПЛАТИЛИ",
-                        PaidYou: "ЗАПЛАТИВ ВАМ",
+                        YouPaid: "Ви заплатили",
+                        PaidYou: "заплатив вам",
                         Save: "Зберегти",
                     },
                     addGroup: {
@@ -248,7 +256,12 @@ i18n
                         Currency: "Валюта",
                         Date: "Дата",
                         FullyPaidByYou: "Повністю оплачено вами",
-                        SplitEquallyBetweenAll: "Розділити порівну між усіма"
+                        SplitEquallyBetweenAll: "Розділити порівну між усіма",
+                        Split: "Розподіляти",
+                        PaidBy: "Оплачений",
+                        Of: "з",
+                        Filled: "наповнений",
+                        Left: "лівий",
                     },
                     account: {
                         ContactUs: "Зв'язатися з нами",

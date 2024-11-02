@@ -89,7 +89,7 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
     };
 
     const onSave = () => {
-        if (isSaveInProgress){
+        if (isSaveInProgress) {
             return;
         }
 
@@ -97,12 +97,12 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
 
         addExpense({
             payers: paidBy
-                .filter(x => x.isSelected)
+                .map(x => x.isSelected ? x : {...x, amount: 0})
                 .map((x) => ({user_id: x.id, amount: x.amount})),
             debtors: splitBetween
-                .filter(x => x.isSelected)
+                .map(x => x.isSelected ? x : {...x, amount: 0})
                 .map((x) => ({user_id: x.id, amount: x.amount})),
-            users: Array.from(new Set([...paidBy, ...splitBetween].filter(x => x.isSelected).map((x) => x.id))),
+            users: Array.from(new Set([...paidBy, ...splitBetween].map((x) => x.id))),
             amount: Number(moneySpent),
             payment: false,
             currency,
@@ -283,6 +283,8 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
                         <div className="grow mr-1">
                             <Input
                                 type="number"
+                                pattern="[0-9]*"
+                                inputMode="numeric"
                                 value={moneySpent}
                                 onChange={onMoneySpentChange}
                                 placeholder={t("expenses.MoneySpent")}
@@ -366,6 +368,8 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
                                         value={paidBy.find(x => x.id === id)?.amount}
                                         onChange={onPaidByAmountChange(id)}
                                         type="number"
+                                        pattern="[0-9]*"
+                                        inputMode="numeric"
                                         className="w-28 ml-auto"
                                         status={currentPaidMoneyAmount !== moneySpent ? "error" : null}
                                         disabled={!paidBy.find(x => x.id === id)?.isSelected}
@@ -385,7 +389,8 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
                             weight="3"
                             className="flex justify-end"
                         >
-                            {currentPaidMoneyAmount} of {moneySpent} USD filled. {`${moneySpent - currentPaidMoneyAmount} USD left.`}
+                            {`${currentPaidMoneyAmount} ${t("expenses.Of")} ${moneySpent} ${currency} ${t("expenses.Filled")}.
+                            ${moneySpent - currentPaidMoneyAmount} ${currency} ${t("expenses.Left")}.`}
                         </Text>
                     </>}
 
@@ -417,6 +422,8 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
                                         value={splitBetween.find(x => x.id === id)?.amount}
                                         onChange={onSplitBetweenAmountChange(id)}
                                         type="number"
+                                        pattern="[0-9]*"
+                                        inputMode="numeric"
                                         className="w-28 ml-auto"
                                         after={
                                             <Caption
@@ -434,7 +441,8 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
                             weight="3"
                             className="flex justify-end"
                         >
-                            {currentSplitBetweenMoneyAmount} of {moneySpent} USD filled. {`${moneySpent - currentSplitBetweenMoneyAmount} USD left.`}
+                            {currentSplitBetweenMoneyAmount} of {moneySpent} USD
+                                                             filled. {`${moneySpent - currentSplitBetweenMoneyAmount} USD left.`}
                         </Text>
                     </>
                 }

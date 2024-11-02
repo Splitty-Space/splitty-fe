@@ -27,6 +27,10 @@ body {
     color: var(--tgui--link_color);
 }
 
+.green {
+    color: var(--tgui--green);
+}
+
 .justify-content-center {
     justify-content: center;
 }
