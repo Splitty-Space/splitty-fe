@@ -31,6 +31,10 @@ body {
     color: var(--tgui--green);
 }
 
+.hint_color {
+    color: var(--tgui--hint_color);
+}
+
 .justify-content-center {
     justify-content: center;
 }

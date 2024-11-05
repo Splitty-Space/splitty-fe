@@ -9,32 +9,45 @@ import SettleUp from "@/app/main/settleUp/settleUp";
 import SettleUpPayment from "@/app/main/settleUp/settleUpPayment";
 import {Snackbar} from "@telegram-apps/telegram-ui";
 import {Icon28Bin} from "@/Icons";
-import {Friend} from "@/entities";
+import {Expense, Friend} from "@/entities";
 import {RefetchFunction} from "axios-hooks";
+import ExpenseDetails from "@/app/main/friends/expenseDetails/expenseDetails";
+import {useTranslation} from "react-i18next";
 
 export default function Friends({
                                     subpage,
                                     setSubpage,
+                                    setCurrentTab,
                                     searchValue,
                                     setSearchValue,
                                     setSelectedUserId,
                                     friends,
                                     loadingFriends,
                                     refetchFriends,
-                                    selectedFriend
+                                    selectedFriend,
+                                    setSelectedFriends,
+                                    selectedExpense,
+                                    setSelectedExpense
                                 }: {
     subpage: number,
     setSubpage: Function,
+    setCurrentTab: Function,
     searchValue: string,
     setSearchValue: Function,
     setSelectedUserId: Function,
     friends: Friend[],
     loadingFriends: boolean,
     refetchFriends: RefetchFunction<any, any>,
-    selectedFriend: Friend
+    selectedFriend: Friend,
+    setSelectedFriends: Function,
+    selectedExpense: Expense,
+    setSelectedExpense: Function,
 }) {
-    const [isDeleteSnackbarShown, setIsDeleteSnackbarShown] = useState(false);
-    const [settleUpPaymentInfo, setSettleUpPaymentInfo] = useState<{friend: Friend, currency: string}>();
+    const {t} = useTranslation();
+
+    const [isDeleteFriendSnackbarShown, setIsDeleteFriendSnackbarShown] = useState(false);
+    const [isDeleteExpenseSnackbarShown, setIsDeleteExpenseSnackbarShown] = useState(false);
+    const [settleUpPaymentInfo, setSettleUpPaymentInfo] = useState<{ friend: Friend, currency: string }>();
 
     return (
         <>
@@ -56,6 +69,7 @@ export default function Friends({
                 <FriendPage
                     friend={selectedFriend}
                     setSubpage={setSubpage}
+                    setSelectedExpense={setSelectedExpense}
                 />}
             {subpage === subPageConst.FriendSettings &&
                 <FriendSettings
@@ -63,8 +77,18 @@ export default function Friends({
                     friends={friends}
                     refetchFriends={refetchFriends}
                     setSubpage={setSubpage}
-                    setIsDeleteSnackbarShown={setIsDeleteSnackbarShown}
+                    setIsDeleteFriendSnackbarShown={setIsDeleteFriendSnackbarShown}
                 />}
+            {subpage === subPageConst.ExpenseDetails &&
+                <ExpenseDetails
+                    setSubpage={setSubpage}
+                    setCurrentTab={setCurrentTab}
+                    selectedExpense={selectedExpense}
+                    setSelectedExpense={setSelectedExpense}
+                    setSelectedFriends={setSelectedFriends}
+                    setIsDeleteExpenseSnackbarShown={setIsDeleteExpenseSnackbarShown}
+                />
+            }
             {subpage === subPageConst.SettleUp &&
                 <SettleUp
                     friends={[selectedFriend]}
@@ -80,13 +104,23 @@ export default function Friends({
                     refetchFriends={refetchFriends}
                 />}
 
-            {isDeleteSnackbarShown && (
+            {isDeleteFriendSnackbarShown && (
                 <Snackbar
                     className="mb-20"
                     before={<Icon28Bin/>}
-                    onClose={() => setIsDeleteSnackbarShown(false)}
+                    onClose={() => setIsDeleteFriendSnackbarShown(false)}
                 >
-                    Friend deleted
+                    {t("friendSettings.FriendDeleted")}
+                </Snackbar>
+            )}
+
+            {isDeleteExpenseSnackbarShown && (
+                <Snackbar
+                    className="mb-20"
+                    before={<Icon28Bin/>}
+                    onClose={() => setIsDeleteExpenseSnackbarShown(false)}
+                >
+                    {t("expenseDetails.ExpenseDeleted")}
                 </Snackbar>
             )}
         </>

@@ -54,9 +54,7 @@ export default function Page() {
 
     const [selectedFriends, setSelectedFriends] = useState<Friend[]>([]);
 
-    const onAddExpense = (selectedFriends: Friend[]) => {
-        setSelectedFriends(selectedFriends);
-    };
+    const [selectedExpense, setSelectedExpense] = useState(null);
 
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}
@@ -66,6 +64,7 @@ export default function Page() {
                     <Friends
                         subpage={subpage}
                         setSubpage={setSubpage}
+                        setCurrentTab={setCurrentTab}
                         searchValue={searchValue}
                         setSearchValue={setSearchValue}
                         setSelectedUserId={setSelectedUserId}
@@ -73,6 +72,9 @@ export default function Page() {
                         loadingFriends={loadingFriends}
                         refetchFriends={refetchFriends}
                         selectedFriend={selectedFriend}
+                        setSelectedFriends={setSelectedFriends}
+                        selectedExpense={selectedExpense}
+                        setSelectedExpense={setSelectedExpense}
                     />
                 }
                 {currentTab === TabIds.Groups &&
@@ -87,7 +89,7 @@ export default function Page() {
                         friends={friends}
                         loadingFriends={loadingFriends}
                         setCurrentTab={setCurrentTab}
-                        onAddExpense={onAddExpense}
+                        setSelectedFriends={setSelectedFriends}
                     />}
                 {currentTab === TabIds.AddExpense &&
                     <AddExpense
@@ -95,6 +97,7 @@ export default function Page() {
                         refetchFriends={refetchFriends}
                         setCurrentTab={setCurrentTab}
                         me={me}
+                        selectedExpense={selectedExpense}
                     />}
 
                 <Footer currentTab={currentTab} setCurrentTab={setCurrentTab} setSubpage={setSubpage}/>

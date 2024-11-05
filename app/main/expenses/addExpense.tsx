@@ -16,7 +16,7 @@ import {
     Title,
 } from "@telegram-apps/telegram-ui";
 import {TabIds} from "@/const/tabIds";
-import {Friend} from "@/entities";
+import {Expense, Friend} from "@/entities";
 import {Me} from "@/services/useMe";
 import {CurrencySelect} from "@/components/CurrencySelect";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
@@ -32,41 +32,68 @@ interface Payment {
     isDirty: boolean;
 }
 
-export default function AddExpense({selectedFriends, refetchFriends, setCurrentTab, me}: {
+export default function AddExpense({
+                                       selectedFriends,
+                                       refetchFriends,
+                                       setCurrentTab,
+                                       me,
+                                       selectedExpense
+                                   }: {
     selectedFriends: Friend[],
     refetchFriends: Function,
     setCurrentTab: Function,
-    me: Me
+    me: Me,
+    selectedExpense?: Expense,
 }) {
     const {t} = useTranslation();
 
-    const participants = [me, ...selectedFriends];
+    const participants = selectedExpense?.expense_users.map(expense => expense.user) ?? [me, ...selectedFriends];
 
     const [isSaveDisabled, setIsSaveDisabled] = useState(true);
     const [isSaveInProgress, setIsSaveInProgress] = useState(false);
 
-    const [expenseName, setExpenseName] = useState("");
+    const [expenseName, setExpenseName] = useState(selectedExpense?.description ?? "");
 
-    const [moneySpent, setMoneySpent] = useState<number | null>();
-    const [currency, setCurrency] = useState(me?.default_currency);
+    const [moneySpent, setMoneySpent] = useState<number | null>(Number(selectedExpense?.amount) ?? null);
+    const [currency, setCurrency] = useState(selectedExpense?.currency ?? me?.default_currency);
 
-    const [date, setDate] = useState(new Date());
+    const [date, setDate] = useState(selectedExpense?.date ?? new Date());
 
-    const [isFullyPaidByYou, setIsFullyPaidByYou] = useState(true);
-    const [paidBy, setPaidBy] = useState<Payment[]>(participants.map((x) => ({
-        id: x.id,
-        isSelected: true,
-        amount: 0,
-        isDirty: false,
-    })));
+    const [isFullyPaidByYou, setIsFullyPaidByYou] = useState(selectedExpense ?
+        selectedExpense.expense_users.some(e => e.lent_amount === selectedExpense?.amount && e.user.id === me.id) : true);
+    const [paidBy, setPaidBy] = useState<Payment[]>(selectedExpense ?
+        selectedExpense.expense_users.map((expense) => ({
+            id: expense.user.id,
+            amount: Number(expense.lent_amount),
+            isSelected: Number(expense.lent_amount) !== 0,
+            isDirty: false,
+        })) :
+        participants.map((x) => ({
+            id: x.id,
+            isSelected: true,
+            amount: 0,
+            isDirty: false,
+        })));
 
-    const [isSplitEquallyBetweenAll, setIsSplitEquallyBetweenAll] = useState(true);
-    const [splitBetween, setSplitBetween] = useState<Payment[]>(participants.map((x) => ({
-        id: x.id,
-        isSelected: true,
-        amount: 0,
-        isDirty: false,
-    })));
+    const [isSplitEquallyBetweenAll, setIsSplitEquallyBetweenAll] = useState(selectedExpense ?
+        selectedExpense.expense_users.every(e => e.debt_amount === selectedExpense.expense_users[0].debt_amount) :
+        true);
+    const [splitBetween, setSplitBetween] = useState<Payment[]>(selectedExpense ?
+        selectedExpense.expense_users.map((expense) => ({
+            id: expense.user.id,
+            amount: Number(expense.debt_amount),
+            isSelected: Number(expense.debt_amount) !== 0,
+            isDirty: false,
+        })) :
+        participants.map((x) => ({
+            id: x.id,
+            isSelected: true,
+            amount: 0,
+            isDirty: false,
+        })));
+
+    console.log("paidBy = ", paidBy);
+    console.log("splitBetween = ", splitBetween);
 
     const currentPaidMoneyAmount = paidBy.reduce((acc, value) => value.isSelected && value.amount ? acc + value.amount : acc, 0);
     const currentSplitBetweenMoneyAmount = splitBetween.reduce((acc, value) => value.isSelected && value.amount ? acc + value.amount : acc, 0);
@@ -83,10 +110,6 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
             setIsSaveDisabled(true);
         }
     }, [expenseName, isFullyPaidByYou, isSplitEquallyBetweenAll, moneySpent, paidBy, splitBetween, currentPaidMoneyAmount]);
-
-    const onPrev = () => {
-        setCurrentTab(TabIds.AddExpenseParticipants);
-    };
 
     const onSave = () => {
         if (isSaveInProgress) {
@@ -237,7 +260,8 @@ export default function AddExpense({selectedFriends, refetchFriends, setCurrentT
                     <Button
                         size="l"
                         mode="plain"
-                        onClick={onPrev}
+                        disabled
+                        className="invisible"
                     >
                         {t("expenses.Prev")}
                     </Button>

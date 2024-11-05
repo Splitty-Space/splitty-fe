@@ -11,12 +11,12 @@ import {deleteFriend} from "@/services/deleteFriend";
 import {subPageConst} from "@/const/subPageConst";
 import "./friendSettings.css";
 
-export default function FriendSettings({friend, friends, refetchFriends, setSubpage, setIsDeleteSnackbarShown}: {
+export default function FriendSettings({friend, friends, refetchFriends, setSubpage, setIsDeleteFriendSnackbarShown}: {
     friend?: Friend,
     friends: Friend[],
     refetchFriends: RefetchFunction<any, any>,
     setSubpage: Function,
-    setIsDeleteSnackbarShown: Function,
+    setIsDeleteFriendSnackbarShown: Function,
 }) {
     const {t} = useTranslation();
 
@@ -34,7 +34,7 @@ export default function FriendSettings({friend, friends, refetchFriends, setSubp
             function (buttonId: string) {
                 if (buttonId === "confirm") {
                     deleteFriend(friend?.id)
-                        .then(() => setIsDeleteSnackbarShown(true))
+                        .then(() => setIsDeleteFriendSnackbarShown(true))
                         .then(() => refetchFriends())
                         .then(() => setSubpage(subPageConst.FriendsList));
                 }

@@ -48,6 +48,7 @@ i18n
                         ConfirmMessage: "Are you sure you want to delete this friend?",
                         DeleteButton: "Delete",
                         CancelButton: "Cancel",
+                        FriendDeleted: "Friend deleted"
                     },
                     addFriends: {
                         Search: "Search for a user",
@@ -95,6 +96,10 @@ i18n
                         Filled: "filled",
                         Left: "left",
                     },
+                    expenseDetails: {
+                        ConfirmMessage: "Are you sure you want to delete this expense?",
+                        ExpenseDeleted: "Expense deleted",
+                    },
                     account: {
                         ContactUs: "Contact Us",
                         DefaultCurrency: "Default Currency",
@@ -128,10 +133,11 @@ i18n
                         YouLent: "Вы одолжили",
                     },
                     friendSettings: {
-                        ConfirmDelete: "Подтвердить удаление",
+                        ConfirmDelete: "Подтвердите удаление",
                         ConfirmMessage: "Вы уверены, что хотите удалить этого друга?",
                         DeleteButton: "Удалить",
                         CancelButton: "Отмена",
+                        FriendDeleted: "Друг удалён",
                     },
                     addFriends: {
                         Search: "Поиск пользователя",
@@ -179,6 +185,10 @@ i18n
                         Filled: "заполнено",
                         Left: "осталось",
                     },
+                    expenseDetails: {
+                        ConfirmMessage: "Вы уверены, что хотите удалить этот расход?",
+                        ExpenseDeleted: "Расход удалён",
+                    },
                     account: {
                         ContactUs: "Связаться с нами",
                         DefaultCurrency: "Валюта по умолчанию",
@@ -216,6 +226,7 @@ i18n
                         ConfirmMessage: "Ви впевнені, що хочете видалити цього друга?",
                         DeleteButton: "Видалити",
                         CancelButton: "Скасувати",
+                        FriendDeleted: "Друг видаляється"
                     },
                     addFriends: {
                         Search: "Пошук користувача",
@@ -262,6 +273,10 @@ i18n
                         Of: "з",
                         Filled: "наповнений",
                         Left: "лівий",
+                    },
+                    expenseDetails: {
+                        ConfirmMessage: "Ви впевнені, що хочете видалити цей рахунок?",
+                        ExpenseDeleted: "Споживання видаляється",
                     },
                     account: {
                         ContactUs: "Зв'язатися з нами",

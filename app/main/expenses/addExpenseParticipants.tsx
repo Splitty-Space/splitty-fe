@@ -22,13 +22,13 @@ export default function AddExpenseParticipants({
                                                    friends,
                                                    loadingFriends,
                                                    setCurrentTab,
-                                                   onAddExpense,
+                                                   setSelectedFriends,
                                                }: {
     selectedFriends: Friend[],
     friends: Friend[],
     loadingFriends: boolean,
     setCurrentTab: Function,
-    onAddExpense: Function
+    setSelectedFriends: Function
 }) {
     const {t} = useTranslation();
 
@@ -43,7 +43,7 @@ export default function AddExpenseParticipants({
 
         const selectedFriends = friends.filter(({id}) => selectedUserIds.includes(id));
 
-        onAddExpense(selectedFriends);
+        setSelectedFriends(selectedFriends);
     };
 
     useEffect(() => {

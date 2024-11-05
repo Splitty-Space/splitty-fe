@@ -23,10 +23,14 @@ import getExpenses from "@/services/getExpenses";
 import {Friend, Expense} from "@/entities";
 import {Arrow} from "@/Icons";
 import useMe from "@/services/useMe";
-import {EN} from "@/const/languages";
+import {formatDate} from "@/utils/formatDate";
 
 
-export default function FriendPage({friend, setSubpage}: { friend: Friend, setSubpage: Function }) {
+export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
+    friend: Friend,
+    setSubpage: Function,
+    setSelectedExpense: Function
+}) {
     const {t} = useTranslation();
 
     const {data: me} = useMe();
@@ -101,7 +105,8 @@ export default function FriendPage({friend, setSubpage}: { friend: Friend, setSu
     };
 
     const rowRenderer = ({index, key, style}: { index: number, key: string, style: object }) => {
-        if (!expenses[index]) {
+        const expense = expenses[index];
+        if (!expense) {
             return (
                 <Skeleton visible withoutAnimation key={key} style={style} className="red">
                     <Cell> </Cell>
@@ -117,7 +122,7 @@ export default function FriendPage({friend, setSubpage}: { friend: Friend, setSu
             currency,
             payment,
             date
-        } = expenses[index];
+        } = expense;
 
         const _owe = Number(owe);
         const _owes = Number(owes);
@@ -153,14 +158,7 @@ export default function FriendPage({friend, setSubpage}: { friend: Friend, setSu
             <div key={key} style={style}>
                 <Cell
                     className="friends-list_shrink-0"
-                    subtitle={new Intl.DateTimeFormat("en-US", {
-                        year: "numeric",
-                        month: "numeric",
-                        day: "numeric",
-                        hour: "numeric",
-                        minute: "numeric",
-                        hour12: me.language.toUpperCase() === EN,
-                    }).format(new Date(date))}
+                    subtitle={formatDate(date, me.language)}
                     before={
                         <AvatarStack>
                             {transactions
@@ -219,7 +217,8 @@ export default function FriendPage({friend, setSubpage}: { friend: Friend, setSu
                             }
                         </div>}
                     onClick={() => {
-                        /* TODO open expanse details */
+                        setSelectedExpense(expense);
+                        setSubpage(subPageConst.ExpenseDetails);
                     }}
                 >
                     {description}
