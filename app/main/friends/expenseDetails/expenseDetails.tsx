@@ -34,8 +34,6 @@ export default function ExpenseDetails({
 
     const [deleteExpenseLoading, setDeleteExpenseLoading] = useState(false);
 
-    console.log("selectedExpense = ", selectedExpense);
-
     const onDelete = () => {
         Telegram?.WebApp?.showPopup({
                 title: t("friendSettings.ConfirmDelete"),
@@ -59,8 +57,6 @@ export default function ExpenseDetails({
     };
 
     const onEdit = () => {
-        // setSubpage();
-
         setCurrentTab(TabIds.AddExpense);
     };
 
@@ -106,7 +102,7 @@ export default function ExpenseDetails({
 
                                     return photoURLs;
                                 }, [])
-                                .map((photoURL, index) =>
+                                .map((photoURL) =>
                                     <Avatar
                                         size={48}
                                         key={photoURL}

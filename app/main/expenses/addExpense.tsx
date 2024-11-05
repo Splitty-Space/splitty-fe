@@ -23,6 +23,8 @@ import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import dayjs, {Dayjs} from "dayjs";
 import {splitNumberIntoParts} from "@/utils/splitNumberIntoParts";
 import {addExpense} from "@/services/addExpense";
+import {putExpense} from "@/services/putExpense";
+import {subPageConst} from "@/const/subPageConst";
 import "./addExpense.css";
 
 interface Payment {
@@ -33,17 +35,19 @@ interface Payment {
 }
 
 export default function AddExpense({
-                                       selectedFriends,
-                                       refetchFriends,
-                                       setCurrentTab,
                                        me,
-                                       selectedExpense
+                                       selectedFriends,
+                                       selectedExpense,
+                                       setSubpage,
+                                       setCurrentTab,
+                                       refetchFriends,
                                    }: {
-    selectedFriends: Friend[],
-    refetchFriends: Function,
-    setCurrentTab: Function,
     me: Me,
+    selectedFriends: Friend[],
     selectedExpense?: Expense,
+    setSubpage: Function,
+    setCurrentTab: Function,
+    refetchFriends: Function,
 }) {
     const {t} = useTranslation();
 
@@ -92,9 +96,6 @@ export default function AddExpense({
             isDirty: false,
         })));
 
-    console.log("paidBy = ", paidBy);
-    console.log("splitBetween = ", splitBetween);
-
     const currentPaidMoneyAmount = paidBy.reduce((acc, value) => value.isSelected && value.amount ? acc + value.amount : acc, 0);
     const currentSplitBetweenMoneyAmount = splitBetween.reduce((acc, value) => value.isSelected && value.amount ? acc + value.amount : acc, 0);
 
@@ -118,23 +119,44 @@ export default function AddExpense({
 
         setIsSaveInProgress(true);
 
-        addExpense({
-            payers: paidBy
-                .map(x => x.isSelected ? x : {...x, amount: 0})
-                .map((x) => ({user_id: x.id, amount: x.amount})),
-            debtors: splitBetween
-                .map(x => x.isSelected ? x : {...x, amount: 0})
-                .map((x) => ({user_id: x.id, amount: x.amount})),
-            users: Array.from(new Set([...paidBy, ...splitBetween].map((x) => x.id))),
-            amount: Number(moneySpent),
-            payment: false,
-            currency,
-            date,
-            description: expenseName
-        }).then(() => {
-            refetchFriends();
-            setCurrentTab(TabIds.Friends);
-        });
+        const payers = paidBy
+            .map(x => x.isSelected ? x : {...x, amount: 0})
+            .map((x) => ({user_id: x.id, amount: x.amount}));
+        const debtors = splitBetween
+            .map(x => x.isSelected ? x : {...x, amount: 0})
+            .map((x) => ({user_id: x.id, amount: x.amount}));
+        const users = Array.from(new Set([...paidBy, ...splitBetween].map((x) => x.id)));
+        const amount = Number(moneySpent);
+        const description = expenseName;
+
+        if (!selectedExpense) {
+            addExpense({
+                payers,
+                debtors,
+                users,
+                amount,
+                payment: false,
+                currency,
+                date,
+                description,
+            }).then(() => {
+                refetchFriends();
+                setCurrentTab(TabIds.Friends);
+            });
+        } else {
+            putExpense({
+                expense_id: selectedExpense.id,
+                payers,
+                debtors,
+                users,
+                amount,
+                description
+            }).then(() => {
+                refetchFriends();
+                setSubpage(subPageConst.Friend);
+                setCurrentTab(TabIds.Friends);
+            });
+        }
     };
 
     const onExpenseNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -318,6 +340,7 @@ export default function AddExpense({
                         <CurrencySelect
                             defaultCurrency={currency}
                             onChange={onCurrencyChange}
+                            disabled={!!selectedExpense}
                         />
                     </div>
                 </div>
@@ -331,6 +354,7 @@ export default function AddExpense({
                         className="p-0 addExpense__cell"
                         after={
                             <DatePicker
+                                disabled={!!selectedExpense}
                                 value={dayjs(date)}
                                 onChange={onDateChange}
                                 className="max-w-28 rounded-3xl addExpense"

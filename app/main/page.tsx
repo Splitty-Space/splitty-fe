@@ -93,11 +93,12 @@ export default function Page() {
                     />}
                 {currentTab === TabIds.AddExpense &&
                     <AddExpense
-                        selectedFriends={selectedFriends}
-                        refetchFriends={refetchFriends}
-                        setCurrentTab={setCurrentTab}
                         me={me}
+                        selectedFriends={selectedFriends}
                         selectedExpense={selectedExpense}
+                        setSubpage={setSubpage}
+                        setCurrentTab={setCurrentTab}
+                        refetchFriends={refetchFriends}
                     />}
 
                 <Footer currentTab={currentTab} setCurrentTab={setCurrentTab} setSubpage={setSubpage}/>
