@@ -82,11 +82,12 @@ export default function Friends({
             {subpage === subPageConst.ExpenseDetails &&
                 <ExpenseDetails
                     setSubpage={setSubpage}
+                    friends={friends}
                     setCurrentTab={setCurrentTab}
                     selectedExpense={selectedExpense}
                     setSelectedExpense={setSelectedExpense}
-                    setSelectedFriends={setSelectedFriends}
                     setIsDeleteExpenseSnackbarShown={setIsDeleteExpenseSnackbarShown}
+                    setSettleUpPaymentInfo={setSettleUpPaymentInfo}
                 />
             }
             {subpage === subPageConst.SettleUp &&
@@ -100,6 +101,7 @@ export default function Friends({
                 <SettleUpPayment
                     friend={settleUpPaymentInfo.friend}
                     defaultCurrency={settleUpPaymentInfo.currency}
+                    selectedExpense={selectedExpense}
                     setSubpage={setSubpage}
                     refetchFriends={refetchFriends}
                 />}

@@ -2,7 +2,8 @@
 
 import {useState} from "react";
 import {useTranslation} from "react-i18next";
-import {Expense} from "@/entities";
+import classNames from "classnames";
+import {Expense, Friend} from "@/entities";
 import Header from "@/app/main/header/header";
 import {Avatar, AvatarStack, Caption, Divider, IconButton, Spinner, Text} from "@telegram-apps/telegram-ui";
 import {Icon28Edit} from "@telegram-apps/telegram-ui/dist/icons/28/edit";
@@ -13,20 +14,24 @@ import {formatDate} from "@/utils/formatDate";
 import {deleteExpense} from "@/services/deleteExpense";
 import {subPageConst} from "@/const/subPageConst";
 import {TabIds} from "@/const/tabIds";
+import "./expenseDetails.css";
 
 export default function ExpenseDetails({
                                            selectedExpense,
+                                           friends,
                                            setSelectedExpense,
                                            setSubpage,
                                            setCurrentTab,
-                                           setIsDeleteExpenseSnackbarShown
+                                           setIsDeleteExpenseSnackbarShown,
+                                           setSettleUpPaymentInfo
                                        }: {
-    selectedExpense: Expense
-    setSelectedExpense: Function
+    selectedExpense: Expense,
+    friends: Friend[],
+    setSelectedExpense: Function,
     setSubpage: Function,
     setCurrentTab: Function,
-    setSelectedFriends: Function,
     setIsDeleteExpenseSnackbarShown: Function,
+    setSettleUpPaymentInfo: Function,
 }) {
     const {t} = useTranslation();
 
@@ -57,8 +62,24 @@ export default function ExpenseDetails({
     };
 
     const onEdit = () => {
-        setCurrentTab(TabIds.AddExpense);
+        if (selectedExpense.payment) {
+            setSubpage(subPageConst.SettleUpPayment);
+            setSettleUpPaymentInfo(
+                {
+                    friend: friends.find(({id}) => id === selectedExpense.expense_users.find(({user}) => user.id !== me.id)?.user.id),
+                    currency: selectedExpense.currency,
+                }
+            );
+        } else {
+            setCurrentTab(TabIds.AddExpense);
+        }
     };
+
+    const _owe = Number(selectedExpense.owe);
+    const _amount = Number(selectedExpense.amount);
+
+    const lents = selectedExpense.expense_users
+        .filter(({lent_amount}) => lent_amount > 0);
 
     return loadingMe ?
         (<Spinner className="flex justify-center " size="l"/>)
@@ -89,63 +110,131 @@ export default function ExpenseDetails({
                 />
 
                 <main className="m-4 mb-12">
-                    <div className="flex">
-                        <AvatarStack>
-                            {selectedExpense.transactions
-                                .reduce((photoURLs, currentValue) => {
-                                    if (photoURLs.every((photoURL) => photoURL !== currentValue.borrower.photo_url)) {
-                                        photoURLs.push(currentValue.borrower.photo_url);
-                                    }
-                                    if (photoURLs.every((photoURL) => photoURL !== currentValue.debtor.photo_url)) {
-                                        photoURLs.push(currentValue.debtor.photo_url);
-                                    }
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                            <AvatarStack>
+                                {selectedExpense.transactions
+                                    .reduce((photoURLs, currentValue) => {
+                                        if (photoURLs.every((photoURL) => photoURL !== currentValue.borrower.photo_url)) {
+                                            photoURLs.push(currentValue.borrower.photo_url);
+                                        }
+                                        if (photoURLs.every((photoURL) => photoURL !== currentValue.debtor.photo_url)) {
+                                            photoURLs.push(currentValue.debtor.photo_url);
+                                        }
 
-                                    return photoURLs;
-                                }, [])
-                                .map((photoURL) =>
-                                    <Avatar
-                                        size={48}
-                                        key={photoURL}
-                                        src={photoURL}
-                                    />
-                                )}
-                        </AvatarStack>
+                                        return photoURLs;
+                                    }, [])
+                                    .map((photoURL, index, array) =>
+                                        <Avatar
+                                            size={48}
+                                            key={photoURL}
+                                            src={photoURL}
+                                            style={{
+                                                marginLeft: index > 0 ? Math.max(-0.25 * array.length, -2.5) + "rem" : 0
+                                            }}
+                                        />
+                                    )}
+                            </AvatarStack>
 
-                        <div className="flex flex-col ml-4">
-                            <Text weight="3">{selectedExpense.description}</Text>
-                            <Caption
-                                weight="3"
-                                className="hint_color"
-                            >{formatDate(selectedExpense.date, me.language)}</Caption>
+                            <div className="flex flex-col ml-4">
+                                <Text weight="3">{selectedExpense.description}</Text>
+                                <Caption
+                                    weight="3"
+                                    className="hint_color"
+                                >{formatDate(selectedExpense.date, me.language)}</Caption>
+                            </div>
                         </div>
+
+                        {selectedExpense.payment && (
+                            <div className="flex ml-4">
+                                <Text
+                                    key="payment"
+                                    weight="3"
+                                    className={_owe === 0 ? "green" : "red"}
+                                >
+                                    {`${_owe === 0 ? "+" : "-"}${_amount} ${selectedExpense.currency}`}
+                                </Text>
+                            </div>
+                        )}
                     </div>
                     <Divider className="mt-4 mb-8"/>
 
-                    <div>
-                        {selectedExpense.expense_users.map(({lent_amount, debt_amount, user, id}) =>
-                            (<div key={id} className="flex">
-                                <Avatar
-                                    key={id + "avatar"}
-                                    size={48}
-                                    src={user.photo_url}
-                                    className="mb-4"
-                                />
-                                {/* TODO Ask how to show this properly */}
-                                <div className="flex flex-col">
-                                    {Number(lent_amount) !== 0 &&
-                                        <Text
-                                            key={id + "paid"}
-                                            className={user.id === me.id ? "blue" : "red"}
-                                        >{user.name} paid {Number(lent_amount)}</Text>}
-                                    {Number(debt_amount) !== 0 &&
-                                        <Text
-                                            key={id + "borrowed"}
-                                            className={user.id === me.id ? "blue" : "red"}
-                                        >{user.name} borrowed {Number(debt_amount)}</Text>}
-                                </div>
-                            </div>)
-                        )}
-                    </div>
+                    {!selectedExpense?.payment &&
+                        <div>
+                            <div className="flex items-center mb-4">
+                                <AvatarStack>
+                                    {
+                                        lents.map(({user}, index, array) => (
+                                            <Avatar
+                                                size={48}
+                                                key={user.photo_url}
+                                                src={user.photo_url}
+                                                style={{
+                                                    marginLeft: index > 0 ? Math.max(-0.25 * array.length, -2.5) + "rem" : 0
+                                                }}
+                                            />
+                                        ))
+                                    }
+                                </AvatarStack>
+                                {
+                                    <div className="flex flex-col ml-4 max-w-70p">
+                                        <Text weight="3">
+                                            {
+                                                `${lents.length === 1 ?
+                                                    lents[0].user.name :
+                                                    lents.length + ` ${t("expenseDetails.people")}`} ${t("friendPage.Paid")} 
+                                                 ${
+                                                    Number(
+                                                        lents.reduce((previousValue, user) =>
+                                                            Number(user.lent_amount) + previousValue, 0)
+                                                    )
+                                                } ${selectedExpense.currency}`
+                                            }
+                                        </Text>
+                                    </div>
+                                }
+                            </div>
+                            {selectedExpense.expense_users.map(({lent_amount, debt_amount, user, id}, index) =>
+                                (<div key={id} className="flex items-center mb-4">
+                                    {
+                                        <div
+                                            style={{
+                                                width: "48px",
+                                                height: "48px",
+                                            }}
+                                            className="relative"
+                                        >
+                                            <div className={classNames("vertical-line",
+                                                {
+                                                    "vertical-line_first": index === 0 && index !== selectedExpense.expense_users.length - 1,
+                                                    "vertical-line_last": index !== 0 && index === selectedExpense.expense_users.length - 1,
+                                                    "vertical-line_first_is_last": index === 0 && index === selectedExpense.expense_users.length - 1,
+                                                })}
+                                            />
+                                            <div className="horizontal-line"/>
+                                        </div>
+                                    }
+                                    <Avatar
+                                        key={id + "avatar"}
+                                        size={48}
+                                        src={user.photo_url}
+                                    />
+                                    <div className="flex flex-col ml-4 max-w-70p">
+                                        {Number(lent_amount) !== 0 &&
+                                            <Text
+                                                key={id + "paid"}
+                                                className={classNames("text-ellipsis overflow-hidden hint_color")}
+                                            >{`${user.name} ${t("friendPage.Paid")} ${Number(lent_amount)} ${selectedExpense.currency}`}</Text>}
+                                        {Number(debt_amount) !== 0 &&
+                                            <Text
+                                                key={id + "borrowed"}
+                                                className={classNames("text-ellipsis overflow-hidden hint_color")}
+                                            >{`${user.name} ${t("expenseDetails.borrowed")} ${Number(debt_amount)} ${selectedExpense.currency}`}</Text>}
+                                    </div>
+                                </div>)
+                            )}
+                        </div>
+                    }
                 </main>
             </>
         );

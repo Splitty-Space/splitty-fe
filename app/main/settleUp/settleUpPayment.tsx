@@ -3,7 +3,7 @@ import {useTranslation} from "react-i18next";
 import classNames from "classnames";
 import dayjs, {Dayjs} from "dayjs";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
-import {Friend} from "@/entities";
+import {Expense, Friend} from "@/entities";
 import Header from "@/app/main/header/header";
 import Logo from "@/app/main/header/logo";
 import {Avatar, Button, Input, Section, Spinner, Text, Title} from "@telegram-apps/telegram-ui";
@@ -12,10 +12,12 @@ import {addExpense} from "@/services/addExpense";
 import {subPageConst} from "@/const/subPageConst";
 import useMe from "@/services/useMe";
 import {Arrow} from "@/Icons";
+import {putExpense} from "@/services/putExpense";
 
-export default function SettleUpPayment({friend, defaultCurrency, setSubpage, refetchFriends}: {
+export default function SettleUpPayment({friend, defaultCurrency, selectedExpense, setSubpage, refetchFriends}: {
     friend: Friend,
     defaultCurrency: string,
+    selectedExpense?: Expense
     setSubpage: Function,
     refetchFriends: Function,
 }) {
@@ -26,12 +28,12 @@ export default function SettleUpPayment({friend, defaultCurrency, setSubpage, re
     const [isSaveDisabled, setIsSaveDisabled] = useState(false);
     const [isSaveInProgress, setIsSaveInProgress] = useState(false);
 
-    const defaultAmount = Number(friend.total.find(x => x.currency === defaultCurrency)?.amount);
+    const defaultAmount = Number(selectedExpense ? selectedExpense.amount : friend.total.find(x => x.currency === defaultCurrency)?.amount);
     const isYouAreDebtor = defaultAmount < 0;
 
     const [amountPaid, setAmountPaid] = useState(Math.abs(defaultAmount));
-    const [currency, setCurrency] = useState(defaultCurrency);
-    const [date, setDate] = useState(new Date());
+    const [currency, setCurrency] = useState(selectedExpense ? selectedExpense.currency : defaultCurrency);
+    const [date, setDate] = useState(selectedExpense ? selectedExpense.date : new Date());
 
     const onAmountPaidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const amount = Number(e.target.value);
@@ -67,19 +69,36 @@ export default function SettleUpPayment({friend, defaultCurrency, setSubpage, re
             debtors.push({user_id: friend.id, amount: 0}, {user_id: me.id, amount: amountPaid})
         }
 
-        addExpense({
-            payers,
-            debtors,
-            users: [me.id, friend.id],
-            amount: amountPaid,
-            payment: true,
-            currency,
-            date,
-            description,
-        }).then(() => {
-            refetchFriends();
-            setSubpage(subPageConst.FriendsList);
-        });
+        const amount = amountPaid;
+        const users = [me.id, friend.id];
+
+        if (selectedExpense) {
+            putExpense({
+                expense_id: selectedExpense.id,
+                payers,
+                debtors,
+                users,
+                amount,
+                description
+            }).then(() => {
+                refetchFriends();
+                setSubpage(subPageConst.FriendsList);
+            });
+        } else {
+            addExpense({
+                payers,
+                debtors,
+                users,
+                amount,
+                payment: true,
+                currency,
+                date,
+                description,
+            }).then(() => {
+                refetchFriends();
+                setSubpage(subPageConst.FriendsList);
+            });
+        }
     };
 
     return loading ?
@@ -153,6 +172,7 @@ export default function SettleUpPayment({friend, defaultCurrency, setSubpage, re
                         <CurrencySelect
                             defaultCurrency={currency}
                             onChange={onCurrencyChange}
+                            disabled={!!selectedExpense}
                         />
                     </Section>
 
@@ -160,6 +180,7 @@ export default function SettleUpPayment({friend, defaultCurrency, setSubpage, re
                         <DatePicker
                             value={dayjs(date)}
                             onChange={onDateChange}
+                            disabled={!!selectedExpense}
                             className="w-full rounded-3xl"
                         />
                     </Section>

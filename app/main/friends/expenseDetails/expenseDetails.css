@@ -1,0 +1,30 @@
+.vertical-line {
+    position: absolute;
+    background-color: white;
+    height: 133%;
+    width: 2%;
+    left: 49%;
+}
+
+.vertical-line_first {
+    top: -25%;
+    height: 158%;
+}
+
+.vertical-line_last {
+    height: 50%;
+}
+
+.vertical-line_first_is_last {
+    top: -25%;
+    height: 75%;
+}
+
+.horizontal-line {
+    position: absolute;
+    background-color: white;
+    height: 3%;
+    width: 40%;
+    left: 50%;
+    top: 48%;
+}

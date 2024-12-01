@@ -288,7 +288,12 @@ export default function AddExpense({
                         {t("expenses.Prev")}
                     </Button>
                 )}
-                CentralComponent={() => <Title>{t("expenses.AddAnExpense")}</Title>}
+                CentralComponent={() =>
+                    <Title>{
+                        !selectedExpense ?
+                            t("expenses.AddAnExpense") :
+                            t("expenses.EditAnExpense")}
+                    </Title>}
                 RightComponent={() => (
                     <Button
                         size="l"
