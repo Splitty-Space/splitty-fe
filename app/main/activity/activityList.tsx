@@ -1,0 +1,171 @@
+"use client"
+
+import {
+    Avatar,
+    Cell,
+    Divider,
+    LargeTitle,
+    Skeleton,
+    Spinner,
+} from "@telegram-apps/telegram-ui";
+import {AutoSizer, InfiniteLoader, List} from "react-virtualized";
+import {useTranslation} from "react-i18next";
+import useMe from "@/services/useMe";
+import React, {useCallback, useEffect, useRef, useState} from "react";
+import {formatDate} from "@/utils/formatDate";
+import Header from "@/app/main/header/header";
+import Logo from "@/app/main/header/logo";
+import getActivities from "@/services/getActivities";
+import Activity, {ACTIVITY_TYPE, ACTIVITY_TYPE_TO_TEXT} from "@/entities/Activity";
+import {subPageConst} from "@/const/subPageConst";
+import getExpense from "@/services/getExpense";
+import {Expense} from "@/entities";
+import {TabIds} from "@/const/tabIds";
+
+export default function ActivityList({setCurrentTab, setSubpage, setPageData, setSelectedExpense}: {
+    setCurrentTab: Function,
+    setSubpage: Function,
+    setPageData: Function,
+    setSelectedExpense: Function
+}) {
+    const {t} = useTranslation();
+
+    const {data: me} = useMe();
+
+    const pageSize = 10;
+    const [rowCount, setRowCount] = useState(pageSize);
+    const [activities, setActivities] = useState<Activity[]>([]);
+    const [isLoaded, setIsLoaded] = useState(true);
+    const [isLoadingExpense, setIsLoadingExpense] = useState(false);
+
+    const refContainer = useRef(null);
+    const refHeader = useRef(null);
+    const [height, setHeight] = useState(0)
+
+    useEffect(() => {
+        setHeight(refContainer.current?.clientHeight - refHeader.current?.clientHeight);
+    }, []);
+
+    const loadPage = (page: number) => {
+        const controller = new AbortController();
+
+        getActivities({
+            page,
+            pageSize,
+            signal: controller.signal
+        }).then(({data}) => {
+            setIsLoaded(true);
+            setRowCount(data.meta.total_records);
+            setActivities(prevState => [...prevState, ...data.data]);
+        }).catch((error) => {
+            console.error({error})
+        });
+
+        return () => {
+            controller.abort();
+        }
+    };
+
+    useEffect(() => {
+        loadPage(1);
+    }, []);
+
+    const isRowLoaded = ({index}: { index: number }) => {
+        return activities && !!activities[index];
+    };
+
+    const loadMoreRows = ({startIndex}: { startIndex: number }) => {
+        if (!Number.isInteger(startIndex / pageSize)) {
+            return;
+        }
+
+        loadPage(startIndex / pageSize + 1);
+    };
+
+    const onCellClick = useCallback((expense: Expense) => () => {
+        if (!isLoadingExpense && !expense.isDeleted) {
+            setIsLoadingExpense(true);
+            getExpense({expense_id: expense.id}).then(({data}) => {
+                setSelectedExpense({...data});
+                setCurrentTab(TabIds.Friends);
+                setSubpage(subPageConst.ExpenseDetails);
+                setPageData({isFromActivity: true});
+            });
+        }
+    }, [isLoadingExpense, setCurrentTab, setSelectedExpense, setSubpage, setPageData]);
+
+    const rowRenderer = ({index, key, style}: { index: number, key: string, style: object }) => {
+        const activity = activities[index];
+        if (!activity) {
+            return (
+                <Skeleton visible withoutAnimation key={key} style={style} className="red">
+                    <Cell> </Cell>
+                </Skeleton>);
+        }
+
+        const {
+            activity_type,
+            user,
+            expense,
+            created_at,
+        } = activity;
+
+        return (
+            <div key={key} style={style}>
+                <Cell
+                    className="friends-list_shrink-0"
+                    subtitle={formatDate(created_at, me.language)}
+                    before={<Avatar size={48} src={user.photo_url}/>}
+                    onClick={onCellClick(expense)}
+                >
+                    {activity_type !== ACTIVITY_TYPE.PAYMENT_CREATED ?
+                        `${user.name} ` + t(`activity.${ACTIVITY_TYPE_TO_TEXT[activity_type]}`) + ` "${expense.description}"` :
+                        expense.expense_users.find(expense_user => expense_user.lent_amount === 0)?.user.id === me.id ?
+                            `${expense.expense_users.find(expense_user => expense_user.debt_amount === 0)?.user.name} ${t("settleUp.PaidYou")}` :
+                            `${t("settleUp.YouPaid")} ${expense.expense_users.find(expense_user => expense_user.lent_amount === 0)?.user.name}`
+                    }
+                </Cell>
+                <Divider className="ml-24"/>
+            </div>
+        );
+    };
+
+    return (
+        <div ref={refContainer} style={{height: "calc(100% - 77px)"}}>
+            <Header
+                ref={refHeader}
+                CentralComponent={Logo}
+                subHeaderClassName="justify-content-center mt-6"
+            />
+
+            {!isLoaded || isLoadingExpense ? <Spinner size="l" className="flex flex-col items-center justify-center"/> :
+                activities?.length > 0 ?
+                    <InfiniteLoader
+                        isRowLoaded={isRowLoaded}
+                        loadMoreRows={loadMoreRows}
+                        rowCount={rowCount}
+                    >
+                        {({onRowsRendered, registerChild}) => (
+                            <AutoSizer>
+                                {({width}) => (
+                                    <List
+                                        ref={registerChild}
+                                        width={width}
+                                        height={height}
+                                        rowHeight={68}
+                                        rowCount={rowCount}
+                                        rowRenderer={rowRenderer}
+                                        onRowsRendered={onRowsRendered}
+                                    />
+                                )}
+                            </AutoSizer>
+                        )}
+                    </InfiniteLoader>
+                    :
+                    <div className="flex flex-col items-center justify-center relative">
+                        <LargeTitle weight="3">{t("activity.NoActivityYet")}</LargeTitle>
+                    </div>
+            }
+        </div>
+    );
+}

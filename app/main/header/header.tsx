@@ -1,19 +1,11 @@
 "use client"
 
-import React, {FC, memo, ReactElement} from "react";
+import React, {FC, forwardRef, memo, ReactElement} from "react";
 import classNames from "classnames";
 import {FixedLayout} from "@telegram-apps/telegram-ui";
 import "./header.css";
 
-function Header({
-                    className,
-                    layoutClassName,
-                    subHeaderClassName,
-                    LeftComponent,
-                    CentralComponent,
-                    RightComponent,
-                    AfterComponent
-                }: {
+interface HeaderProps {
     className?: string,
     layoutClassName?: string,
     subHeaderClassName?: string,
@@ -21,9 +13,19 @@ function Header({
     CentralComponent?: FC,
     RightComponent?: FC,
     AfterComponent?: ReactElement,
-}) {
+}
+
+const Header = forwardRef<HTMLDivElement, HeaderProps>(({
+                                                            className,
+                                                            layoutClassName,
+                                                            subHeaderClassName,
+                                                            LeftComponent,
+                                                            CentralComponent,
+                                                            RightComponent,
+                                                            AfterComponent
+                                                        }, ref) => {
     return (
-        <header className={classNames("h-20", className)}>
+        <header ref={ref} className={classNames("h-20", className)}>
             <FixedLayout vertical="top" className={classNames("header_layout p-4 z-10", layoutClassName)}>
                 <div className={classNames("flex shrink items-center justify-between mb-3", subHeaderClassName)}>
                     {LeftComponent && <LeftComponent/>}
@@ -37,6 +39,8 @@ function Header({
             </FixedLayout>
         </header>
     );
-}
+});
+
+Header.displayName = "Header";
 
 export default memo(Header);

@@ -73,6 +73,8 @@ export default function Footer({currentTab, setCurrentTab, setSubpage}: {
             setSubpage(subPageConst.FriendsList);
         } else if (id === TabIds.Groups) {
             setSubpage(subPageConst.GroupsList);
+        } else if (id === TabIds.Activity) {
+            setSubpage(subPageConst.ActivityList);
         }
     }, [setCurrentTab, setSubpage]);
 

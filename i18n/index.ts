@@ -42,6 +42,8 @@ i18n
                         YouOwe: "you owe",
                         Paid: "paid",
                         YouLent: "You lent",
+                        You: "You",
+                        you: "you",
                     },
                     friendSettings: {
                         ConfirmDelete: "Confirm Delete",
@@ -79,6 +81,7 @@ i18n
                     },
                     expenses: {
                         AddAnExpense: "Add an Expense",
+                        EditAnExpense: "Edit an Expense",
                         Next: "Next",
                         Prev: "Prev",
                         Friends: "Friends",
@@ -99,6 +102,18 @@ i18n
                     expenseDetails: {
                         ConfirmMessage: "Are you sure you want to delete this expense?",
                         ExpenseDeleted: "Expense deleted",
+                        people: "people",
+                        borrowed: "borrowed",
+                        paidForYourself: "paid for yourself",
+                        Expense: "Expense",
+                        Payment: "Payment",
+                        wasEditedBy: "was edited by",
+                    },
+                    activity: {
+                        NoActivityYet: "No activity yet",
+                        created: "created",
+                        deleted: "deleted",
+                        edited: "edited",
                     },
                     account: {
                         ContactUs: "Contact Us",
@@ -131,6 +146,8 @@ i18n
                         YouOwe: "ты должен",
                         Paid: "заплатил",
                         YouLent: "Вы одолжили",
+                        You: "Ты",
+                        you: "тебе",
                     },
                     friendSettings: {
                         ConfirmDelete: "Подтвердите удаление",
@@ -168,6 +185,7 @@ i18n
                     },
                     expenses: {
                         AddAnExpense: "Добавить расход",
+                        EditAnExpense: "Редактировать расход",
                         Next: "Далее",
                         Prev: "Назад",
                         Friends: "Друзья",
@@ -188,6 +206,18 @@ i18n
                     expenseDetails: {
                         ConfirmMessage: "Вы уверены, что хотите удалить этот расход?",
                         ExpenseDeleted: "Расход удалён",
+                        people: "людей",
+                        borrowed: "одолжил",
+                        paidForYourself: "заплатил за себя",
+                        Expense: "Расход",
+                        Payment: "Оплата",
+                        wasEditedBy: "был изменён",
+                    },
+                    activity: {
+                        NoActivityYet: "Пока нет активностей",
+                        created: "создал",
+                        deleted: "удалил",
+                        edited: "отредактировал",
                     },
                     account: {
                         ContactUs: "Связаться с нами",
@@ -220,6 +250,8 @@ i18n
                         YouOwe: "ти винен",
                         Paid: "заплатив",
                         YouLent: "Ви позичили",
+                        You: "Ти",
+                        you: "тобі",
                     },
                     friendSettings: {
                         ConfirmDelete: "Підтвердьте видалення",
@@ -257,6 +289,7 @@ i18n
                     },
                     expenses: {
                         AddAnExpense: "Додайте витрати",
+                        EditAnExpense: "Редагувати витрати",
                         Next: "Далі",
                         Prev: "Назад",
                         Friends: "Друзі",
@@ -277,6 +310,18 @@ i18n
                     expenseDetails: {
                         ConfirmMessage: "Ви впевнені, що хочете видалити цей рахунок?",
                         ExpenseDeleted: "Споживання видаляється",
+                        people: "людей",
+                        borrowed: "позичив",
+                        paidForYourself: "заплатив за себе",
+                        Expense: "Витрата",
+                        Payment: "Оплата",
+                        wasEditedBy: "був змінений",
+                    },
+                    activity: {
+                        NoActivityYet: "Поки що немає активностей",
+                        created: "створив",
+                        deleted: "видалив",
+                        edited: "відредагував",
                     },
                     account: {
                         ContactUs: "Зв'язатися з нами",

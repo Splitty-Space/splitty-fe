@@ -12,6 +12,7 @@ export default interface Expense {
     owes: number;
     currency: string;
     payment: boolean;
+    isDeleted: boolean;
     settled: boolean;
     group: Group;
     date: Date,

@@ -66,3 +66,7 @@ body {
 .scale-25 {
     scale: 0.25;
 }
+
+.max-w-70p {
+    max-width: 70%;
+}

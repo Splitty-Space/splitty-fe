@@ -153,8 +153,8 @@ export default function AddExpense({
                 description
             }).then(() => {
                 refetchFriends();
-                setSubpage(subPageConst.Friend);
                 setCurrentTab(TabIds.Friends);
+                setSubpage(subPageConst.ExpenseDetails);
             });
         }
     };
@@ -288,7 +288,12 @@ export default function AddExpense({
                         {t("expenses.Prev")}
                     </Button>
                 )}
-                CentralComponent={() => <Title>{t("expenses.AddAnExpense")}</Title>}
+                CentralComponent={() =>
+                    <Title>{
+                        !selectedExpense ?
+                            t("expenses.AddAnExpense") :
+                            t("expenses.EditAnExpense")}
+                    </Title>}
                 RightComponent={() => (
                     <Button
                         size="l"

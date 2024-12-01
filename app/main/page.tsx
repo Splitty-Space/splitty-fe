@@ -29,6 +29,10 @@ const darkTheme = createTheme({
     },
 });
 
+export type PageData = {
+    isFromActivity: boolean;
+};
+
 export default function Page() {
     useEffect(() => {
         if (window?.Telegram?.WebApp) {
@@ -42,6 +46,9 @@ export default function Page() {
 
     const [currentTab, setCurrentTab] = useState(TabIds.Friends);
     const [subpage, setSubpage] = useState(subPageConst.FriendsList);
+    const [pageData, setPageData] = useState<PageData>({
+        isFromActivity: false
+    });
 
     const {data: me} = useMe();
 
@@ -66,6 +73,7 @@ export default function Page() {
                         setSubpage={setSubpage}
                         setCurrentTab={setCurrentTab}
                         searchValue={searchValue}
+                        pageData={pageData}
                         setSearchValue={setSearchValue}
                         setSelectedUserId={setSelectedUserId}
                         friends={friends}
@@ -80,7 +88,13 @@ export default function Page() {
                 {currentTab === TabIds.Groups &&
                     <Groups subpage={subpage} setSubpage={setSubpage}/>}
                 {currentTab === TabIds.Activity &&
-                    <Activity/>}
+                    <Activity
+                        subpage={subpage}
+                        setCurrentTab={setCurrentTab}
+                        setSubpage={setSubpage}
+                        setPageData={setPageData}
+                        setSelectedExpense={setSelectedExpense}
+                    />}
                 {currentTab === TabIds.Account &&
                     <Account/>}
                 {currentTab === TabIds.AddExpenseParticipants &&

@@ -121,7 +121,8 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
             amount,
             currency,
             payment,
-            date
+            date,
+            expense_users,
         } = expense;
 
         const _owe = Number(owe);
@@ -153,6 +154,8 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
         } else {
             whoPaid = `${borrowersAmount} people`;
         }
+
+        const payerName = expense_users.find(({user}) => user.id !== me.id)?.user.name;
 
         return (
             <div key={key} style={style}>
@@ -221,9 +224,12 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
                         setSubpage(subPageConst.ExpenseDetails);
                     }}
                 >
-                    {description}
+                    {payment ? _owe !== 0 ?
+                            `${t("friendPage.You")} ${t("friendPage.Paid")} ${payerName}` :
+                            `${payerName} ${t("friendPage.Paid")} ${t("friendPage.you")}` :
+                        description}
                 </Cell>
-                <Divider className="ml-24"/>
+                <Divider className="ml-16"/>
             </div>
         );
     };
