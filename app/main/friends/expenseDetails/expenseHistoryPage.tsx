@@ -28,7 +28,7 @@ export default function ExpenseHistoryPage({activity, selectedExpense}: {
                 />
 
                 <main className="m-4 mb-12">
-                    <Text weight="3">EXPENSE HISTORY</Text>
+                    <Text weight="3">{t("expenseDetails.expenseHistory")}</Text>
 
                     <List className="px-0">
                         {

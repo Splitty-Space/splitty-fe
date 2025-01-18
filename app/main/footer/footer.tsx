@@ -41,7 +41,7 @@ export default function Footer({currentTab, setCurrentTab, setSubpage}: {
         },
         {
             id: TabIds.AddExpenseParticipants,
-            Icon: ({fill}: { fill: string }) =>
+            Icon: () =>
                 <>
                     <PlusIcon style={{
                         position: "absolute",

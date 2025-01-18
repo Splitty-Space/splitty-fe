@@ -108,6 +108,7 @@ i18n
                         Expense: "Expense",
                         Payment: "Payment",
                         wasEditedBy: "was edited by",
+                        expenseHistory: "EXPENSE HISTORY",
                     },
                     activity: {
                         NoActivityYet: "No activity yet",
@@ -212,6 +213,7 @@ i18n
                         Expense: "Расход",
                         Payment: "Оплата",
                         wasEditedBy: "был изменён",
+                        expenseHistory: "ИСТОРИЯ РАСХОДОВ",
                     },
                     activity: {
                         NoActivityYet: "Пока нет активностей",
@@ -316,6 +318,7 @@ i18n
                         Expense: "Витрата",
                         Payment: "Оплата",
                         wasEditedBy: "був змінений",
+                        expenseHistory: "ІСТОРІЯ ВИТРАТ"
                     },
                     activity: {
                         NoActivityYet: "Поки що немає активностей",

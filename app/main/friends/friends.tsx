@@ -29,7 +29,6 @@ export default function Friends({
                                     loadingFriends,
                                     refetchFriends,
                                     selectedFriend,
-                                    setSelectedFriends,
                                     selectedExpense,
                                     setSelectedExpense
                                 }: {
@@ -44,7 +43,6 @@ export default function Friends({
     loadingFriends: boolean,
     refetchFriends: RefetchFunction<any, any>,
     selectedFriend: Friend,
-    setSelectedFriends: Function,
     selectedExpense: Expense,
     setSelectedExpense: Function,
 }) {

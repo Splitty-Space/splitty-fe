@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useState, useEffect, useRef} from "react";
+import React from "react";
 import {useTranslation} from "react-i18next";
 import useMe from "@/services/useMe";
 import {Avatar, Badge, Cell, Divider, List, Spinner, Text} from "@telegram-apps/telegram-ui";
@@ -12,7 +12,6 @@ import {Expense} from "@/entities";
 import {formatDate} from "@/utils/formatDate";
 import {TabIds} from "@/const/tabIds";
 import {subPageConst} from "@/const/subPageConst";
-import {Icon24ChevronRight} from "@telegram-apps/telegram-ui/dist/icons/24/chevron_right";
 
 
 export default function ExpenseHistoryList({
@@ -30,7 +29,7 @@ export default function ExpenseHistoryList({
 
     const {data: me} = useMe();
 
-    const {data: activityData, loading, error, refetch} = useActivity(expanseId);
+    const {data: activityData, loading} = useActivity(expanseId);
 
     const openExpenseHistoryPage = (id: number) => () => {
         setCurrentTab(TabIds.Friends);
@@ -40,7 +39,7 @@ export default function ExpenseHistoryList({
 
     return (
         <div>
-            <Text weight="3">EXPENSE HISTORY</Text>
+            <Text weight="3">{t("expenseDetails.expenseHistory")}</Text>
 
             <div>
                 {loading ?
