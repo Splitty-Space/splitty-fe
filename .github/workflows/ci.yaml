@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+
+run-name: "Run CI for ${{ github.ref_name }} triggered by @${{ github.actor }}"
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: self-hosted
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v4
+      - name: Setup node v20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install Yarn
+        run: npm install -g yarn
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint codebase
+        run: yarn lint
