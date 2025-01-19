@@ -4,7 +4,6 @@ export enum subPageConst {
     Friend,
     FriendSettings,
     ExpenseDetails,
-    ExpenseHistory,
     SettleUp,
     SettleUpPayment,
     AddExpense,

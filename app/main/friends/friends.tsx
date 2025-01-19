@@ -14,8 +14,6 @@ import {Expense, Friend} from "@/entities";
 import {RefetchFunction} from "axios-hooks";
 import {Icon28Bin} from "@/Icons";
 import {PageData} from "@/app/main/page";
-import ExpenseHistoryPage from "@/app/main/friends/expenseDetails/expenseHistoryPage";
-import Activity from "@/entities/Activity";
 
 export default function Friends({
                                     subpage,
@@ -51,7 +49,6 @@ export default function Friends({
     const [isDeleteFriendSnackbarShown, setIsDeleteFriendSnackbarShown] = useState(false);
     const [isDeleteExpenseSnackbarShown, setIsDeleteExpenseSnackbarShown] = useState(false);
     const [settleUpPaymentInfo, setSettleUpPaymentInfo] = useState<{ friend: Friend, currency: string }>();
-    const [activity, setActivity] = useState<Activity>()
 
     return (
         <>
@@ -93,14 +90,6 @@ export default function Friends({
                     setSelectedExpense={setSelectedExpense}
                     setIsDeleteExpenseSnackbarShown={setIsDeleteExpenseSnackbarShown}
                     setSettleUpPaymentInfo={setSettleUpPaymentInfo}
-                    setActivity={setActivity}
-                />
-            }
-            {
-                subpage === subPageConst.ExpenseHistory &&
-                <ExpenseHistoryPage
-                    activity={activity}
-                    selectedExpense={selectedExpense}
                 />
             }
             {subpage === subPageConst.SettleUp &&

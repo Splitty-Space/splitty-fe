@@ -7,23 +7,17 @@ import {Avatar, Badge, Cell, Divider, List, Spinner, Text} from "@telegram-apps/
 import useActivity from "@/services/useActivity";
 import classNames from "classnames";
 import {ACTIVITY_TYPE, ACTIVITY_TYPE_TO_TEXT} from "@/entities/Activity";
-import UserInfo from "@/entities/UserInfo";
 import {Expense} from "@/entities";
 import {formatDate} from "@/utils/formatDate";
-import {TabIds} from "@/const/tabIds";
-import {subPageConst} from "@/const/subPageConst";
+import {ExpenseHistoryModal} from "@/app/main/friends/expenseDetails/ExpenseHistoryModal";
 
 
 export default function ExpenseHistoryList({
                                                expanseId,
-                                               setSubpage,
-                                               setCurrentTab,
-                                               setActivity,
+                                               selectedExpense
                                            }: {
     expanseId: number,
-    setSubpage: Function,
-    setCurrentTab: Function,
-    setActivity: Function,
+    selectedExpense: Expense,
 }) {
     const {t} = useTranslation();
 
@@ -31,11 +25,23 @@ export default function ExpenseHistoryList({
 
     const {data: activityData, loading} = useActivity(expanseId);
 
-    const openExpenseHistoryPage = (id: number) => () => {
-        setCurrentTab(TabIds.Friends);
-        setSubpage(subPageConst.ExpenseHistory);
-        setActivity(activityData.data.find((activity) => activity.id === id));
-    };
+    const countExpenseHistoryItems = (data: object): number => {
+        return Object.entries(data)
+            .reduce((acc, curr) => {
+                if (curr[0] === "amount" || curr[0] === "description")
+                    return acc + 1;
+
+                if (curr[0] === "expense_users") {
+                    // @ts-ignore
+                    return acc + Object.values(curr[1]).reduce((_acc, _curr) => {
+                        // @ts-ignore
+                        return _acc + Object.keys(_curr).length;
+                    }, 0);
+                }
+
+                return acc;
+            }, 0)
+    }
 
     return (
         <div>
@@ -51,48 +57,31 @@ export default function ExpenseHistoryList({
                         </div>
                     ) :
                     (<List className="px-0">
-                        {activityData?.data?.map(({id, activity_type, user, expense, created_at, data}: {
-                                id: number,
-                                activity_type: ACTIVITY_TYPE,
-                                user: UserInfo,
-                                expense: Expense,
-                                created_at: Date,
-                                data: object
-                            }) =>
-                                activity_type === ACTIVITY_TYPE.EXPENSE_EDITED ||
-                                activity_type === ACTIVITY_TYPE.PAYMENT_EDITED ?
-                                    (<div key={id}>
-                                        <Cell
-                                            className="p-0"
-                                            subtitle={formatDate(created_at, me.language)}
-                                            before={<Avatar size={48} src={user.photo_url}/>}
-                                            // after={<Icon24ChevronRight />}
-                                            after={<Badge type="number">
-                                                {
-                                                    Object.entries(data)
-                                                        .reduce((acc, curr) => {
-                                                            if (curr[0] === "amount" || curr[0] === "description")
-                                                                return acc + 1;
+                        {activityData?.data?.map((activity) => {
+                                const {id, activity_type, user, expense, created_at, data} = activity;
 
-                                                            if (curr[0] === "expense_users") {
-                                                                // @ts-ignore
-                                                                return acc + Object.values(curr[1]).reduce((_acc, _curr) => {
-                                                                    // @ts-ignore
-                                                                    return _acc + Object.keys(_curr).length;
-                                                                }, 0);
-                                                            }
-
-                                                            return acc;
-                                                        }, 0)
-                                                }
-                                            </Badge>}
-                                            onClick={openExpenseHistoryPage(id)}
-                                        >
-                                            {`${t(activity_type === ACTIVITY_TYPE.EXPENSE_EDITED ?
-                                                "expenseDetails.Expense" : "expenseDetails.Payment")} ${t("expenseDetails.wasEditedBy")} ${user.name}`}
-                                        </Cell>
-                                        <Divider className="ml-16"/>
-                                    </div>)
+                                return activity_type === ACTIVITY_TYPE.EXPENSE_EDITED || activity_type === ACTIVITY_TYPE.PAYMENT_EDITED ?
+                                    (
+                                        <ExpenseHistoryModal
+                                            selectedExpense={selectedExpense}
+                                            activity={activityData.data.find((activity) => activity.id === id)}
+                                            trigger={
+                                                <div key={id}>
+                                                    <Cell
+                                                        className="p-0"
+                                                        subtitle={formatDate(created_at, me.language)}
+                                                        before={<Avatar size={48} src={user.photo_url}/>}
+                                                        after={
+                                                            <Badge type="number">
+                                                                {countExpenseHistoryItems(data)}
+                                                            </Badge>}
+                                                    >
+                                                        {`${t(activity_type === ACTIVITY_TYPE.EXPENSE_EDITED ?
+                                                            "expenseDetails.Expense" : "expenseDetails.Payment")} ${t("expenseDetails.wasEditedBy")} ${user.name}`}
+                                                    </Cell>
+                                                    <Divider className="ml-16"/>
+                                                </div>}
+                                        />)
                                     :
                                     (<div key={id}>
                                         <Cell
@@ -109,6 +98,7 @@ export default function ExpenseHistoryList({
                                         </Cell>
                                         <Divider className="ml-16"/>
                                     </div>)
+                            }
                         )}
                     </List>)
                 }

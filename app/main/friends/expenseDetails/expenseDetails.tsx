@@ -28,7 +28,6 @@ export default function ExpenseDetails({
                                            pageData,
                                            setIsDeleteExpenseSnackbarShown,
                                            setSettleUpPaymentInfo,
-                                           setActivity
                                        }: {
     selectedExpense: Expense,
     friends: Friend[],
@@ -38,7 +37,6 @@ export default function ExpenseDetails({
     pageData: PageData,
     setIsDeleteExpenseSnackbarShown: Function,
     setSettleUpPaymentInfo: Function,
-    setActivity: Function
 }) {
     const {t} = useTranslation();
 
@@ -258,9 +256,7 @@ export default function ExpenseDetails({
 
                             <ExpenseHistoryList
                                 expanseId={selectedExpense.id}
-                                setCurrentTab={setCurrentTab}
-                                setSubpage={setSubpage}
-                                setActivity={setActivity}
+                                selectedExpense={selectedExpense}
                             />
                         </div>
                     }
