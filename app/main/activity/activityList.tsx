@@ -131,7 +131,7 @@ export default function ActivityList({setCurrentTab, setSubpage, setPageData, se
         );
     };
 
-
+    // @ts-ignore
     return (
         <div ref={refContainer} style={{height: "calc(100% - 77px)"}}>
             <Header
@@ -142,16 +142,19 @@ export default function ActivityList({setCurrentTab, setSubpage, setPageData, se
 
             {!isLoaded || isLoadingExpense ? <Spinner size="l" className="flex flex-col items-center justify-center"/> :
                 activities?.length > 0 ?
+                    // @ts-ignore
                     <InfiniteLoader
-                        refs={undefined}
                         isRowLoaded={isRowLoaded}
                         // @ts-ignore
                         loadMoreRows={loadMoreRows}
                         rowCount={rowCount}
                     >
-                        {({onRowsRendered, registerChild}) => (
+                        { // @ts-ignore
+                            ({onRowsRendered, registerChild}) => (
+                            // @ts-ignore
                             <AutoSizer>
                                 {({width}) => (
+                                    // @ts-ignore
                                     <List
                                         ref={registerChild}
                                         width={width}

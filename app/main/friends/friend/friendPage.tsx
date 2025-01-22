@@ -294,16 +294,18 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
 
             {loadingExpenses ? <Spinner size="l" className="flex flex-col items-center justify-center"/> :
                 expenses?.length > 0 ?
+                    // @ts-ignore
                     <InfiniteLoader
-                        refs={undefined}
                         isRowLoaded={isRowLoaded}
                         // @ts-ignore
                         loadMoreRows={loadMoreRows}
                         rowCount={rowCount}
                     >
                         {({onRowsRendered, registerChild}) => (
+                            // @ts-ignore
                             <AutoSizer>
                                 {({width}) => (
+                                    // @ts-ignore
                                     <List
                                         ref={registerChild}
                                         width={width}
