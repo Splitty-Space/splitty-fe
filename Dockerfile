@@ -7,10 +7,10 @@ WORKDIR /app
 COPY . .
 
 RUN npm install
-RUN npm build
+RUN next build
 
 # Expose the port for the React dev server
 EXPOSE 3000
 
 # Start the React app
-CMD ["npm", "start"]
+CMD ["next", "start"]
