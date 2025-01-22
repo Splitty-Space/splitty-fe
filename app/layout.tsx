@@ -11,8 +11,8 @@ import classNames from "classnames";
 import {main} from "@/const/urls";
 import "@/API/axiosConfig";
 import useMe from "@/services/useMe";
-import {DARK, DEFAULT_THEME, LIGHT} from "@/const/theme";
-import {DEFAULT_PLATFORM, IOS, BASE} from "@/const/platform";
+import {DARK, DEFAULT_THEME, THEME_TYPE} from "@/const/theme";
+import {DEFAULT_PLATFORM, IOS, BASE, PLATFORM_TYPE} from "@/const/platform";
 import {AppRootContext} from "./AppRootContext";
 import "./globals.css";
 
@@ -25,8 +25,8 @@ import "./globals.css";
 export default function RootLayout({children}: Readonly<{
     children: React.ReactNode;
 }>) {
-    const [platform, setPlatform] = useState<BASE | IOS>(DEFAULT_PLATFORM);
-    const [appearance, setAppearance] = useState<LIGHT | DARK>(DEFAULT_THEME);
+    const [platform, setPlatform] = useState<PLATFORM_TYPE>(DEFAULT_PLATFORM);
+    const [appearance, setAppearance] = useState<THEME_TYPE>(DEFAULT_THEME);
 
     const {data} = useMe();
 
