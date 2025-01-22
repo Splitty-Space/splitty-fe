@@ -13,4 +13,4 @@ RUN npm next build
 EXPOSE 3000
 
 # Start the React app
-CMD ["next", "start"]
+CMD ["npm", "next", "start"]
