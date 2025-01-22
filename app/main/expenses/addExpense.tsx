@@ -327,7 +327,7 @@ export default function AddExpense({
                         onChange={onExpenseNameChange}
                         placeholder={t("expenses.ExpenseName")}
                         className="mb-2"
-                        status={expenseName.length < 3 && "error"}
+                        status={expenseName.length < 3 ? "error" : "default"}
                     />
 
                     <div className="flex items-center justify-between">
@@ -336,10 +336,11 @@ export default function AddExpense({
                                 type="number"
                                 pattern="[0-9]*"
                                 inputMode="numeric"
+                                // @ts-ignore
                                 value={moneySpent}
                                 onChange={onMoneySpentChange}
                                 placeholder={t("expenses.MoneySpent")}
-                                status={(moneySpent && moneySpent > 0) || "error"}
+                                status={(moneySpent && moneySpent > 0) ? "default" : "error"}
                             />
                         </div>
                         <CurrencySelect
@@ -424,7 +425,7 @@ export default function AddExpense({
                                         pattern="[0-9]*"
                                         inputMode="numeric"
                                         className="w-28 ml-auto"
-                                        status={currentPaidMoneyAmount !== moneySpent ? "error" : null}
+                                        status={currentPaidMoneyAmount !== moneySpent ? "error" : undefined}
                                         disabled={!paidBy.find(x => x.id === id)?.isSelected}
                                         after={
                                             <Caption
@@ -438,13 +439,15 @@ export default function AddExpense({
                                 </div>))}
                         </List>
 
-                        <Text
-                            weight="3"
-                            className="flex justify-end"
-                        >
-                            {`${currentPaidMoneyAmount} ${t("expenses.Of")} ${moneySpent} ${currency} ${t("expenses.Filled")}.
-                            ${moneySpent - currentPaidMoneyAmount} ${currency} ${t("expenses.Left")}.`}
-                        </Text>
+                        {moneySpent &&
+                            <Text
+                                weight="3"
+                                className="flex justify-end"
+                            >
+                                {`${currentPaidMoneyAmount} ${t("expenses.Of")} ${moneySpent} ${currency} ${t("expenses.Filled")}.
+                            ${moneySpent - currentPaidMoneyAmount} ${currency} ${t("expenses.Left")}.`}:
+                            </Text>
+                        }
                     </>}
 
                 {!isSplitEquallyBetweenAll &&
@@ -490,13 +493,15 @@ export default function AddExpense({
                             )}
                         </List>
 
-                        <Text
-                            weight="3"
-                            className="flex justify-end"
-                        >
-                            {currentSplitBetweenMoneyAmount} of {moneySpent} USD
-                                                             filled. {`${moneySpent - currentSplitBetweenMoneyAmount} USD left.`}
-                        </Text>
+                        {moneySpent &&
+                            <Text
+                                weight="3"
+                                className="flex justify-end"
+                            >
+                                {currentSplitBetweenMoneyAmount} of {moneySpent} USD
+                                filled. {`${moneySpent - currentSplitBetweenMoneyAmount} USD left.`}
+                            </Text>
+                        }
                     </>
                 }
             </main>

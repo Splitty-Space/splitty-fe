@@ -6,7 +6,7 @@ import {Expense} from "@/entities";
 
 export const ExpenseHistoryModal = ({trigger, activity, selectedExpense}: Readonly<{
     trigger: React.ReactNode,
-    activity: Activity,
+    activity?: Activity,
     selectedExpense: Expense,
 }>) => {
     return (

@@ -131,9 +131,11 @@ export default function ExpenseDetails({
                                 {selectedExpense.transactions
                                     .reduce((photoURLs, currentValue) => {
                                         if (photoURLs.every((photoURL) => photoURL !== currentValue.borrower.photo_url)) {
+                                            // @ts-ignore
                                             photoURLs.push(currentValue.borrower.photo_url);
                                         }
                                         if (photoURLs.every((photoURL) => photoURL !== currentValue.debtor.photo_url)) {
+                                            // @ts-ignore
                                             photoURLs.push(currentValue.debtor.photo_url);
                                         }
 

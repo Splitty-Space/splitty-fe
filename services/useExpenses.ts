@@ -8,9 +8,9 @@ export interface UseExpenses {
         data: Expense[];
         meta: object;
     },
-    loadingFriends: boolean;
+    loading: boolean;
     error: AxiosError<any, any> | null;
-    refetchFriends: RefetchFunction<any, any>;
+    refetch: RefetchFunction<any, any>;
 }
 
 const useExpenses = ({

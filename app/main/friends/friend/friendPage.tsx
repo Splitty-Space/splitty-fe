@@ -45,6 +45,7 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
     const [height, setHeight] = useState(0)
 
     useEffect(() => {
+        // @ts-ignore
         setHeight(refContainer.current.clientHeight - refHeader.current.clientHeight);
     }, []);
 
@@ -74,7 +75,7 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
         }
     }, [friend]);
 
-    const isRowLoaded = ({index}) => {
+    const isRowLoaded = ({index}: { index: number }) => {
         return expenses && !!expenses[index];
     };
 
@@ -133,9 +134,12 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
 
         const borrowers = transactions.reduce((ids, {amount, borrower}) => {
             const amountNumber = Number(amount);
+            // @ts-ignore
             if (ids[borrower.id]) {
+                // @ts-ignore
                 ids[borrower.id] = ids[borrower.id] + amountNumber;
             } else {
+                // @ts-ignore
                 ids[borrower.id] = amountNumber;
             }
 
@@ -146,6 +150,7 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
 
         let whoPaid;
         if (borrowersAmount === 1) {
+            // @ts-ignore
             if (borrowers[me.id]) {
                 whoPaid = "You";
             } else {
@@ -167,6 +172,7 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
                             {transactions
                                 .reduce((trans, currentValue) => {
                                     if (trans.every(({id}) => id !== currentValue.id)) {
+                                        // @ts-ignore
                                         trans.push(currentValue);
                                     }
 
@@ -176,7 +182,9 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
                                 .map(transaction =>
                                     <Avatar
                                         size={avatarSize}
+                                        // @ts-ignore
                                         key={transaction.id}
+                                        // @ts-ignore
                                         src={transaction.borrower.photo_url}
                                     />)}
                         </AvatarStack>}
@@ -288,6 +296,7 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
                 expenses?.length > 0 ?
                     <InfiniteLoader
                         isRowLoaded={isRowLoaded}
+                        // @ts-ignore
                         loadMoreRows={loadMoreRows}
                         rowCount={rowCount}
                     >

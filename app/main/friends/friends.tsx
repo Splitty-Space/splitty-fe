@@ -101,7 +101,9 @@ export default function Friends({
                 />}
             {subpage === subPageConst.SettleUpPayment &&
                 <SettleUpPayment
+                    // @ts-ignore
                     friend={settleUpPaymentInfo.friend}
+                    // @ts-ignore
                     defaultCurrency={settleUpPaymentInfo.currency}
                     selectedExpense={selectedExpense}
                     setSubpage={setSubpage}

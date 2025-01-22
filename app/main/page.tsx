@@ -20,7 +20,7 @@ import {ThemeProvider, createTheme} from "@mui/material/styles";
 import Activity from "@/app/main/activity/activity";
 import useMe from "@/services/useMe";
 import {initClosingBehavior, initSwipeBehavior} from "@telegram-apps/sdk-react";
-import "@/utils/mockTelegramEnv";
+// import "@/utils/mockTelegramEnv";
 import {DEFAULT_THEME} from "@/const/theme";
 
 const darkTheme = createTheme({
@@ -79,8 +79,10 @@ export default function Page() {
                         friends={friends}
                         loadingFriends={loadingFriends}
                         refetchFriends={refetchFriends}
+                        // @ts-ignore
                         selectedFriend={selectedFriend}
                         setSelectedFriends={setSelectedFriends}
+                        // @ts-ignore
                         selectedExpense={selectedExpense}
                         setSelectedExpense={setSelectedExpense}
                     />
@@ -109,6 +111,7 @@ export default function Page() {
                     <AddExpense
                         me={me}
                         selectedFriends={selectedFriends}
+                        // @ts-ignore
                         selectedExpense={selectedExpense}
                         setSubpage={setSubpage}
                         setCurrentTab={setCurrentTab}

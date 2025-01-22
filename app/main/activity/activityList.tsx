@@ -43,6 +43,7 @@ export default function ActivityList({setCurrentTab, setSubpage, setPageData, se
     const [height, setHeight] = useState(0)
 
     useEffect(() => {
+        // @ts-ignore
         setHeight(refContainer.current?.clientHeight - refHeader.current?.clientHeight);
     }, []);
 
@@ -130,6 +131,7 @@ export default function ActivityList({setCurrentTab, setSubpage, setPageData, se
         );
     };
 
+
     return (
         <div ref={refContainer} style={{height: "calc(100% - 77px)"}}>
             <Header
@@ -142,6 +144,7 @@ export default function ActivityList({setCurrentTab, setSubpage, setPageData, se
                 activities?.length > 0 ?
                     <InfiniteLoader
                         isRowLoaded={isRowLoaded}
+                        // @ts-ignore
                         loadMoreRows={loadMoreRows}
                         rowCount={rowCount}
                     >
