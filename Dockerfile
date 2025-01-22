@@ -7,7 +7,7 @@ WORKDIR /app
 COPY . .
 
 RUN npm install
-RUN next build
+RUN npm next build
 
 # Expose the port for the React dev server
 EXPOSE 3000
