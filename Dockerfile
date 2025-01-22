@@ -6,11 +6,11 @@ WORKDIR /app
 
 COPY . .
 
-RUN npm install
-RUN npm next build
+RUN yarn install
+RUN yarn build
 
 # Expose the port for the React dev server
 EXPOSE 3000
 
 # Start the React app
-CMD ["npm", "next", "start"]
+CMD ["yarn", "start"]
