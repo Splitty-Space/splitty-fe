@@ -1,6 +1,8 @@
 # Base image
 FROM node:20
 
+ENV NEXT_PUBLIC_SERVER_URL=NEXT_PUBLIC_SERVER_URL
+
 # Set working directory
 WORKDIR /app
 
