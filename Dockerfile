@@ -1,6 +1,7 @@
 # Base image
 FROM node:20
 
+ARG NEXT_PUBLIC_SERVER_URL
 ENV NEXT_PUBLIC_SERVER_URL=${NEXT_PUBLIC_SERVER_URL}
 
 # Set working directory
