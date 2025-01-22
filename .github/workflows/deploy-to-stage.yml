@@ -37,6 +37,8 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: splittyapp/stage-splitty-fe:latest
+          build-args: |
+            "NEXT_PUBLIC_SERVER_URL=https://backend-stage.splitty.digital"
 
   deployment:
     name: deployment  stage
