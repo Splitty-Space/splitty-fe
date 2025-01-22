@@ -143,6 +143,7 @@ export default function ActivityList({setCurrentTab, setSubpage, setPageData, se
             {!isLoaded || isLoadingExpense ? <Spinner size="l" className="flex flex-col items-center justify-center"/> :
                 activities?.length > 0 ?
                     <InfiniteLoader
+                        refs={undefined}
                         isRowLoaded={isRowLoaded}
                         // @ts-ignore
                         loadMoreRows={loadMoreRows}

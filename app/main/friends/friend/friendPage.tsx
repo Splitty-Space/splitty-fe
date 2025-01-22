@@ -295,6 +295,7 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
             {loadingExpenses ? <Spinner size="l" className="flex flex-col items-center justify-center"/> :
                 expenses?.length > 0 ?
                     <InfiniteLoader
+                        refs={undefined}
                         isRowLoaded={isRowLoaded}
                         // @ts-ignore
                         loadMoreRows={loadMoreRows}
