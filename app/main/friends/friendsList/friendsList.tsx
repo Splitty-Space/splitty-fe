@@ -1,13 +1,15 @@
 "use client"
 
-import classNames from "classnames";
 import {useTranslation} from "react-i18next";
 import {Avatar, Cell, List, Placeholder, Spinner, Divider, Caption} from "@telegram-apps/telegram-ui";
+import Main from "@/app/main/main/main";
 import FriendsHeader from "@/app/main/friends/friendsList/friendsHeader/friendsHeader";
 import {subPageConst} from "@/const/subPageConst";
 import {Friend} from "@/entities";
 import {Arrow} from "@/Icons";
 import "./friendsList.css";
+import {useState} from "react";
+import classNames from "classnames";
 
 export default function FriendsList({
                                         setSubpage,
@@ -26,12 +28,19 @@ export default function FriendsList({
 }) {
     const {t} = useTranslation();
 
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+
     return (
         <>
-            <FriendsHeader searchValue={searchValue} setSearchValue={setSearchValue} setSubpage={setSubpage}/>
-            <main className={classNames({
-                "flex items-center justify-center": loadingFriends
-            })}>
+            <FriendsHeader searchValue={searchValue} setSearchValue={setSearchValue} onSearchChange={setIsSearchOpen}/>
+
+            <Main
+                center={loadingFriends}
+                style={isSearchOpen ? {height: "calc(100% - 11rem)"} : undefined}
+                className={classNames({
+                    "mt-32": isSearchOpen
+                })}
+            >
                 {
                     loadingFriends ?
                         (<Spinner size="l"/>) :
@@ -41,7 +50,7 @@ export default function FriendsList({
                             </Placeholder>) :
                             friends?.length > 0 ?
                                 (
-                                    <List className="mb-8 px-0">
+                                    <List className="px-0">
                                         {friends?.map(({id, name, photo_url, total}) =>
                                             <div key={id}>
                                                 <Cell
@@ -71,7 +80,7 @@ export default function FriendsList({
                                     </List>)
                                 : (<Placeholder header={t("friendsList.FriendNotFound")}/>)
                 }
-            </main>
+            </Main>
         </>
     );
 }

@@ -1,9 +1,9 @@
 "use client"
 
 import {useState} from "react";
-import classNames from "classnames";
 import {Avatar, Cell, List, Placeholder, Spinner} from "@telegram-apps/telegram-ui";
 import GroupsHeader from "@/app/main/groups/groupList/groupsHeader/groupsHeader";
+import Main from "@/app/main/main/main";
 import useGroups from "@/services/useGroups";
 import {Arrow} from "@/Icons";
 
@@ -14,9 +14,8 @@ export default function GroupsList({setSubpage}: { setSubpage: Function }) {
     return (
         <>
             <GroupsHeader searchValue={searchValue} setSearchValue={setSearchValue} setSubpage={setSubpage}/>
-            <main className={classNames({
-                "flex items-center justify-center": loading
-            })}>
+
+            <Main center={loading}>
                 {
                     !!data && data?.data?.length > 0 ? (
                             <List className="mb-8 px-0">
@@ -40,7 +39,7 @@ export default function GroupsList({setSubpage}: { setSubpage: Function }) {
                             </Placeholder>
                         )
                 }
-            </main>
+            </Main>
         </>
     );
 }

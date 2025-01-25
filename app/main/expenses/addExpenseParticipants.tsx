@@ -16,6 +16,7 @@ import {
 } from "@telegram-apps/telegram-ui";
 import {TabIds} from "@/const/tabIds";
 import HeaderWithSearch from "@/app/main/header/headerWithSearch";
+import Main from "@/app/main/main/main";
 
 export default function AddExpenseParticipants({
                                                    selectedFriends,
@@ -80,7 +81,7 @@ export default function AddExpenseParticipants({
                 setSearchValue={setSearchValue}
             />
 
-            <main>
+            <Main style={{height: "calc(100% - 7rem)"}}>
                 {
                     loadingFriends ?
                         (<Spinner size="l"/>) :
@@ -105,7 +106,7 @@ export default function AddExpenseParticipants({
                                 </List>)
                             : (<Placeholder header={t("friendsList.FriendNotFound")}/>)
                 }
-            </main>
+            </Main>
         </>
     );
 }

@@ -24,6 +24,7 @@ import {Friend, Expense} from "@/entities";
 import {Arrow} from "@/Icons";
 import useMe from "@/services/useMe";
 import {formatDate} from "@/utils/formatDate";
+import Main from "@/app/main/main/main";
 
 
 export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
@@ -243,7 +244,7 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
     };
 
     return (
-        <div ref={refContainer} style={{height: "calc(100% - 77px)"}}>
+        <>
             <div
                 ref={refHeader}
                 className="flex flex-col items-center justify-center p-4 pt-8"
@@ -267,7 +268,7 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
                 <Title
                     level="1"
                     weight="1"
-                    className="mt-2"
+                    className="mt-2 max-w-full overflow-hidden text-ellipsis"
                 >
                     {friend?.name}
                 </Title>
@@ -292,40 +293,42 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
                 </Button>
             </div>
 
-            {loadingExpenses ? <Spinner size="l" className="flex flex-col items-center justify-center"/> :
-                expenses?.length > 0 ?
-                    // @ts-ignore
-                    <InfiniteLoader
-                        isRowLoaded={isRowLoaded}
+            <Main ref={refContainer} className="mt-0" style={{height: "calc(100% - 4rem)"}}>
+                {loadingExpenses ? <Spinner size="l" className="flex flex-col items-center justify-center"/> :
+                    expenses?.length > 0 ?
                         // @ts-ignore
-                        loadMoreRows={loadMoreRows}
-                        rowCount={rowCount}
-                    >
-                        {({onRowsRendered, registerChild}) => (
+                        <InfiniteLoader
+                            isRowLoaded={isRowLoaded}
                             // @ts-ignore
-                            <AutoSizer>
-                                {({width}) => (
-                                    // @ts-ignore
-                                    <List
-                                        ref={registerChild}
-                                        width={width}
-                                        height={height}
-                                        rowHeight={68}
-                                        rowCount={rowCount}
-                                        rowRenderer={rowRenderer}
-                                        onRowsRendered={onRowsRendered}
-                                    />
-                                )}
-                            </AutoSizer>
-                        )}
-                    </InfiniteLoader>
-                    :
-                    <div className="flex flex-col items-center justify-center relative">
-                        <LargeTitle weight="3">{t("friend.AddFirstExpense")}</LargeTitle>
+                            loadMoreRows={loadMoreRows}
+                            rowCount={rowCount}
+                        >
+                            {({onRowsRendered, registerChild}) => (
+                                // @ts-ignore
+                                <AutoSizer>
+                                    {({width}) => (
+                                        // @ts-ignore
+                                        <List
+                                            ref={registerChild}
+                                            width={width}
+                                            height={height}
+                                            rowHeight={68}
+                                            rowCount={rowCount}
+                                            rowRenderer={rowRenderer}
+                                            onRowsRendered={onRowsRendered}
+                                        />
+                                    )}
+                                </AutoSizer>
+                            )}
+                        </InfiniteLoader>
+                        :
+                        <div className="flex flex-col items-center justify-center relative">
+                            <LargeTitle weight="3">{t("friend.AddFirstExpense")}</LargeTitle>
 
-                        <Arrow className="rotate-[160deg] absolute left-24 top-12"/>
-                    </div>
-            }
-        </div>
+                            <Arrow className="rotate-[160deg] absolute left-24 top-12"/>
+                        </div>
+                }
+            </Main>
+        </>
     );
 }

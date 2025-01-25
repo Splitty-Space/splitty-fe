@@ -11,6 +11,7 @@ import i18next from "i18next";
 import {CurrencySelect} from "@/components/CurrencySelect";
 import Header from "@/app/main/header/header";
 import Logo from "@/app/main/header/logo";
+import Main from "@/app/main/main/main";
 
 export default function Account() {
     const {t} = useTranslation();
@@ -54,7 +55,7 @@ export default function Account() {
                 subHeaderClassName="justify-content-center mt-6"
             />
 
-            <main className="mt-4 mx-4 flex flex-col items-center justify-center">
+            <Main className="px-4 flex flex-col items-center justify-center">
                 {data ?
                     <>
                         <div className="flex flex-col items-center mb-16">
@@ -125,7 +126,7 @@ export default function Account() {
                     :
                     <Spinner size="l"/>
                 }
-            </main>
+            </Main>
         </>
     );
 }

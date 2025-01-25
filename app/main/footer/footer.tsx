@@ -79,7 +79,7 @@ export default function Footer({currentTab, setCurrentTab, setSubpage}: {
     }, [setCurrentTab, setSubpage]);
 
     return (
-        <footer className="h-8">
+        <footer className="fixed bottom-0 h-16 w-full">
             <Tabbar
                 style={{
                     backgroundColor: appRootContext.appearance === DARK ? "var(--tgui--black)" : "var(--tgui--white)",

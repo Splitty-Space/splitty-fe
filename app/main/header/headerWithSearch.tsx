@@ -11,13 +11,15 @@ export default function HeaderWithSearch({
                                              forceSearchOpen,
                                              searchValue,
                                              setSearchValue,
+                                             onSearchChange,
                                              LeftComponent,
                                              CentralComponent,
-                                             RightComponent
+                                             RightComponent,
                                          }: {
                                              forceSearchOpen?: boolean,
                                              searchValue?: string,
                                              setSearchValue?: Function,
+                                             onSearchChange?: Function,
                                              LeftComponent?: FC,
                                              CentralComponent?: FC,
                                              RightComponent?: FC,
@@ -25,6 +27,11 @@ export default function HeaderWithSearch({
 ) {
     const {t} = useTranslation();
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+    useEffect(() => {
+            if (onSearchChange) onSearchChange(isSearchOpen)
+        }, [isSearchOpen, onSearchChange]
+    );
 
     const HEADER_SEARCH_ID = "HEADER_SEARCH_ID";
 

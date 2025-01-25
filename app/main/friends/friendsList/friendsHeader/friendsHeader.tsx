@@ -5,15 +5,16 @@ import {Icon28PersonAdd} from "@/Icons";
 import {IconButton} from "@telegram-apps/telegram-ui";
 import {initUtils} from "@telegram-apps/sdk-react";
 
-export default function FriendsHeader({searchValue, setSearchValue, setSubpage}: {
+export default function FriendsHeader({searchValue, setSearchValue, onSearchChange}: {
     searchValue: string,
     setSearchValue: Function,
-    setSubpage: Function
+    onSearchChange: Function,
 }) {
     return (
         <HeaderWithSearch
             searchValue={searchValue}
             setSearchValue={setSearchValue}
+            onSearchChange={onSearchChange}
             RightComponent={() => (
                 <IconButton
                     size="l"

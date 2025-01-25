@@ -15,6 +15,7 @@ import React, {useCallback, useEffect, useRef, useState} from "react";
 import {formatDate} from "@/utils/formatDate";
 import Header from "@/app/main/header/header";
 import Logo from "@/app/main/header/logo";
+import Main from "@/app/main/main/main";
 import getActivities from "@/services/getActivities";
 import Activity, {ACTIVITY_TYPE, ACTIVITY_TYPE_TO_TEXT} from "@/entities/Activity";
 import {subPageConst} from "@/const/subPageConst";
@@ -133,46 +134,49 @@ export default function ActivityList({setCurrentTab, setSubpage, setPageData, se
 
     // @ts-ignore
     return (
-        <div ref={refContainer} style={{height: "calc(100% - 77px)"}}>
+        <>
             <Header
                 ref={refHeader}
                 CentralComponent={Logo}
                 subHeaderClassName="justify-content-center mt-6"
             />
 
-            {!isLoaded || isLoadingExpense ? <Spinner size="l" className="flex flex-col items-center justify-center"/> :
-                activities?.length > 0 ?
-                    // @ts-ignore
-                    <InfiniteLoader
-                        isRowLoaded={isRowLoaded}
+            <Main ref={refContainer} style={{height: "calc(100% - 4rem)"}}>
+                {!isLoaded || isLoadingExpense ?
+                    <Spinner size="l" className="flex flex-col items-center justify-center"/> :
+                    activities?.length > 0 ?
                         // @ts-ignore
-                        loadMoreRows={loadMoreRows}
-                        rowCount={rowCount}
-                    >
-                        { // @ts-ignore
-                            ({onRowsRendered, registerChild}) => (
+                        <InfiniteLoader
+                            isRowLoaded={isRowLoaded}
                             // @ts-ignore
-                            <AutoSizer>
-                                {({width}) => (
+                            loadMoreRows={loadMoreRows}
+                            rowCount={rowCount}
+                        >
+                            { // @ts-ignore
+                                ({onRowsRendered, registerChild}) => (
                                     // @ts-ignore
-                                    <List
-                                        ref={registerChild}
-                                        width={width}
-                                        height={height}
-                                        rowHeight={68}
-                                        rowCount={rowCount}
-                                        rowRenderer={rowRenderer}
-                                        onRowsRendered={onRowsRendered}
-                                    />
+                                    <AutoSizer>
+                                        {({width}) => (
+                                            // @ts-ignore
+                                            <List
+                                                ref={registerChild}
+                                                width={width}
+                                                height={height}
+                                                rowHeight={68}
+                                                rowCount={rowCount}
+                                                rowRenderer={rowRenderer}
+                                                onRowsRendered={onRowsRendered}
+                                            />
+                                        )}
+                                    </AutoSizer>
                                 )}
-                            </AutoSizer>
-                        )}
-                    </InfiniteLoader>
-                    :
-                    <div className="flex flex-col items-center justify-center relative">
-                        <LargeTitle weight="3">{t("activity.NoActivityYet")}</LargeTitle>
-                    </div>
-            }
-        </div>
+                        </InfiniteLoader>
+                        :
+                        <div className="flex flex-col items-center justify-center relative">
+                            <LargeTitle weight="3">{t("activity.NoActivityYet")}</LargeTitle>
+                        </div>
+                }
+            </Main>
+        </>
     );
 }

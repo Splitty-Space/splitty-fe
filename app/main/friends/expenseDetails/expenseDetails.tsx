@@ -5,6 +5,7 @@ import {useTranslation} from "react-i18next";
 import classNames from "classnames";
 import {Expense, Friend} from "@/entities";
 import Header from "@/app/main/header/header";
+import Main from "@/app/main/main/main";
 import {Avatar, AvatarStack, Caption, Divider, IconButton, Spinner, Text} from "@telegram-apps/telegram-ui";
 import {Icon28Edit} from "@telegram-apps/telegram-ui/dist/icons/28/edit";
 import {Icon28Bin} from "@/Icons";
@@ -124,7 +125,7 @@ export default function ExpenseDetails({
                     )}
                 />
 
-                <main className="m-4 mb-12">
+                <Main className="px-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center w-full">
                             <AvatarStack>
@@ -262,7 +263,7 @@ export default function ExpenseDetails({
                             />
                         </div>
                     }
-                </main>
+                </Main>
             </>
         );
 }

@@ -3,6 +3,7 @@
 import React, {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import Header from "@/app/main/header/header";
+import Main from "@/app/main/main/main";
 import {
     Avatar,
     AvatarStack,
@@ -307,7 +308,7 @@ export default function AddExpense({
                 )}
             />
 
-            <main className="mx-4 mb-12">
+            <Main className="px-4" style={{height: "calc(100% - 10rem)"}}>
                 <div className="my-5 flex flex-col items-center justify-center">
                     <AvatarStack>
                         {participants.map(({id, photo_url}) =>
@@ -439,13 +440,13 @@ export default function AddExpense({
                                 </div>))}
                         </List>
 
-                        {moneySpent &&
+                        {Number(moneySpent) > 0 &&
                             <Text
                                 weight="3"
                                 className="flex justify-end"
                             >
                                 {`${currentPaidMoneyAmount} ${t("expenses.Of")} ${moneySpent} ${currency} ${t("expenses.Filled")}.
-                            ${moneySpent - currentPaidMoneyAmount} ${currency} ${t("expenses.Left")}.`}:
+                            ${Number(moneySpent) - currentPaidMoneyAmount} ${currency} ${t("expenses.Left")}.`}
                             </Text>
                         }
                     </>}
@@ -493,18 +494,18 @@ export default function AddExpense({
                             )}
                         </List>
 
-                        {moneySpent &&
+                        {Number(moneySpent) > 0 &&
                             <Text
                                 weight="3"
                                 className="flex justify-end"
                             >
                                 {currentSplitBetweenMoneyAmount} of {moneySpent} USD
-                                filled. {`${moneySpent - currentSplitBetweenMoneyAmount} USD left.`}
+                                filled. {`${Number(moneySpent) - currentSplitBetweenMoneyAmount} USD left.`}
                             </Text>
                         }
                     </>
                 }
-            </main>
+            </Main>
         </>
     );
 }
