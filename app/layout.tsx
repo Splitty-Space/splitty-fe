@@ -66,7 +66,7 @@ export default function RootLayout({children}: Readonly<{
         <html lang="en">
         <Script src="https://telegram.org/js/telegram-web-app.js"/>
 
-        <body className={classNames({
+        <body className={classNames("overflow-hidden h-screen",{
             "body_dark": appearance === DARK
         })}>
         {platform && appearance && (
