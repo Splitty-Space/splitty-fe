@@ -9,6 +9,7 @@ export interface Me {
     default_currency: string;
     photo_url: string;
     username: string;
+    referral_code: string;
 }
 
 export interface useMe {
