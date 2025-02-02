@@ -161,8 +161,7 @@ export default function SettleUpPayment({friend, defaultCurrency, selectedExpens
                             placeholder="Amount Paid"
                             value={amountPaid}
                             type="number"
-                            pattern="[0-9]*"
-                            inputMode="numeric"
+                            step="any"
                             onChange={onAmountPaidChange}
                             status={amountPaid > 0 ? "default" : "error"}
                         />
