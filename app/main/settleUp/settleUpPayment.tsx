@@ -36,7 +36,7 @@ export default function SettleUpPayment({friend, defaultCurrency, selectedExpens
     const [date, setDate] = useState(selectedExpense ? selectedExpense.date : new Date());
 
     const onAmountPaidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const amount = Number(e.target.value);
+        const amount = Number(e.target.value.replace(",", "."));
         setAmountPaid(amount);
 
         setIsSaveDisabled(amount === 0);

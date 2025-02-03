@@ -165,7 +165,7 @@ export default function AddExpense({
     };
 
     const onMoneySpentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const amount = Number(e.target.value.replace(/[^0-9]/g, ""))
+        const amount = Number(e.target.value.replace(",", "."))
         const moneySpent = amount === 0 ? null : amount
         setMoneySpent(moneySpent);
 
@@ -270,7 +270,7 @@ export default function AddExpense({
     const onSplitBetweenAmountChange = (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
         setSplitBetween(splitBetween.map(x => x.id === id ? {
             ...x,
-            amount: e.target.value ? Number(e.target.value) : undefined,
+            amount: e.target.value ? Number(e.target.value.replace(",", ".")) : undefined,
             isDirty: true,
         } : x));
     };
