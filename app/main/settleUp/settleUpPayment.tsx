@@ -160,8 +160,9 @@ export default function SettleUpPayment({friend, defaultCurrency, selectedExpens
                         <Input
                             placeholder="Amount Paid"
                             value={amountPaid}
-                            type="number"
+                            type="text"
                             inputMode="decimal"
+                            pattern="^\d+([.,]\d+)?$"
                             onChange={onAmountPaidChange}
                             status={amountPaid > 0 ? "default" : "error"}
                         />

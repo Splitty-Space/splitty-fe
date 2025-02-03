@@ -334,8 +334,9 @@ export default function AddExpense({
                     <div className="flex items-center justify-between">
                         <div className="grow mr-1">
                             <Input
-                                type="number"
+                                type="text"
                                 inputMode="decimal"
+                                pattern="^\d+([.,]\d+)?$"
                                 // @ts-ignore
                                 value={moneySpent}
                                 onChange={onMoneySpentChange}
@@ -421,8 +422,9 @@ export default function AddExpense({
                                     <Input
                                         value={paidBy.find(x => x.id === id)?.amount}
                                         onChange={onPaidByAmountChange(id)}
-                                        type="number"
+                                        type="text"
                                         inputMode="decimal"
+                                        pattern="^\d+([.,]\d+)?$"
                                         className="w-28 ml-auto"
                                         status={currentPaidMoneyAmount !== moneySpent ? "error" : undefined}
                                         disabled={!paidBy.find(x => x.id === id)?.isSelected}
@@ -476,8 +478,9 @@ export default function AddExpense({
                                     <Input
                                         value={splitBetween.find(x => x.id === id)?.amount}
                                         onChange={onSplitBetweenAmountChange(id)}
-                                        type="number"
+                                        type="text"
                                         inputMode="decimal"
+                                        pattern="^\d+([.,]\d+)?$"
                                         className="w-28 ml-auto"
                                         after={
                                             <Caption
