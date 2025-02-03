@@ -14,7 +14,7 @@ export const ExpenseHistoryModal = ({trigger, activity, selectedExpense}: Readon
 }>) => {
     return (
         <Modal
-            header={<ModalHeader>Only iOS header</ModalHeader>}
+            header={<ModalHeader />}
             className="z-50 top-20"
             trigger={trigger}
             aria-describedby={undefined}
