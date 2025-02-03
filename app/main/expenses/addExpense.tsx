@@ -233,7 +233,7 @@ export default function AddExpense({
     const onPaidByAmountChange = (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
         setPaidBy(paidBy.map(x => x.id === id ? {
             ...x,
-            amount: e.target.value ? Number(e.target.value) : undefined,
+            amount: e.target.value ? Number(e.target.value.replace(",", ".")) : undefined,
             isDirty: true,
         } : x));
     };
@@ -334,9 +334,9 @@ export default function AddExpense({
                     <div className="flex items-center justify-between">
                         <div className="grow mr-1">
                             <Input
-                                type="text"
+                                type="number"
                                 inputMode="decimal"
-                                pattern="^\d+([.,]\d+)?$"
+                                step="any"
                                 // @ts-ignore
                                 value={moneySpent}
                                 onChange={onMoneySpentChange}
@@ -422,9 +422,9 @@ export default function AddExpense({
                                     <Input
                                         value={paidBy.find(x => x.id === id)?.amount}
                                         onChange={onPaidByAmountChange(id)}
-                                        type="text"
+                                        type="number"
                                         inputMode="decimal"
-                                        pattern="^\d+([.,]\d+)?$"
+                                        step="any"
                                         className="w-28 ml-auto"
                                         status={currentPaidMoneyAmount !== moneySpent ? "error" : undefined}
                                         disabled={!paidBy.find(x => x.id === id)?.isSelected}
@@ -478,9 +478,9 @@ export default function AddExpense({
                                     <Input
                                         value={splitBetween.find(x => x.id === id)?.amount}
                                         onChange={onSplitBetweenAmountChange(id)}
-                                        type="text"
+                                        type="number"
                                         inputMode="decimal"
-                                        pattern="^\d+([.,]\d+)?$"
+                                        step="any"
                                         className="w-28 ml-auto"
                                         after={
                                             <Caption
