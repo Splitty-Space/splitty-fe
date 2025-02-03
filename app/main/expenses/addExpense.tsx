@@ -336,7 +336,7 @@ export default function AddExpense({
                             <Input
                                 type="number"
                                 inputMode="decimal"
-                                pattern="\d*\.?\d*"
+                                pattern="^\d+([.,]\d+)?$"
                                 // @ts-ignore
                                 value={moneySpent}
                                 onChange={onMoneySpentChange}
@@ -424,7 +424,7 @@ export default function AddExpense({
                                         onChange={onPaidByAmountChange(id)}
                                         type="number"
                                         inputMode="decimal"
-                                        pattern="\d*\.?\d*"
+                                        pattern="^\d+([.,]\d+)?$"
                                         className="w-28 ml-auto"
                                         status={currentPaidMoneyAmount !== moneySpent ? "error" : undefined}
                                         disabled={!paidBy.find(x => x.id === id)?.isSelected}
@@ -480,7 +480,7 @@ export default function AddExpense({
                                         onChange={onSplitBetweenAmountChange(id)}
                                         type="number"
                                         inputMode="decimal"
-                                        pattern="\d*\.?\d*"
+                                        pattern="^\d+([.,]\d+)?$"
                                         className="w-28 ml-auto"
                                         after={
                                             <Caption
