@@ -65,6 +65,11 @@ export default function HeaderWithSearch({
         },
         [setSearchValue]);
 
+    const onBlur = useCallback(() => {
+        setIsSearchOpen(false)
+        clearSearch();
+    }, [clearSearch]);
+
     return (
         <Header
             className={isOpen ? "h-28" : "h-16"}
@@ -77,6 +82,7 @@ export default function HeaderWithSearch({
                 className={isOpen ? "header_input" : "header_input__hide"}
                 value={searchValue}
                 onChange={onChange}
+                onBlur={onBlur}
                 before={<Icon24Search/>}
                 after={
                     <Tappable

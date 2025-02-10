@@ -9,6 +9,7 @@ import useMe from "@/services/useMe";
 import {subPageConst} from "@/const/subPageConst";
 import {AppRootContext} from "@/app/AppRootContext";
 import {DARK} from "@/const/theme";
+import {Friend} from "@/entities";
 import "./footer.css";
 
 interface Tab {
@@ -17,10 +18,28 @@ interface Tab {
     Icon: FC<{ fill: string }>;
 }
 
-export default function Footer({currentTab, setCurrentTab, setSubpage}: {
+export default function Footer({
+                                   currentTab,
+                                   setCurrentTab,
+                                   subpage,
+                                   setSubpage,
+                                   friends,
+                                   selectedUserId,
+                                   setSelectedUserId,
+                                   setSelectedFriends,
+                                   setSearchValue,
+                                   setSelectedExpense,
+                               }: {
     currentTab: number,
     setCurrentTab: Function,
-    setSubpage: Function
+    subpage: subPageConst,
+    setSubpage: Function,
+    friends: Friend[],
+    selectedUserId: any,
+    setSelectedUserId: Function,
+    setSelectedFriends: Function,
+    setSearchValue: Function,
+    setSelectedExpense: Function,
 }) {
     const {t} = useTranslation();
 
@@ -67,7 +86,22 @@ export default function Footer({currentTab, setCurrentTab, setSubpage}: {
     ];
 
     const onBarItemClick = useCallback((id: number) => () => {
-        setCurrentTab(id);
+        if (id === TabIds.AddExpenseParticipants && currentTab === TabIds.Friends && subpage) {
+            setCurrentTab(TabIds.AddExpense);
+
+            const selectedFriend = friends.find(x => x.id === selectedUserId);
+
+            setSelectedFriends([selectedFriend]);
+        } else {
+            setCurrentTab(id);
+
+            setSelectedFriends([]);
+            setSelectedUserId(null);
+        }
+
+        setSearchValue("");
+        setSelectedExpense(null);
+
 
         if (id === TabIds.Friends) {
             setSubpage(subPageConst.FriendsList);
@@ -76,7 +110,7 @@ export default function Footer({currentTab, setCurrentTab, setSubpage}: {
         } else if (id === TabIds.Activity) {
             setSubpage(subPageConst.ActivityList);
         }
-    }, [setCurrentTab, setSubpage]);
+    }, [currentTab, subpage, setSearchValue, setSelectedExpense, setCurrentTab, friends, setSelectedFriends, selectedUserId, setSelectedUserId, setSubpage]);
 
     return (
         <footer className="fixed bottom-0 h-20 w-full">

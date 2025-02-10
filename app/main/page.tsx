@@ -118,7 +118,18 @@ export default function Page() {
                         refetchFriends={refetchFriends}
                     />}
 
-                <Footer currentTab={currentTab} setCurrentTab={setCurrentTab} setSubpage={setSubpage}/>
+                <Footer
+                    currentTab={currentTab}
+                    setCurrentTab={setCurrentTab}
+                    subpage={subpage}
+                    setSubpage={setSubpage}
+                    friends={friends}
+                    selectedUserId={selectedUserId}
+                    setSelectedUserId={setSelectedUserId}
+                    setSelectedFriends={setSelectedFriends}
+                    setSearchValue={setSearchValue}
+                    setSelectedExpense={setSelectedExpense}
+                />
             </ThemeProvider>
         </LocalizationProvider>
     );

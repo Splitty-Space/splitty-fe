@@ -14,7 +14,8 @@ import {
     Skeleton,
     Text,
     Placeholder,
-    Headline
+    Headline,
+    Subheadline
 } from "@telegram-apps/telegram-ui";
 import {AutoSizer, InfiniteLoader, List} from "react-virtualized";
 import {Icon28Edit} from "@telegram-apps/telegram-ui/dist/icons/28/edit";
@@ -131,8 +132,6 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
         const _owes = Number(owes);
         const _amount = Number(amount);
 
-        const avatarSize = transactions.length === 1 ? 48 : 28;
-
         const borrowers = transactions.reduce((ids, {amount, borrower}) => {
             const amountNumber = Number(amount);
             // @ts-ignore
@@ -163,6 +162,12 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
 
         const payerName = expense_users.find(({user}) => user.id !== me.id)?.user.name;
 
+        const participants = expense_users
+            .filter(x => Number(x.lent_amount) > 0)
+            .map(expense_user => expense_user.user)
+            .slice(0, 3);
+        const avatarSize = participants.length === 1 ? 48 : participants.length <= 2 ? 28 : 24;
+
         return (
             <div key={key} style={style}>
                 <Cell
@@ -170,24 +175,18 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
                     subtitle={formatDate(date, me.language)}
                     before={
                         <AvatarStack>
-                            {transactions
-                                .reduce((trans, currentValue) => {
-                                    if (trans.every(({id}) => id !== currentValue.id)) {
-                                        // @ts-ignore
-                                        trans.push(currentValue);
-                                    }
-
-                                    return trans;
-                                }, [])
-                                .slice(0, 2)
-                                .map(transaction =>
-                                    <Avatar
-                                        size={avatarSize}
-                                        // @ts-ignore
-                                        key={transaction.id}
-                                        // @ts-ignore
-                                        src={transaction.borrower.photo_url}
-                                    />)}
+                            {participants.map((participant, index, array) =>
+                                <Avatar
+                                    // @ts-ignore
+                                    size={avatarSize}
+                                    // @ts-ignore
+                                    key={participant.id}
+                                    // @ts-ignore
+                                    src={participant.photo_url}
+                                    style={{
+                                        marginLeft: index > 0 ? Math.max(-0.25 * array.length, -2.5) + "rem" : 0
+                                    }}
+                                />)}
                         </AvatarStack>}
                     after={
                         <div className="flex flex-col items-end">
@@ -276,6 +275,16 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
                 >
                     {friend?.name}
                 </Headline>
+
+                {friend?.username &&
+                    <Subheadline
+                        level="1"
+                        weight="3"
+                        className="opacity-50"
+                    >
+                        {"@" + friend?.username}
+                    </Subheadline>
+                }
 
                 {friend.total.map(({amount, currency}) =>
                     <Caption
