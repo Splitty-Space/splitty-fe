@@ -79,7 +79,7 @@ export default function ExpenseHistoryList({
                                                         {`${t(activity_type === ACTIVITY_TYPE.EXPENSE_EDITED ?
                                                             "expenseDetails.Expense" : "expenseDetails.Payment")} ${t("expenseDetails.wasEditedBy")} ${user.name}`}
                                                     </Cell>
-                                                    <Divider className="ml-16"/>
+                                                    <Divider className="ml-16 border-2"/>
                                                 </div>}
                                         />)
                                     :
@@ -96,7 +96,7 @@ export default function ExpenseHistoryList({
                                                     `${t("settleUp.YouPaid")} ${expense.expense_users.find(expense_user => expense_user.lent_amount === 0)?.user.name}`
                                             }
                                         </Cell>
-                                        <Divider className="ml-16"/>
+                                        <Divider className="ml-16 border-2"/>
                                     </div>)
                             }
                         )}

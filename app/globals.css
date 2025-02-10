@@ -43,6 +43,10 @@ body {
     margin: 0 !important;
 }
 
+.margin-top-0 {
+    margin-top: 0 !important;
+}
+
 .margin-bottom-0 {
     margin-bottom: 0 !important;
 }
@@ -53,6 +57,10 @@ body {
 
 .margin-top-125 {
     margin-top: 0.125rem !important;
+}
+
+.margin-top-28 {
+    margin-top: 7rem !important;
 }
 
 .m--12 {

@@ -81,17 +81,21 @@ export default function AddExpenseParticipants({
                 setSearchValue={setSearchValue}
             />
 
-            <Main style={{height: "calc(100% - 7rem)"}}>
+            <Main>
                 {
                     loadingFriends ?
                         (<Spinner size="l"/>) :
                         filteredFriends?.length > 0 ?
                             (
                                 <List className="mb-8 px-0">
-                                    {filteredFriends?.map(({id, name, photo_url}) =>
+                                    {filteredFriends?.map(({id, name, username, photo_url}) =>
                                         <div key={id}>
                                             <Cell
+                                                className="h-14"
                                                 before={<Avatar size={48} src={photo_url}/>}
+                                                subtitle={<span className="text-ellipsis overflow-hidden">
+                                                         {"@" + username}
+                                                    </span>}
                                                 after={<Switch
                                                     defaultChecked={selectedUserIds.includes(id)}
                                                     onChange={onUserChange(id)}
@@ -99,7 +103,7 @@ export default function AddExpenseParticipants({
                                             >
                                                 {name}
                                             </Cell>
-                                            <Divider className="ml-20"/>
+                                            <Divider className="ml-20 border-2"/>
                                         </div>
                                     )
                                     }

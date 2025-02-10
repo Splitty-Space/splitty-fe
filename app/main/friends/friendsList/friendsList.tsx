@@ -38,7 +38,7 @@ export default function FriendsList({
                 center={loadingFriends}
                 style={isSearchOpen ? {height: "calc(100% - 11rem)"} : undefined}
                 className={classNames({
-                    "mt-32": isSearchOpen
+                    "margin-top-28": isSearchOpen
                 })}
             >
                 {
@@ -46,22 +46,29 @@ export default function FriendsList({
                         (<Spinner size="l"/>) :
                         searchValue === "" && friends?.length === 0 ?
                             (<Placeholder header={t("friendsList.AddFirstFriend")}>
-                                <Arrow/>
+                                <Arrow className="ml-16"/>
                             </Placeholder>) :
                             friends?.length > 0 ?
                                 (
-                                    <List className="px-0">
-                                        {friends?.map(({id, name, photo_url, total}) =>
-                                            <div key={id}>
+                                    <List className="p-0">
+                                        {friends?.map(({id, name, username, photo_url, total}) =>
+                                            <div key={id} className="margin-bottom-0">
                                                 <Cell
                                                     className="friends-list_shrink-0"
                                                     before={<Avatar size={48} src={photo_url}/>}
-                                                    after={<div className="flex flex-col">
+                                                    subtitle={<span
+                                                        className={classNames("text-ellipsis overflow-hidden", {
+                                                            "invisible": !username
+                                                        })}>
+                                                         {"@" + username}
+                                                    </span>}
+                                                    after={<div className="flex flex-col items-end">
                                                         {total.slice(0, 2).map(({amount, currency}, index) =>
                                                             <Caption
                                                                 key={index}
                                                                 weight="3"
-                                                                className={Number(amount) > 0 ? "blue" : "red"}>
+                                                                className={Number(amount) > 0 ? "blue" : "red"}
+                                                            >
                                                                 {`${Number(amount) > 0 ? "owes you" : "you owe"} ${Math.abs(Number(amount))} ${currency}`}
                                                             </Caption>)
                                                         }
@@ -73,7 +80,7 @@ export default function FriendsList({
                                                 >
                                                     {name}
                                                 </Cell>
-                                                <Divider className="ml-20"/>
+                                                <Divider className="ml-20 border-2"/>
                                             </div>
                                         )
                                         }

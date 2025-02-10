@@ -44,7 +44,7 @@ export default function SettleUp({friends, setSubpage, setSettleUpPaymentInfo}: 
                             >
                                 {friend.name}
                             </Cell>
-                            <Divider className="ml-20"/>
+                            <Divider className="ml-20 border-2"/>
                         </div>))}
             </List>
         </>);

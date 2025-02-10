@@ -35,7 +35,7 @@ export default function GroupsList({setSubpage}: { setSubpage: Function }) {
                             <Spinner size="l"/>
                         ) : (
                             <Placeholder header="Add you first group">
-                                <Arrow/>
+                                <Arrow className="ml-16"/>
                             </Placeholder>
                         )
                 }

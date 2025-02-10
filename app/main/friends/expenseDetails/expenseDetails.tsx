@@ -125,7 +125,7 @@ export default function ExpenseDetails({
                     )}
                 />
 
-                <Main className="px-4">
+                <Main className="px-4 pt-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center w-full">
                             <AvatarStack>
@@ -176,7 +176,7 @@ export default function ExpenseDetails({
                             </div>
                         )}
                     </div>
-                    <Divider className="mt-4 mb-8"/>
+                    <Divider className="mt-4 mb-8 border-2"/>
 
                     {!selectedExpense?.payment &&
                         <div>

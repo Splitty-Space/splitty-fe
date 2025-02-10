@@ -51,7 +51,7 @@ export default function ExpenseHistory({activity, selectedExpense}: {
                                                             </span>
                                                     }
                                                 </Cell>
-                                                <Divider className="ml-16"/>
+                                                <Divider className="ml-16 border-2"/>
                                             </div>)
                                     ))
                                     :
@@ -65,7 +65,7 @@ export default function ExpenseHistory({activity, selectedExpense}: {
                                                     {`${activity.user.name} changed ${key} ${value.old} to ${value.new}`}
                                                 </span>
                                         </Cell>
-                                        <Divider className="ml-16"/>
+                                        <Divider className="ml-16 border-2"/>
                                     </div>)
                             )
                     }

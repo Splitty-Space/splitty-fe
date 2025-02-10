@@ -124,7 +124,7 @@ export default function AddGroup() {
                                                 >
                                                     {name}
                                                 </Cell>
-                                                <Divider className="ml-20"/>
+                                                <Divider className="ml-20 border-2"/>
                                             </div>
                                     )
                                     }

@@ -308,14 +308,17 @@ export default function AddExpense({
                 )}
             />
 
-            <Main className="px-4" style={{height: "calc(100% - 10rem)"}}>
+            <Main className="px-4">
                 <div className="my-5 flex flex-col items-center justify-center">
                     <AvatarStack>
-                        {participants.map(({id, photo_url}) =>
+                        {participants.map(({id, photo_url}, index, array) =>
                             <Avatar
                                 key={id}
                                 size={48}
                                 src={photo_url}
+                                style={{
+                                    marginLeft: index > 0 ? Math.max(-0.25 * array.length, -1.5) + "rem" : 0
+                                }}
                             />)}
                     </AvatarStack>
                     <Text>{participants.map(({name}) => name).join(", ")}</Text>
@@ -402,7 +405,7 @@ export default function AddExpense({
                         <div className="mt-4 flex items-center justify-between">
                             <Headline weight="3">{t("expenses.PaidBy")}:</Headline>
                         </div>
-                        <Divider className="mt-2"/>
+                        <Divider className="mt-2 border-2"/>
 
                         <List className="mt-4 w-full rounded-3xl px-0">
                             {participants.map(({id, name, photo_url}) =>
@@ -458,7 +461,7 @@ export default function AddExpense({
 
                             <Headline weight="3" className="invisible">{t("expenses.Split")}:</Headline>
                         </div>
-                        <Divider className="mt-2"/>
+                        <Divider className="mt-2 border-2"/>
 
                         <List className="mt-4 w-full rounded-3xl px-0">
                             {participants.map(({id, name, photo_url}) =>

@@ -20,8 +20,8 @@ const Main = forwardRef<HTMLDivElement, MainProps>(({
     return (
         <main
             ref={ref}
-            style={style ? style : {height: "calc(100% - 8rem)"}}
-            className={classNames("mt-20 overflow-scroll", {
+            style={style ? style : {height: "calc(100% - 9rem)"}}
+            className={classNames("mt-16 mb-20 overflow-scroll", {
                 "flex items-center justify-center": center
             }, className)}
         >

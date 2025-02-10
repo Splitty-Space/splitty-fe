@@ -67,7 +67,7 @@ export default function HeaderWithSearch({
 
     return (
         <Header
-            className={isOpen ? "h-32" : "h-20"}
+            className={isOpen ? "h-28" : "h-16"}
             LeftComponent={_LeftComponent}
             CentralComponent={CentralComponent ? CentralComponent : Logo}
             RightComponent={RightComponent}

@@ -86,7 +86,7 @@ export default function Account() {
                             >
                                 {t("account.ContactUs")}
                             </Cell>
-                            <Divider className="ml-10 margin-bottom-0-125"/>
+                            <Divider className="ml-10 margin-bottom-0-125 border-2"/>
 
                             <Cell
                                 className="p-0 margin-0"
@@ -100,7 +100,7 @@ export default function Account() {
                             >
                                 {t("account.DefaultCurrency")}
                             </Cell>
-                            <Divider className="ml-10 margin-bottom-0-125"/>
+                            <Divider className="ml-10 margin-bottom-0-125 border-2"/>
 
                             <Cell
                                 className="p-0 margin-0"

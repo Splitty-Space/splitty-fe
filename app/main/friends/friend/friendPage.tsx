@@ -10,11 +10,11 @@ import {
     Cell,
     Divider,
     IconButton,
-    LargeTitle,
     Spinner,
     Skeleton,
-    Title,
-    Text
+    Text,
+    Placeholder,
+    Headline
 } from "@telegram-apps/telegram-ui";
 import {AutoSizer, InfiniteLoader, List} from "react-virtualized";
 import {Icon28Edit} from "@telegram-apps/telegram-ui/dist/icons/28/edit";
@@ -36,7 +36,7 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
 
     const {data: me} = useMe();
 
-    const limit = 10;
+    const limit = 25;
     const [rowCount, setRowCount] = useState(limit);
     const [expenses, setExpenses] = useState<Expense[]>([]);
     const [loadingExpenses, setLoadingExpenses] = useState(true);
@@ -47,7 +47,7 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
 
     useEffect(() => {
         // @ts-ignore
-        setHeight(refContainer.current.clientHeight - refHeader.current.clientHeight);
+        setHeight(refContainer.current?.clientHeight - refHeader.current.clientHeight);
     }, []);
 
     useEffect(() => {
@@ -200,12 +200,17 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
                                     {`${_owe === 0 ? "+" : "-"}${_amount} ${currency}`}
                                 </Text> :
                                 <>
-                                    <Caption
-                                        key="N people paid"
-                                        weight="3"
-                                    >
-                                        {`${whoPaid} ${t("friendPage.Paid")} ${_amount} ${currency}`}
-                                    </Caption>
+                                    <div>
+                                        <Caption weight="3" className="overflow-auto text-ellipsis">
+                                            {whoPaid}
+                                        </Caption>
+                                        <Caption
+                                            key="N people paid"
+                                            weight="3"
+                                        >
+                                            {` ${t("friendPage.Paid")} ${_amount} ${currency}`}
+                                        </Caption>
+                                    </div>
 
                                     {_owe !== 0 &&
                                         <Caption
@@ -238,7 +243,7 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
                             `${payerName} ${t("friendPage.Paid")} ${t("friendPage.you")}` :
                         description}
                 </Cell>
-                <Divider className="ml-16"/>
+                <Divider className="ml-16 border-2"/>
             </div>
         );
     };
@@ -265,13 +270,12 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
                     src={friend?.photo_url}
                 />
 
-                <Title
-                    level="1"
-                    weight="1"
+                <Headline
+                    weight="3"
                     className="mt-2 max-w-full overflow-hidden text-ellipsis"
                 >
                     {friend?.name}
-                </Title>
+                </Headline>
 
                 {friend.total.map(({amount, currency}) =>
                     <Caption
@@ -293,7 +297,11 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
                 </Button>
             </div>
 
-            <Main ref={refContainer} className="mt-0" style={{height: "calc(100% - 4rem)"}}>
+            <Main
+                ref={refContainer}
+                className="margin-top-0"
+                style={{height: "calc(100% - 5rem)"}}
+            >
                 {loadingExpenses ? <Spinner size="l" className="flex flex-col items-center justify-center"/> :
                     expenses?.length > 0 ?
                         // @ts-ignore
@@ -323,9 +331,8 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
                         </InfiniteLoader>
                         :
                         <div className="flex flex-col items-center justify-center relative">
-                            <LargeTitle weight="3">{t("friend.AddFirstExpense")}</LargeTitle>
-
-                            <Arrow className="rotate-[160deg] absolute left-24 top-12"/>
+                            <Placeholder header={t("friend.AddFirstExpense")}/>
+                            <Arrow className="rotate-[160deg] "/>
                         </div>
                 }
             </Main>

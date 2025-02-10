@@ -4,7 +4,7 @@ import {
     Avatar,
     Cell,
     Divider,
-    LargeTitle,
+    Placeholder,
     Skeleton,
     Spinner,
 } from "@telegram-apps/telegram-ui";
@@ -33,19 +33,18 @@ export default function ActivityList({setCurrentTab, setSubpage, setPageData, se
 
     const {data: me} = useMe();
 
-    const pageSize = 10;
+    const pageSize = 25;
     const [rowCount, setRowCount] = useState(pageSize);
     const [activities, setActivities] = useState<Activity[]>([]);
-    const [isLoaded, setIsLoaded] = useState(true);
+    const [isLoaded, setIsLoaded] = useState(false);
     const [isLoadingExpense, setIsLoadingExpense] = useState(false);
 
     const refContainer = useRef(null);
-    const refHeader = useRef(null);
-    const [height, setHeight] = useState(0)
+    const [height, setHeight] = useState(0);
 
     useEffect(() => {
         // @ts-ignore
-        setHeight(refContainer.current?.clientHeight - refHeader.current?.clientHeight);
+        setHeight(refContainer.current?.clientHeight);
     }, []);
 
     const loadPage = (page: number) => {
@@ -127,7 +126,7 @@ export default function ActivityList({setCurrentTab, setSubpage, setPageData, se
                             `${t("settleUp.YouPaid")} ${expense.expense_users.find(expense_user => expense_user.lent_amount === 0)?.user.name}`
                     }
                 </Cell>
-                <Divider className="ml-24"/>
+                <Divider className="ml-20 border-2"/>
             </div>
         );
     };
@@ -136,12 +135,14 @@ export default function ActivityList({setCurrentTab, setSubpage, setPageData, se
     return (
         <>
             <Header
-                ref={refHeader}
                 CentralComponent={Logo}
                 subHeaderClassName="justify-content-center mt-6"
             />
 
-            <Main ref={refContainer} style={{height: "calc(100% - 4rem)"}}>
+            <Main
+                ref={refContainer}
+                center={activities?.length === 0}
+            >
                 {!isLoaded || isLoadingExpense ?
                     <Spinner size="l" className="flex flex-col items-center justify-center"/> :
                     activities?.length > 0 ?
@@ -172,9 +173,7 @@ export default function ActivityList({setCurrentTab, setSubpage, setPageData, se
                                 )}
                         </InfiniteLoader>
                         :
-                        <div className="flex flex-col items-center justify-center relative">
-                            <LargeTitle weight="3">{t("activity.NoActivityYet")}</LargeTitle>
-                        </div>
+                        <Placeholder header={t("activity.NoActivityYet")}/>
                 }
             </Main>
         </>
