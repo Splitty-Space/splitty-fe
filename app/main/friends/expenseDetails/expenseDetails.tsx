@@ -107,7 +107,7 @@ export default function ExpenseDetails({
                         <Spinner className="flex justify-center " size="m"/>) : (
                         <IconButton
                             size="l"
-                            mode="plain"
+                            mode="bezeled"
                             onClick={onDelete}
                         >
                             <Icon28Bin color={"var(--tgui--destructive_text_color)"}/>
@@ -128,31 +128,33 @@ export default function ExpenseDetails({
                 <Main className="px-4 pt-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center w-full">
-                            <AvatarStack>
-                                {selectedExpense.transactions
-                                    .reduce((photoURLs, currentValue) => {
-                                        if (photoURLs.every((photoURL) => photoURL !== currentValue.borrower.photo_url)) {
-                                            // @ts-ignore
-                                            photoURLs.push(currentValue.borrower.photo_url);
-                                        }
-                                        if (photoURLs.every((photoURL) => photoURL !== currentValue.debtor.photo_url)) {
-                                            // @ts-ignore
-                                            photoURLs.push(currentValue.debtor.photo_url);
-                                        }
+                            {selectedExpense.payment &&
+                                (<AvatarStack>
+                                    {selectedExpense.transactions
+                                        .reduce((photoURLs, currentValue) => {
+                                            if (photoURLs.every((photoURL) => photoURL !== currentValue.borrower.photo_url)) {
+                                                // @ts-ignore
+                                                photoURLs.push(currentValue.borrower.photo_url);
+                                            }
+                                            if (photoURLs.every((photoURL) => photoURL !== currentValue.debtor.photo_url)) {
+                                                // @ts-ignore
+                                                photoURLs.push(currentValue.debtor.photo_url);
+                                            }
 
-                                        return photoURLs;
-                                    }, [])
-                                    .map((photoURL, index, array) =>
-                                        <Avatar
-                                            size={48}
-                                            key={photoURL}
-                                            src={photoURL}
-                                            style={{
-                                                marginLeft: index > 0 ? Math.max(-0.25 * array.length, -2.5) + "rem" : 0
-                                            }}
-                                        />
-                                    )}
-                            </AvatarStack>
+                                            return photoURLs;
+                                        }, [])
+                                        .map((photoURL, index, array) =>
+                                            <Avatar
+                                                size={48}
+                                                key={photoURL}
+                                                src={photoURL}
+                                                style={{
+                                                    marginLeft: index > 0 ? Math.max(-0.25 * array.length, -2.5) + "rem" : 0
+                                                }}
+                                            />
+                                        )}
+                                </AvatarStack>)
+                            }
 
                             <div className="flex flex-col ml-4 overflow-hidden">
                                 <Text weight="3"
@@ -180,82 +182,96 @@ export default function ExpenseDetails({
 
                     {!selectedExpense?.payment &&
                         <div>
-                            <div className="flex items-center mb-4">
-                                <AvatarStack>
+                            <div className="mb-8">
+                                <div className="flex items-center mb-4">
+                                    <AvatarStack>
+                                        {
+                                            lents.map(({user}, index, array) => (
+                                                <Avatar
+                                                    size={48}
+                                                    key={user.photo_url}
+                                                    src={user.photo_url}
+                                                    style={{
+                                                        marginLeft: index > 0 ? Math.max(-0.25 * array.length, -2.5) + "rem" : 0
+                                                    }}
+                                                />
+                                            ))
+                                        }
+                                    </AvatarStack>
                                     {
-                                        lents.map(({user}, index, array) => (
-                                            <Avatar
-                                                size={48}
-                                                key={user.photo_url}
-                                                src={user.photo_url}
-                                                style={{
-                                                    marginLeft: index > 0 ? Math.max(-0.25 * array.length, -2.5) + "rem" : 0
-                                                }}
-                                            />
-                                        ))
-                                    }
-                                </AvatarStack>
-                                {
-                                    <div className="flex flex-col ml-4 max-w-70p">
-                                        <Text weight="3">
-                                            {
-                                                `${lents.length === 1 ?
-                                                    lents[0].user.name :
-                                                    lents.length + ` ${t("expenseDetails.people")}`} ${t("friendPage.Paid")} 
-                                                 ${
-                                                    Number(
-                                                        lents.reduce((previousValue, user) =>
-                                                            Number(user.lent_amount) + previousValue, 0)
-                                                    )
-                                                } ${selectedExpense.currency}`
-                                            }
-                                        </Text>
-                                    </div>
-                                }
-                            </div>
-                            {selectedExpense.expense_users.map(({lent_amount, debt_amount, user, id}, index) =>
-                                (<div key={id} className="flex items-center mb-4">
-                                    {
-                                        <div
-                                            style={{
-                                                width: "48px",
-                                                height: "48px",
-                                            }}
-                                            className="relative"
-                                        >
-                                            <div className={classNames("vertical-line",
+                                        <div className="flex flex-col ml-4 max-w-70p">
+                                            <Text weight="3">
                                                 {
-                                                    "vertical-line_first": index === 0 && index !== selectedExpense.expense_users.length - 1,
-                                                    "vertical-line_last": index !== 0 && index === selectedExpense.expense_users.length - 1,
-                                                    "vertical-line_first_is_last": index === 0 && index === selectedExpense.expense_users.length - 1,
-                                                })}
-                                            />
-                                            <div className="horizontal-line"/>
+                                                    `${lents.length === 1 ?
+                                                        lents[0].user.name :
+                                                        lents.length + ` ${t("expenseDetails.people")}`} ${t("friendPage.Paid")} 
+                                                 ${
+                                                        Number(
+                                                            lents.reduce((previousValue, user) =>
+                                                                Number(user.lent_amount) + previousValue, 0)
+                                                        )
+                                                    } ${selectedExpense.currency}`
+                                                }
+                                            </Text>
                                         </div>
                                     }
-                                    <Avatar
-                                        key={id + "avatar"}
-                                        size={48}
-                                        src={user.photo_url}
-                                    />
-                                    <div className="flex flex-col ml-4 max-w-70p">
-                                        {Number(lent_amount) !== 0 &&
-                                            <Text
-                                                key={id + "paid"}
-                                                className={classNames("text-ellipsis overflow-hidden hint_color")}
-                                            >{`${user.name} ${t("friendPage.Paid")} ${Number(lent_amount)} ${selectedExpense.currency}`}</Text>}
-                                        {Number(debt_amount) !== 0 &&
-                                            <Text
-                                                key={id + "borrowed"}
-                                                className={classNames("text-ellipsis overflow-hidden hint_color")}
-                                            >{`${user.name} ${
-                                                Number(lent_amount) !== 0 ?
-                                                    t("expenseDetails.paidForYourself") :
-                                                    t("expenseDetails.borrowed")
-                                            } ${Number(debt_amount)} ${selectedExpense.currency}`}</Text>}
-                                    </div>
-                                </div>)
-                            )}
+                                </div>
+                                {selectedExpense.expense_users
+                                    .map(x => ({
+                                        ...x,
+                                        lent_amount: Number(x.lent_amount),
+                                        debt_amount: Number(x.debt_amount)
+                                    }))
+                                    .sort((a, b) => b.lent_amount - a.lent_amount)
+                                    .map(({lent_amount, debt_amount, user, id}, index) =>
+                                        (<div key={id} className="flex items-center mb-4">
+                                            {
+                                                <div
+                                                    style={{
+                                                        width: "48px",
+                                                        height: "48px",
+                                                    }}
+                                                    className="relative"
+                                                >
+                                                    <div className={classNames("vertical-line",
+                                                        {
+                                                            "vertical-line_first": index === 0 && index !== selectedExpense.expense_users.length - 1,
+                                                            "vertical-line_last": index !== 0 && index === selectedExpense.expense_users.length - 1,
+                                                            "vertical-line_last_long": index !== 0 && index === selectedExpense.expense_users.length - 1 &&
+                                                                Number(lent_amount) !== 0 && Number(debt_amount) !== 0,
+                                                            "vertical-line_first_is_last": index === 0 && index === selectedExpense.expense_users.length - 1,
+                                                            "vertical-line_long": Number(lent_amount) !== 0 && Number(debt_amount) !== 0,
+                                                            "vertical-line_first_long": index === 0 && index !== selectedExpense.expense_users.length - 1 &&
+                                                                Number(lent_amount) !== 0 && Number(debt_amount) !== 0,
+                                                        })}
+                                                    />
+                                                    <div className="horizontal-line"/>
+                                                </div>
+                                            }
+                                            <Avatar
+                                                key={id + "avatar"}
+                                                size={48}
+                                                src={user.photo_url}
+                                            />
+                                            <div className="flex flex-col ml-4 max-w-70p">
+                                                {Number(lent_amount) !== 0 &&
+                                                    <Text
+                                                        key={id + "paid"}
+                                                        className={classNames("text-ellipsis overflow-hidden hint_color")}
+                                                    >{`${user.name} ${t("friendPage.Paid")} ${Number(lent_amount)} ${selectedExpense.currency}`}</Text>}
+                                                {Number(debt_amount) !== 0 &&
+                                                    <Text
+                                                        key={id + "borrowed"}
+                                                        className={classNames("text-ellipsis overflow-hidden hint_color")}
+                                                    >{`${user.name} ${
+                                                        Number(lent_amount) !== 0 ?
+                                                            t("expenseDetails.paidForYourself") :
+                                                            t("expenseDetails.borrowed")
+                                                    } ${Number(debt_amount)} ${selectedExpense.currency}`}</Text>}
+                                            </div>
+                                        </div>)
+                                    )}
+                            </div>
 
                             <ExpenseHistoryList
                                 expanseId={selectedExpense.id}

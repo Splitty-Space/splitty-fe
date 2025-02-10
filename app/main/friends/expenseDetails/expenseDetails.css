@@ -1,18 +1,33 @@
 .vertical-line {
     position: absolute;
     background-color: white;
-    height: 133%;
-    width: 2%;
+    height: 134%;
+    width: 3%;
     left: 49%;
+}
+
+.vertical-line_long {
+    top: -17%;
+    height: 171%;
 }
 
 .vertical-line_first {
     top: -25%;
-    height: 158%;
+    height: 160%;
+}
+
+.vertical-line_first_long {
+    top: -25% !important;
+    height: 178% !important;
 }
 
 .vertical-line_last {
     height: 50%;
+}
+
+.vertical-line_last_long {
+    top: -18%;
+    height: 69%;
 }
 
 .vertical-line_first_is_last {

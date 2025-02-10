@@ -27,7 +27,7 @@ export default function ExpenseHistory({activity, selectedExpense}: {
         (<Spinner className="flex justify-center " size="l"/>)
         : (
             <div className="m-4 mb-12">
-                <Text weight="3">{t("expenseDetails.expenseHistory")}</Text>
+                <Text weight="3">{t("expenseDetails.detailedChanges")}</Text>
 
                 <List className="px-0">
                     {

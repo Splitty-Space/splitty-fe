@@ -104,11 +104,12 @@ i18n
                         ExpenseDeleted: "Expense deleted",
                         people: "people",
                         borrowed: "borrowed",
-                        paidForYourself: "paid for yourself",
+                        paidForYourself: "paid for himself/herself",
                         Expense: "Expense",
                         Payment: "Payment",
                         wasEditedBy: "was edited by",
                         expenseHistory: "EXPENSE HISTORY",
+                        detailedChanges: "DETAILED CHANGES"
                     },
                     activity: {
                         NoActivityYet: "No activity yet",
@@ -214,6 +215,7 @@ i18n
                         Payment: "Оплата",
                         wasEditedBy: "был изменён",
                         expenseHistory: "ИСТОРИЯ РАСХОДОВ",
+                        detailedChanges: "ПОДРОБНЫЕ ИЗМЕНЕНИЯ"
                     },
                     activity: {
                         NoActivityYet: "Пока нет активностей",
@@ -318,7 +320,8 @@ i18n
                         Expense: "Витрата",
                         Payment: "Оплата",
                         wasEditedBy: "був змінений",
-                        expenseHistory: "ІСТОРІЯ ВИТРАТ"
+                        expenseHistory: "ІСТОРІЯ ВИТРАТ",
+                        detailedChanges: "ДЕТАЛЬНІ ЗМІНИ"
                     },
                     activity: {
                         NoActivityYet: "Поки що немає активностей",
