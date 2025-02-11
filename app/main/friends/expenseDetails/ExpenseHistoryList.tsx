@@ -60,6 +60,8 @@ export default function ExpenseHistoryList({
                         {activityData?.data?.map((activity) => {
                                 const {id, activity_type, user, expense, created_at, data} = activity;
 
+                                const numberOfExpenseHistoryItems = countExpenseHistoryItems(data);
+
                                 return activity_type === ACTIVITY_TYPE.EXPENSE_EDITED || activity_type === ACTIVITY_TYPE.PAYMENT_EDITED ?
                                     (
                                         <ExpenseHistoryModal
@@ -71,10 +73,11 @@ export default function ExpenseHistoryList({
                                                         className="p-0"
                                                         subtitle={formatDate(created_at, me.language)}
                                                         before={<Avatar size={48} src={user.photo_url}/>}
-                                                        after={
-                                                            <Badge type="number">
-                                                                {countExpenseHistoryItems(data)}
-                                                            </Badge>}
+                                                        after={numberOfExpenseHistoryItems > 0 &&
+                                                            (<Badge type="number">
+                                                                {numberOfExpenseHistoryItems}
+                                                            </Badge>)
+                                                        }
                                                     >
                                                         {`${t(activity_type === ACTIVITY_TYPE.EXPENSE_EDITED ?
                                                             "expenseDetails.Expense" : "expenseDetails.Payment")} ${t("expenseDetails.wasEditedBy")} ${user.name}`}

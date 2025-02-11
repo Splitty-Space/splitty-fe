@@ -14,6 +14,7 @@ import useMe from "@/services/useMe";
 import {DARK, DEFAULT_THEME, THEME_TYPE} from "@/const/theme";
 import {DEFAULT_PLATFORM, IOS, BASE, PLATFORM_TYPE} from "@/const/platform";
 import {AppRootContext} from "./AppRootContext";
+import {viewport, addToHomeScreen} from "@telegram-apps/sdk";
 import "./globals.css";
 
 // import type {Metadata} from "next";
@@ -62,11 +63,23 @@ export default function RootLayout({children}: Readonly<{
         checkIfTelegramScriptReady();
     }, [router]);
 
+    useEffect(() => {
+        if (viewport.requestFullscreen.isAvailable()) {
+            viewport.requestFullscreen().then(() =>
+                console.log("viewport.isFullscreen() = ", viewport.isFullscreen())
+            )
+        }
+
+        if (addToHomeScreen.isAvailable()) {
+            addToHomeScreen();
+        }
+    }, []);
+
     return (
         <html lang="en">
         <Script src="https://telegram.org/js/telegram-web-app.js"/>
 
-        <body className={classNames("overflow-hidden h-screen",{
+        <body className={classNames("overflow-hidden h-screen", {
             "body_dark": appearance === DARK
         })}>
         {platform && appearance && (

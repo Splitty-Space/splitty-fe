@@ -4,7 +4,7 @@ import useMe from "@/services/useMe";
 import HeaderWithSearch from "@/app/main/header/headerWithSearch";
 import {Icon28PersonAdd} from "@/Icons";
 import {IconButton, Spinner} from "@telegram-apps/telegram-ui";
-import {initUtils} from "@telegram-apps/sdk-react";
+import {shareURL} from "@telegram-apps/sdk-react";
 
 export default function FriendsHeader({searchValue, setSearchValue, onSearchChange}: {
     searchValue: string,
@@ -25,10 +25,11 @@ export default function FriendsHeader({searchValue, setSearchValue, onSearchChan
                         size="l"
                         mode="bezeled"
                         onClick={() => {
-                            const utils = initUtils();
-                            utils.shareURL(
-                                `https://t.me/splitty_fe_bot?start=${me.referral_code}`,
-                                "Join me on Splitty and let's split together! Use my invite link to join. 🌟"); // TODO localize text
+                            if (shareURL.isAvailable()) {
+                                shareURL(
+                                    `https://t.me/splitty_fe_bot?start=${me.referral_code}`,
+                                    "Join me on Splitty and let's split together! Use my invite link to join. 🌟"); // TODO localize text
+                            }
                         }}
                     >
                         <Icon28PersonAdd/>

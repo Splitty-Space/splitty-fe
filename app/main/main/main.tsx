@@ -21,7 +21,7 @@ const Main = forwardRef<HTMLDivElement, MainProps>(({
         <main
             ref={ref}
             style={style ? style : {height: "calc(100% - 9rem)"}}
-            className={classNames("mt-16 mb-20 overflow-scroll", {
+            className={classNames("mt-16 mb-20 overflow-auto", {
                 "flex items-center justify-center": center
             }, className)}
         >

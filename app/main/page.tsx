@@ -36,11 +36,15 @@ export type PageData = {
 export default function Page() {
     useEffect(() => {
         if (window?.Telegram?.WebApp) {
-            const [swipeBehavior] = initSwipeBehavior();
-            const [closingBehavior] = initClosingBehavior();
+            if (closingBehavior.enableConfirmation.isAvailable()) {
+                closingBehavior.enableConfirmation();
+                console.log("closingBehavior.isConfirmationEnabled() = ", closingBehavior.isConfirmationEnabled());
+            }
 
-            swipeBehavior.disableVerticalSwipe();
-            closingBehavior.enableConfirmation();
+            if (swipeBehavior.disableVertical.isAvailable()) {
+                swipeBehavior.disableVertical();
+                console.log("swipeBehavior.isVerticalEnabled() = ", swipeBehavior.isVerticalEnabled());
+            }
         }
     }, []);
 
