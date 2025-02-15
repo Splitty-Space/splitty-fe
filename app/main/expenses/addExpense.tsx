@@ -6,10 +6,11 @@ import Header from "@/app/main/header/header";
 import Main from "@/app/main/main/main";
 import {
     Avatar,
-    AvatarStack,
-    Button, Caption,
+    Button,
+    Caption,
     Cell,
-    Divider, Headline,
+    Divider,
+    Headline,
     Input,
     List,
     Switch,
@@ -310,18 +311,17 @@ export default function AddExpense({
 
             <Main className="px-4">
                 <div className="my-5 flex flex-col items-center justify-center">
-                    <AvatarStack>
-                        {participants.map(({id, photo_url}, index, array) =>
+                    <div className="flex max-w-full overflow-auto pl-4">
+                        {participants.map(({id, photo_url}) =>
                             <Avatar
                                 key={id}
                                 size={48}
                                 src={photo_url}
                                 style={{
-                                    marginLeft: index > 0 ? Math.max(-0.25 * array.length, -1.5) + "rem" : 0
+                                    marginLeft: "-1rem"
                                 }}
                             />)}
-                    </AvatarStack>
-                    <Text>{participants.map(({name}) => name).join(", ")}</Text>
+                    </div>
                 </div>
 
                 <div>
@@ -380,6 +380,7 @@ export default function AddExpense({
                             <Switch
                                 defaultChecked={isFullyPaidByYou}
                                 onChange={onFullyPaidByYouChange}
+                                style={{"backgroundColor": "red"}}
                             />
                         }
                     >
@@ -401,7 +402,7 @@ export default function AddExpense({
                 </List>
 
                 {!isFullyPaidByYou &&
-                    <>
+                    <div className="mb-4">
                         <div className="mt-4 flex items-center justify-between">
                             <Headline weight="3">{t("expenses.PaidBy")}:</Headline>
                         </div>
@@ -410,7 +411,7 @@ export default function AddExpense({
                         <List className="mt-4 w-full rounded-3xl px-0">
                             {participants.map(({id, name, photo_url}) =>
                                 (<div key={id} className="flex items-center justify-between">
-                                    <div className="flex items-center w-2/3">
+                                    <div className="flex items-center w-1/2">
                                         <Switch
                                             className="shrink-0"
                                             defaultChecked={paidBy.find(x => x.id === id)?.isSelected}
@@ -419,7 +420,7 @@ export default function AddExpense({
 
                                         <Avatar size={48} src={photo_url} className="ml-2"/>
 
-                                        <Text className="ml-4 overflow-auto text-ellipsis">{name}</Text>
+                                        <Text className="ml-4 overflow-hidden text-ellipsis">{name}</Text>
                                     </div>
 
                                     <Input
@@ -428,7 +429,7 @@ export default function AddExpense({
                                         type="number"
                                         inputMode="decimal"
                                         step="any"
-                                        className="w-28 ml-auto"
+                                        className="w-36 ml-auto"
                                         status={currentPaidMoneyAmount !== moneySpent ? "error" : undefined}
                                         disabled={!paidBy.find(x => x.id === id)?.isSelected}
                                         after={
@@ -452,10 +453,10 @@ export default function AddExpense({
                             ${Number(moneySpent) - currentPaidMoneyAmount} ${currency} ${t("expenses.Left")}.`}
                             </Text>
                         }
-                    </>}
+                    </div>}
 
                 {!isSplitEquallyBetweenAll &&
-                    <>
+                    <div className="mb-4">
                         <div className="mt-4 flex items-center justify-between">
                             <Headline weight="3">{t("expenses.Split")}:</Headline>
 
@@ -466,7 +467,7 @@ export default function AddExpense({
                         <List className="mt-4 w-full rounded-3xl px-0">
                             {participants.map(({id, name, photo_url}) =>
                                 <div key={id} className="flex items-center justify-between">
-                                    <div className="flex items-center w-2/3">
+                                    <div className="flex items-center w-1/2">
                                         <Switch
                                             className="shrink-0"
                                             defaultChecked={splitBetween.find(x => x.id === id)?.isSelected}
@@ -475,7 +476,7 @@ export default function AddExpense({
 
                                         <Avatar size={48} src={photo_url} className="ml-2"/>
 
-                                        <Text className="ml-4 overflow-auto text-ellipsis">{name}</Text>
+                                        <Text className="ml-4 overflow-hidden text-ellipsis">{name}</Text>
                                     </div>
 
                                     <Input
@@ -484,7 +485,7 @@ export default function AddExpense({
                                         type="number"
                                         inputMode="decimal"
                                         step="any"
-                                        className="w-28 ml-auto"
+                                        className="w-36 ml-auto"
                                         after={
                                             <Caption
                                                 level="1"
@@ -506,7 +507,7 @@ export default function AddExpense({
                                 filled. {`${Number(moneySpent) - currentSplitBetweenMoneyAmount} USD left.`}
                             </Text>
                         }
-                    </>
+                    </div>
                 }
             </Main>
         </>

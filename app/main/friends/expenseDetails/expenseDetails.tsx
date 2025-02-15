@@ -199,7 +199,7 @@ export default function ExpenseDetails({
                                         }
                                     </AvatarStack>
                                     {
-                                        <div className="flex flex-col ml-4 max-w-70p">
+                                        <div className="flex flex-col ml-4 max-w-65p">
                                             <Text weight="3">
                                                 {
                                                     `${lents.length === 1 ?
@@ -253,7 +253,7 @@ export default function ExpenseDetails({
                                                 size={48}
                                                 src={user.photo_url}
                                             />
-                                            <div className="flex flex-col ml-4 max-w-70p">
+                                            <div className="flex flex-col ml-4 max-w-65p">
                                                 {Number(lent_amount) !== 0 &&
                                                     <Text
                                                         key={id + "paid"}

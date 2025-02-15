@@ -9,6 +9,7 @@ body {
     margin: 0;
 
     --tg-theme-bg-color: #1C1C1D;
+    --tg-theme-secondary-bg-color: #808080 !important;
 }
 
 .body_dark {
@@ -75,6 +76,6 @@ body {
     scale: 0.25;
 }
 
-.max-w-70p {
-    max-width: 70%;
+.max-w-65p {
+    max-width: 65%;
 }
