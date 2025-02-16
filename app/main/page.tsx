@@ -19,8 +19,7 @@ import "dayjs/locale/uk";
 import {ThemeProvider, createTheme} from "@mui/material/styles";
 import Activity from "@/app/main/activity/activity";
 import useMe from "@/services/useMe";
-import {closingBehavior, swipeBehavior} from "@telegram-apps/sdk-react";
-import {init, viewport, addToHomeScreen} from "@telegram-apps/sdk";
+import {init, viewport, addToHomeScreen, closingBehavior, swipeBehavior} from "@telegram-apps/sdk";
 // import "@/utils/mockTelegramEnv"; // TODO DO NOT UNCOMMENT
 import {DEFAULT_THEME} from "@/const/theme";
 
@@ -42,22 +41,23 @@ export default function Page() {
         if (window?.Telegram?.WebApp) {
             if (closingBehavior.enableConfirmation.isAvailable()) {
                 closingBehavior.enableConfirmation();
-                console.log("closingBehavior.isConfirmationEnabled() = ", closingBehavior.isConfirmationEnabled());
             }
 
             if (swipeBehavior.disableVertical.isAvailable()) {
                 swipeBehavior.disableVertical();
-                console.log("swipeBehavior.isVerticalEnabled() = ", swipeBehavior.isVerticalEnabled());
             }
         }
     }, []);
 
     useEffect(() => {
-        if (viewport.requestFullscreen.isAvailable()) {
-            viewport.requestFullscreen().then(() =>
-                console.log("viewport.isFullscreen() = ", viewport.isFullscreen())
-            )
-        }
+        const enableFullscreen = async () => {
+            if (viewport.requestFullscreen.isAvailable()) {
+                await viewport.requestFullscreen();
+                viewport.isFullscreen(); // true
+            }
+        };
+
+        enableFullscreen();
 
         if (addToHomeScreen.isAvailable()) {
             addToHomeScreen();
