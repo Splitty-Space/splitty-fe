@@ -14,11 +14,7 @@ import useMe from "@/services/useMe";
 import {DARK, DEFAULT_THEME, THEME_TYPE} from "@/const/theme";
 import {DEFAULT_PLATFORM, IOS, BASE, PLATFORM_TYPE} from "@/const/platform";
 import {AppRootContext} from "./AppRootContext";
-import {init, viewport, addToHomeScreen} from "@telegram-apps/sdk";
-// import "@/utils/mockTelegramEnv"; // TODO DO NOT UNCOMMENT
 import "./globals.css";
-
-init();
 
 // import type {Metadata} from "next";
 // export const metadata: Metadata = {
@@ -65,18 +61,6 @@ export default function RootLayout({children}: Readonly<{
 
         checkIfTelegramScriptReady();
     }, [router]);
-
-    useEffect(() => {
-        if (viewport.requestFullscreen.isAvailable()) {
-            viewport.requestFullscreen().then(() =>
-                console.log("viewport.isFullscreen() = ", viewport.isFullscreen())
-            )
-        }
-
-        if (addToHomeScreen.isAvailable()) {
-            addToHomeScreen();
-        }
-    }, []);
 
     return (
         <html lang="en">

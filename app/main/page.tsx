@@ -20,7 +20,12 @@ import {ThemeProvider, createTheme} from "@mui/material/styles";
 import Activity from "@/app/main/activity/activity";
 import useMe from "@/services/useMe";
 import {closingBehavior, swipeBehavior} from "@telegram-apps/sdk-react";
+import {init, viewport, addToHomeScreen} from "@telegram-apps/sdk";
+// import "@/utils/mockTelegramEnv"; // TODO DO NOT UNCOMMENT
 import {DEFAULT_THEME} from "@/const/theme";
+
+
+init();
 
 const darkTheme = createTheme({
     palette: {
@@ -44,6 +49,18 @@ export default function Page() {
                 swipeBehavior.disableVertical();
                 console.log("swipeBehavior.isVerticalEnabled() = ", swipeBehavior.isVerticalEnabled());
             }
+        }
+    }, []);
+
+    useEffect(() => {
+        if (viewport.requestFullscreen.isAvailable()) {
+            viewport.requestFullscreen().then(() =>
+                console.log("viewport.isFullscreen() = ", viewport.isFullscreen())
+            )
+        }
+
+        if (addToHomeScreen.isAvailable()) {
+            addToHomeScreen();
         }
     }, []);
 
