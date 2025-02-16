@@ -14,8 +14,11 @@ import useMe from "@/services/useMe";
 import {DARK, DEFAULT_THEME, THEME_TYPE} from "@/const/theme";
 import {DEFAULT_PLATFORM, IOS, BASE, PLATFORM_TYPE} from "@/const/platform";
 import {AppRootContext} from "./AppRootContext";
-import {viewport, addToHomeScreen} from "@telegram-apps/sdk";
+import {init, viewport, addToHomeScreen} from "@telegram-apps/sdk";
+// import "@/utils/mockTelegramEnv"; // TODO DO NOT UNCOMMENT
 import "./globals.css";
+
+init();
 
 // import type {Metadata} from "next";
 // export const metadata: Metadata = {

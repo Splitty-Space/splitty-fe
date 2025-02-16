@@ -4,7 +4,7 @@ import useMe from "@/services/useMe";
 import HeaderWithSearch from "@/app/main/header/headerWithSearch";
 import {Icon28PersonAdd} from "@/Icons";
 import {IconButton, Spinner} from "@telegram-apps/telegram-ui";
-import {shareURL} from "@telegram-apps/sdk-react";
+import {shareURL} from "@telegram-apps/sdk";
 
 export default function FriendsHeader({searchValue, setSearchValue, onSearchChange}: {
     searchValue: string,

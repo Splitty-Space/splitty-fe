@@ -20,7 +20,6 @@ import {ThemeProvider, createTheme} from "@mui/material/styles";
 import Activity from "@/app/main/activity/activity";
 import useMe from "@/services/useMe";
 import {closingBehavior, swipeBehavior} from "@telegram-apps/sdk-react";
-// import "@/utils/mockTelegramEnv"; // TODO DO NOT UNCOMMENT
 import {DEFAULT_THEME} from "@/const/theme";
 
 const darkTheme = createTheme({

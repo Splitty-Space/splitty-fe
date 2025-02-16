@@ -1,55 +1,60 @@
-// import {mockTelegramEnv} from "@telegram-apps/bridge";
-//
-// mockTelegramEnv({
-//     themeParams: {
-//         accentTextColor: "#6ab2f2",
-//         bgColor: "#17212b",
-//         buttonColor: "#5288c1",
-//         buttonTextColor: "#ffffff",
-//         destructiveTextColor: "#ec3942",
-//         headerBgColor: "#17212b",
-//         hintColor: "#708499",
-//         linkColor: "#6ab3f3",
-//         secondaryBgColor: "#232e3c",
-//         sectionBgColor: "#17212b",
-//         sectionHeaderTextColor: "#6ab3f3",
-//         subtitleTextColor: "#708499",
-//         textColor: "#f5f5f5",
-//     },
-//     initData: {
-//         user: {
-//             id: 99281932,
-//             firstName: "Andrew",
-//             lastName: "Rogue",
-//             username: "rogue",
-//             languageCode: "en",
-//             isPremium: true,
-//             allowsWriteToPm: true,
-//         },
-//         hash: "89d6079ad6762351f38c6dbbc41bb53048019256a9443988af7a48bcad16ba31",
-//         authDate: new Date(1716922846000),
-//         signature: "abc",
-//         startParam: "debug",
-//         chatType: "sender",
-//         chatInstance: "8428209589180549439",
-//     },
-//     initDataRaw: new URLSearchParams([
-//         ["user", JSON.stringify({
-//             id: 99281932,
-//             first_name: "Andrew",
-//             last_name: "Rogue",
-//             username: "rogue",
-//             language_code: "en",
-//             is_premium: true,
-//             allows_write_to_pm: true,
-//         })],
-//         ["hash", "89d6079ad6762351f38c6dbbc41bb53048019256a9443988af7a48bcad16ba31"],
-//         ["auth_date", "1716922846"],
-//         ["start_param", "debug"],
-//         ["signature", "abc"],
-//         ["chat_type", "sender"],
-//         ["chat_instance", "8428209589180549439"],
-//     ]).toString(),
-//     version: "7.2",
-//     platform: "tdesktop",
-// });
+import { mockTelegramEnv, emitEvent } from "@telegram-apps/bridge";
+
+const noInsets = {
+    left: 0,
+    top: 0,
+    bottom: 0,
+    right: 0,
+} as const;
+const themeParams = {
+    accent_text_color: "#6ab2f2",
+    bg_color: "#17212b",
+    button_color: "#5288c1",
+    button_text_color: "#ffffff",
+    destructive_text_color: "#ec3942",
+    header_bg_color: "#17212b",
+    hint_color: "#708499",
+    link_color: "#6ab3f3",
+    secondary_bg_color: "#232e3c",
+    section_bg_color: "#17212b",
+    section_header_text_color: "#6ab3f3",
+    subtitle_text_color: "#708499",
+    text_color: "#f5f5f5",
+} as const;
+
+mockTelegramEnv({
+    launchParams: {
+        tgWebAppThemeParams: themeParams,
+        tgWebAppData: new URLSearchParams([
+            ["user", JSON.stringify({
+                id: 1,
+                first_name: "Pavel",
+            })],
+            ["hash", ""],
+            ["signature", ""],
+            ["auth_date", Date.now().toString()],
+        ]),
+        tgWebAppStartParam: "debug",
+        tgWebAppVersion: "8",
+        tgWebAppPlatform: "tdesktop",
+    },
+    onEvent(e) {
+        if (e[0] === "web_app_request_theme") {
+            return emitEvent("theme_changed", { theme_params: themeParams });
+        }
+        if (e[0] === "web_app_request_viewport") {
+            return emitEvent("viewport_changed", {
+                height: window.innerHeight,
+                width: window.innerWidth,
+                is_expanded: true,
+                is_state_stable: true,
+            });
+        }
+        if (e[0] === "web_app_request_content_safe_area") {
+            return emitEvent("content_safe_area_changed", noInsets);
+        }
+        if (e[0] === "web_app_request_safe_area") {
+            return emitEvent("safe_area_changed", noInsets);
+        }
+    },
+});
