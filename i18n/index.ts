@@ -118,9 +118,11 @@ i18n
                         edited: "edited",
                     },
                     account: {
-                        ContactUs: "Contact Us",
                         DefaultCurrency: "Default Currency",
-                        Language: "Language"
+                        Language: "Language",
+                        ContactUs: "Contact Us",
+                        ReportABug: "Report a Bug",
+                        ProposeChanges: "Propose Changes",
                     }
                 }
             },
@@ -224,9 +226,11 @@ i18n
                         edited: "отредактировал",
                     },
                     account: {
-                        ContactUs: "Связаться с нами",
                         DefaultCurrency: "Валюта по умолчанию",
-                        Language: "Язык"
+                        Language: "Язык",
+                        ContactUs: "Связаться с нами",
+                        ReportABug: "Сообщить об ошибке",
+                        ProposeChanges: "Предложить изменения",
                     }
                 }
             },
@@ -330,9 +334,11 @@ i18n
                         edited: "відредагував",
                     },
                     account: {
-                        ContactUs: "Зв'язатися з нами",
                         DefaultCurrency: "Валюта",
-                        Language: "Мова"
+                        Language: "Мова",
+                        ContactUs: "Зв'язатися з нами",
+                        ReportABug: "Повідомити про помилку",
+                        ProposeChanges: "Запропонувати зміни",
                     }
                 }
             }

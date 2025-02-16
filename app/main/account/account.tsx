@@ -55,10 +55,10 @@ export default function Account() {
                 subHeaderClassName="justify-content-center mt-6"
             />
 
-            <Main className="px-4 flex flex-col items-center justify-center">
+            <Main className="px-4 flex flex-col items-center">
                 {data ?
                     <>
-                        <div className="flex flex-col items-center mb-16">
+                        <div className="flex flex-col items-center mt-4">
                             <Avatar
                                 size={96}
                                 src={data.photo_url}
@@ -74,20 +74,11 @@ export default function Account() {
                         </div>
 
                         <List
-                            className="w-full rounded-xl py-0"
+                            className="w-11/12 rounded-xl py-0 pr-0 absolute top-1/2 -translate-y--50p"
                             style={{
                                 background: "var(--tgui--bg_color)",
                             }}
                         >
-                            <Cell
-                                className="p-0 margin-0 max-h-12"
-                                before={<IconContainer><Icon28Chat/></IconContainer>}
-                                onClick={onContactUs}
-                            >
-                                {t("account.ContactUs")}
-                            </Cell>
-                            <Divider className="ml-10 margin-bottom-0-125 border-2"/>
-
                             <Cell
                                 className="p-0 margin-0"
                                 before={<IconContainer><Icon28Stats/></IconContainer>}
@@ -120,6 +111,24 @@ export default function Account() {
                                 }
                             >
                                 {t("account.Language")}
+                            </Cell>
+                            <Divider className="ml-10 margin-bottom-0-125 border-2"/>
+
+                            <Cell
+                                className="p-0 margin-0 max-h-12"
+                                before={<IconContainer><Icon28Chat/></IconContainer>}
+                                onClick={onContactUs}
+                            >
+                                {t("account.ContactUs")}
+                            </Cell>
+                            <Divider className="ml-10 margin-bottom-0-125 border-2"/>
+
+                            <Cell
+                                className="p-0 margin-0 max-h-12"
+                                before={<IconContainer><Icon28Chat/></IconContainer>}
+                                onClick={onContactUs}
+                            >
+                                {t("account.ReportABug")} / {t("account.ProposeChanges")}
                             </Cell>
                         </List>
                     </>

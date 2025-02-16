@@ -79,3 +79,7 @@ body {
 .max-w-65p {
     max-width: 65%;
 }
+
+.-translate-y--50p {
+    transform: translateY(-50%);
+}
