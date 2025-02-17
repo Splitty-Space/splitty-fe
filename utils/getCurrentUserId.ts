@@ -1,22 +1,20 @@
 import {MASTER_USER_ID} from "@/API/APIConstants";
-// import {initData} from "@telegram-apps/sdk";
 import {isTMA} from "@telegram-apps/bridge";
-import { retrieveLaunchParams } from "@telegram-apps/sdk";
-
-const { initDataRaw, initData } = retrieveLaunchParams();
-
-console.log("initDataRaw = ", initDataRaw);
-console.log("initData = ", initData);
-
-// @ts-ignore
-// if (isTMA("simple")) {
-//     initData.restore();
-// }
+import {retrieveLaunchParams} from "@telegram-apps/sdk";
 
 export default function getCurrentUserId() {
     // @ts-ignore
-    const user = initData?.user;
-    console.log("user = ", user);
+    if (isTMA("simple")) {
+        const {initDataRaw, initData} = retrieveLaunchParams();
+        console.log("initDataRaw = ", initDataRaw);
+        console.log("initData = ", initData);
 
-    return user?.id || MASTER_USER_ID;
+        // @ts-ignore
+        const user = initData?.user;
+        console.log("user = ", user);
+
+        return user.id;
+    }
+
+    return MASTER_USER_ID; // TODO Dev env
 }
