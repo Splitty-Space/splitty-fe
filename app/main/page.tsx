@@ -49,6 +49,7 @@ export default function Page() {
             }
         }
 
+        console.log("swipeBehavior.mount.isAvailable() = ", swipeBehavior.mount.isAvailable());
         if (swipeBehavior.mount.isAvailable()) {
             swipeBehavior.mount();
             console.log("swipeBehavior.isMounted() = ", swipeBehavior.isMounted());
@@ -89,7 +90,7 @@ export default function Page() {
             }
         };
 
-        mountViewport().then(() => enableFullscreen());
+        // mountViewport().then(() => enableFullscreen());
 
 
         return () => {
