@@ -19,7 +19,7 @@ import "dayjs/locale/uk";
 import {ThemeProvider, createTheme} from "@mui/material/styles";
 import Activity from "@/app/main/activity/activity";
 import useMe from "@/services/useMe";
-import {init, viewport, addToHomeScreen, closingBehavior, swipeBehavior} from "@telegram-apps/sdk";
+import {init, viewport, closingBehavior, swipeBehavior} from "@telegram-apps/sdk";
 // import "@/utils/mockTelegramEnv"; // TODO DO NOT UNCOMMENT
 import {DEFAULT_THEME} from "@/const/theme";
 
@@ -38,30 +38,63 @@ export type PageData = {
 
 export default function Page() {
     useEffect(() => {
-        if (window?.Telegram?.WebApp) {
+        console.log("closingBehavior.mount.isAvailable() = ", closingBehavior.mount.isAvailable());
+        if (closingBehavior.mount.isAvailable()) {
+            closingBehavior.mount();
+            console.log("closingBehavior.isMounted() = ", closingBehavior.isMounted());
+
             if (closingBehavior.enableConfirmation.isAvailable()) {
                 closingBehavior.enableConfirmation();
+                console.log("closingBehavior.isConfirmationEnabled() = ", closingBehavior.isConfirmationEnabled());
             }
+        }
+
+        if (swipeBehavior.mount.isAvailable()) {
+            swipeBehavior.mount();
+            console.log("swipeBehavior.isMounted() = ", swipeBehavior.isMounted());
 
             if (swipeBehavior.disableVertical.isAvailable()) {
                 swipeBehavior.disableVertical();
+                console.log("swipeBehavior.isVerticalEnabled(); = ", swipeBehavior.isVerticalEnabled());
             }
         }
+
+        return () => {
+            closingBehavior.unmount();
+            swipeBehavior.unmount();
+        };
     }, []);
 
     useEffect(() => {
-        const enableFullscreen = async () => {
-            if (viewport.requestFullscreen.isAvailable()) {
-                await viewport.requestFullscreen();
-                viewport.isFullscreen(); // true
+        const mountViewport = async () => {
+            if (viewport.mount.isAvailable()) {
+                try {
+                    const promise = viewport.mount();
+                    console.log("viewport.isMounting() = ", viewport.isMounting());
+                    await promise;
+                    console.log("viewport.isMounting() = ", viewport.isMounting());
+                    console.log("viewport.isMounted() = ", viewport.isMounted());
+                } catch (err) {
+                    console.log("viewport.mountError() = ", viewport.mountError());
+                    console.log("viewport.isMounting() = ", viewport.isMounting());
+                    console.log("viewport.isMounted() = ", viewport.isMounted());
+                }
             }
         };
 
-        enableFullscreen();
+        const enableFullscreen = async () => {
+            if (viewport.requestFullscreen.isAvailable()) {
+                await viewport.requestFullscreen();
+                console.log("viewport.isFullscreen() = ", viewport.isFullscreen());
+            }
+        };
 
-        if (addToHomeScreen.isAvailable()) {
-            addToHomeScreen();
-        }
+        mountViewport().then(() => enableFullscreen());
+
+
+        return () => {
+            viewport.unmount();
+        };
     }, []);
 
     const [currentTab, setCurrentTab] = useState(TabIds.Friends);
