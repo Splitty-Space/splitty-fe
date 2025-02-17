@@ -1,5 +1,10 @@
 import {MASTER_USER_ID} from "@/API/APIConstants";
+import {initData} from "@telegram-apps/sdk";
+
+const user = initData.user();
+
+console.log("user = ", user);
 
 export default function getCurrentUserId() {
-    return global?.window && window?.Telegram?.WebApp?.initDataUnsafe.user?.id || MASTER_USER_ID;
+    return user?.id || MASTER_USER_ID;
 }

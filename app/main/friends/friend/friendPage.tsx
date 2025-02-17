@@ -14,8 +14,7 @@ import {
     Skeleton,
     Text,
     Placeholder,
-    Headline,
-    Subheadline
+    Headline
 } from "@telegram-apps/telegram-ui";
 import {AutoSizer, InfiniteLoader, List} from "react-virtualized";
 import {Icon28Edit} from "@telegram-apps/telegram-ui/dist/icons/28/edit";
@@ -276,15 +275,6 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
                     {friend?.name}
                 </Headline>
 
-                {friend?.username &&
-                    <Subheadline
-                        level="1"
-                        weight="3"
-                        className="opacity-50"
-                    >
-                        {"@" + friend?.username}
-                    </Subheadline>
-                }
 
                 {friend.total.map(({amount, currency}) =>
                     <Caption
