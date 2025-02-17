@@ -6,7 +6,6 @@ export default function getCurrentUserId() {
     // @ts-ignore
 
     console.log("global?.window ", global?.window);
-    console.log("window ", window);
 
     // @ts-ignore
     if (global?.window && window && isTMA("simple")) {
@@ -18,7 +17,7 @@ export default function getCurrentUserId() {
         const user = initData?.user;
         console.log("user = ", user);
 
-        return user.id;
+        return user?.id || MASTER_USER_ID;
     }
 
     return MASTER_USER_ID; // TODO Dev env
