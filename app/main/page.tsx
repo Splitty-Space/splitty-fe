@@ -90,7 +90,7 @@ export default function Page() {
             }
         };
 
-        mountViewport().then(() => enableFullscreen());
+        // mountViewport().then(() => enableFullscreen()); // TODO fullscreen
 
         return () => {
             viewport.unmount();
