@@ -9,6 +9,7 @@ export default function getCurrentUserId() {
     if (global?.window && window && isTMA("simple")) {
         console.log("initData = ", initData);
 
+        initData.restore();
         const user = initData.user();
         console.log("user = ", user);
 
