@@ -4,7 +4,12 @@ import {retrieveLaunchParams} from "@telegram-apps/sdk";
 
 export default function getCurrentUserId() {
     // @ts-ignore
-    if (isTMA("simple")) {
+
+    console.log("global?.window ", global?.window);
+    console.log("window ", window);
+
+    // @ts-ignore
+    if (global?.window && window && isTMA("simple")) {
         const {initDataRaw, initData} = retrieveLaunchParams();
         console.log("initDataRaw = ", initDataRaw);
         console.log("initData = ", initData);
