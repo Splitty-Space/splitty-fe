@@ -27,7 +27,7 @@ const Header = forwardRef<HTMLDivElement, HeaderProps>(({
     return (
         <header ref={ref} className={classNames("h-16 fixed top-0 left-0 w-full z-40", className)}>
             <FixedLayout vertical="top" className={classNames("header_layout px-4 z-10 pt-3", {
-                "padding-top-32": true,
+                "padding-top-24": true,
             }, layoutClassName)}>
                 <div className={classNames("flex shrink items-center justify-between mb-3", subHeaderClassName)}>
                     {LeftComponent && <LeftComponent/>}
