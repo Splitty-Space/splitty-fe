@@ -10,6 +10,7 @@ import {subPageConst} from "@/const/subPageConst";
 import {AppRootContext} from "@/app/AppRootContext";
 import {DARK} from "@/const/theme";
 import {Friend} from "@/entities";
+import {hapticFeedback, ImpactHapticFeedbackStyle} from "@telegram-apps/sdk";
 import "./footer.css";
 
 interface Tab {
@@ -85,7 +86,26 @@ export default function Footer({
         },
     ];
 
+    const getHapticStyle = (id: number): ImpactHapticFeedbackStyle => {
+        switch (id) {
+            case TabIds.Friends:
+                return "light";
+            case TabIds.Groups:
+                return "medium";
+            case TabIds.AddExpenseParticipants:
+                return "heavy";
+            case TabIds.Activity:
+                return "rigid";
+            case TabIds.Account:
+                return "soft";
+            default:
+                return "light";
+        }
+    };
+
     const onBarItemClick = useCallback((id: number) => () => {
+        console.log("hapticFeedback.isSupported() = ", hapticFeedback.isSupported()); // TODO remove
+
         if (id === TabIds.AddExpenseParticipants && currentTab === TabIds.Friends && subpage) {
             setCurrentTab(TabIds.AddExpense);
 
@@ -110,6 +130,12 @@ export default function Footer({
         } else if (id === TabIds.Activity) {
             setSubpage(subPageConst.ActivityList);
         }
+
+        if (hapticFeedback.impactOccurred.isAvailable()) {
+            const style = getHapticStyle(id);
+            hapticFeedback.impactOccurred(style);
+        }
+
     }, [currentTab, subpage, setSearchValue, setSelectedExpense, setCurrentTab, friends, setSelectedFriends, selectedUserId, setSelectedUserId, setSubpage]);
 
     return (

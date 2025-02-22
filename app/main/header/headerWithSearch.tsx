@@ -6,6 +6,7 @@ import Header from "@/app/main/header/header";
 import {Icon24Search, Icon24Close, Icon28Search} from "@/Icons";
 import {IconButton, Input, Tappable} from "@telegram-apps/telegram-ui";
 import Logo from "@/app/main/header/logo";
+import {hapticFeedback} from "@telegram-apps/sdk";
 
 export default function HeaderWithSearch({
                                              forceSearchOpen,
@@ -61,6 +62,10 @@ export default function HeaderWithSearch({
         (e: React.ChangeEvent<HTMLInputElement>) => {
             if (setSearchValue) {
                 setSearchValue(e.target.value);
+            }
+
+            if (hapticFeedback.selectionChanged.isAvailable()) {
+                hapticFeedback.selectionChanged();
             }
         },
         [setSearchValue]);
