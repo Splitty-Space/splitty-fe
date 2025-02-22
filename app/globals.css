@@ -76,6 +76,10 @@ body {
     padding: 0 !important;
 }
 
+.padding-top-16 {
+    padding: 4rem !important;
+}
+
 .scale-25 {
     scale: 0.25;
 }
