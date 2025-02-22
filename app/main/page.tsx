@@ -38,25 +38,19 @@ export type PageData = {
 
 export default function Page() {
     useEffect(() => {
-        console.log("closingBehavior.mount.isAvailable() = ", closingBehavior.mount.isAvailable());
         if (closingBehavior.mount.isAvailable()) {
             closingBehavior.mount();
-            console.log("closingBehavior.isMounted() = ", closingBehavior.isMounted());
 
             if (closingBehavior.enableConfirmation.isAvailable()) {
                 closingBehavior.enableConfirmation();
-                console.log("closingBehavior.isConfirmationEnabled() = ", closingBehavior.isConfirmationEnabled());
             }
         }
 
-        console.log("swipeBehavior.mount.isAvailable() = ", swipeBehavior.mount.isAvailable());
         if (swipeBehavior.mount.isAvailable()) {
             swipeBehavior.mount();
-            console.log("swipeBehavior.isMounted() = ", swipeBehavior.isMounted());
 
             if (swipeBehavior.disableVertical.isAvailable()) {
                 swipeBehavior.disableVertical();
-                console.log("swipeBehavior.isVerticalEnabled(); = ", swipeBehavior.isVerticalEnabled());
             }
         }
 

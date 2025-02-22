@@ -36,9 +36,9 @@ export default function FriendsList({
 
             <Main
                 center={loadingFriends}
-                style={isSearchOpen ? {height: "calc(100% - 11rem)"} : undefined}
+                style={isSearchOpen ? {height: "calc(100% - 8rem)"} : undefined}
                 className={classNames({
-                    "margin-top-28": isSearchOpen
+                    "margin-top-32": isSearchOpen
                 })}
             >
                 {

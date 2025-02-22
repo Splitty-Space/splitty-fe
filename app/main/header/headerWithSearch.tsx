@@ -7,6 +7,7 @@ import {Icon24Search, Icon24Close, Icon28Search} from "@/Icons";
 import {IconButton, Input, Tappable} from "@telegram-apps/telegram-ui";
 import Logo from "@/app/main/header/logo";
 import {hapticFeedback} from "@telegram-apps/sdk";
+import classNames from "classnames";
 
 export default function HeaderWithSearch({
                                              forceSearchOpen,
@@ -77,14 +78,17 @@ export default function HeaderWithSearch({
 
     return (
         <Header
-            className={isOpen ? "h-28" : "h-16"}
+            className={isOpen ? "h-32" : "h-16"}
             LeftComponent={_LeftComponent}
             CentralComponent={CentralComponent ? CentralComponent : Logo}
             RightComponent={RightComponent}
             AfterComponent={<Input
                 id={HEADER_SEARCH_ID}
                 placeholder={t("header.Search")}
-                className={isOpen ? "header_input" : "header_input__hide"}
+                className={classNames("mb-4", {
+                    "header_input": isOpen,
+                    "header_input__hide": !isOpen,
+                })}
                 value={searchValue}
                 onChange={onChange}
                 onBlur={onBlur}

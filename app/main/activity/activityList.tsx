@@ -167,6 +167,7 @@ export default function ActivityList({setCurrentTab, setSubpage, setPageData, se
                                                 rowCount={rowCount}
                                                 rowRenderer={rowRenderer}
                                                 onRowsRendered={onRowsRendered}
+                                                className="pb-20"
                                             />
                                         )}
                                     </AutoSizer>

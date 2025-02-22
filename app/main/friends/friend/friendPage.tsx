@@ -299,7 +299,7 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
             <Main
                 ref={refContainer}
                 className="margin-top-0"
-                style={{height: "calc(100% - 5rem)"}}
+                style={{height: "calc(100%)"}}
             >
                 {loadingExpenses ? <Spinner size="l" className="flex flex-col items-center justify-center"/> :
                     expenses?.length > 0 ?
@@ -323,6 +323,7 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
                                             rowCount={rowCount}
                                             rowRenderer={rowRenderer}
                                             onRowsRendered={onRowsRendered}
+                                            className="pb-20"
                                         />
                                     )}
                                 </AutoSizer>

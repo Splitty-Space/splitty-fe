@@ -3,7 +3,6 @@
 import React, {forwardRef, memo} from "react";
 import classNames from "classnames";
 
-
 interface MainProps {
     style?: object,
     className?: string,
@@ -20,8 +19,8 @@ const Main = forwardRef<HTMLDivElement, MainProps>(({
     return (
         <main
             ref={ref}
-            style={style ? style : {height: "calc(100% - 9rem)"}}
-            className={classNames("mt-16 mb-20 overflow-auto", {
+            style={style ? style : {height: "calc(100% - 4rem)"}}
+            className={classNames("mt-16 pb-20 overflow-auto", {
                 "flex items-center justify-center": center
             }, className)}
         >

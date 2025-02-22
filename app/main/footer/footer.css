@@ -1,4 +1,10 @@
-.footer_layout {
-    background-color: black;
-    /*var(--tgui--bg_color);*/
+.footer {
+    bottom: -1px;
+}
+
+.footer_tabbar {
+    backdrop-filter: blur(10px);
+    background: #00000080;
+
+    margin-bottom: -1px;
 }

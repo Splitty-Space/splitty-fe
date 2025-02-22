@@ -1,14 +1,12 @@
 "use client"
 
-import {useCallback, FC, useContext} from "react";
+import {useCallback, FC} from "react";
 import {Avatar, Tabbar} from "@telegram-apps/telegram-ui";
 import {Icon24Group, Icon24Person, Icon24Stats, PlusIcon} from "@/Icons";
 import {useTranslation} from "react-i18next";
 import {TabIds} from "@/const/tabIds";
 import useMe from "@/services/useMe";
 import {subPageConst} from "@/const/subPageConst";
-import {AppRootContext} from "@/app/AppRootContext";
-import {DARK} from "@/const/theme";
 import {Friend} from "@/entities";
 import {hapticFeedback, ImpactHapticFeedbackStyle} from "@telegram-apps/sdk";
 import "./footer.css";
@@ -43,8 +41,6 @@ export default function Footer({
     setSelectedExpense: Function,
 }) {
     const {t} = useTranslation();
-
-    const appRootContext = useContext(AppRootContext);
 
     const {data} = useMe();
 
@@ -104,8 +100,6 @@ export default function Footer({
     };
 
     const onBarItemClick = useCallback((id: number) => () => {
-        console.log("hapticFeedback.isSupported() = ", hapticFeedback.isSupported()); // TODO remove
-
         if (id === TabIds.AddExpenseParticipants && currentTab === TabIds.Friends && subpage) {
             setCurrentTab(TabIds.AddExpense);
 
@@ -139,13 +133,8 @@ export default function Footer({
     }, [currentTab, subpage, setSearchValue, setSelectedExpense, setCurrentTab, friends, setSelectedFriends, selectedUserId, setSelectedUserId, setSubpage]);
 
     return (
-        <footer className="fixed bottom-0 h-20 w-full">
-            <Tabbar
-                style={{
-                    backgroundColor: appRootContext.appearance === DARK ? "var(--tgui--black)" : "var(--tgui--white)",
-                    paddingBottom: "1.5rem",
-                    marginBottom: "-1px",
-                }}>
+        <footer className="footer fixed h-20 w-full">
+            <Tabbar className="footer_tabbar pb-6">
                 {tabs.map(({
                                id,
                                text,
