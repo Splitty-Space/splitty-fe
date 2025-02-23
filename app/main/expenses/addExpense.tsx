@@ -279,7 +279,6 @@ export default function AddExpense({
     return (
         <>
             <Header
-                layoutClassName="p-0 py-4"
                 LeftComponent={() => (
                     <Button
                         size="l"
