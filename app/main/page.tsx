@@ -22,6 +22,7 @@ import useMe from "@/services/useMe";
 import {init, viewport, closingBehavior, swipeBehavior} from "@telegram-apps/sdk";
 // import "@/utils/mockTelegramEnv"; // TODO DO NOT UNCOMMENT
 import {DEFAULT_THEME} from "@/const/theme";
+import {IOS} from "@/const/platform";
 
 
 init();
