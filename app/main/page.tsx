@@ -84,8 +84,13 @@ export default function Page() {
             }
         };
 
-        mountViewport()
-            //.then(() => enableFullscreen()); // TODO fullscreen
+        mountViewport().then(() => {
+            console.log("window.Telegram?.WebApp?.platform = ", window.Telegram?.WebApp?.platform);
+            if (window.Telegram?.WebApp?.platform === IOS) {
+                enableFullscreen();
+            }
+
+        }); // TODO fullscreen
 
         return () => {
             viewport.unmount();
