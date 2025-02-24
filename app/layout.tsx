@@ -41,7 +41,6 @@ export default function RootLayout({children}: Readonly<{
     useEffect(() => {
         function checkIfTelegramScriptReady() {
             setTimeout(() => {
-
                 if (window?.Telegram) {
                     setPlatform(window.Telegram?.WebApp?.platform === IOS ? IOS : BASE);
                     setAppearance(window.Telegram.WebApp.colorScheme);

@@ -22,7 +22,7 @@ import useMe from "@/services/useMe";
 import {init, viewport, closingBehavior, swipeBehavior} from "@telegram-apps/sdk";
 // import "@/utils/mockTelegramEnv"; // TODO DO NOT UNCOMMENT
 import {DEFAULT_THEME} from "@/const/theme";
-import {IOS} from "@/const/platform";
+import {ANDROID, IOS} from "@/const/platform";
 
 
 init();
@@ -86,12 +86,24 @@ export default function Page() {
         };
 
         mountViewport().then(() => {
-            console.log("window.Telegram?.WebApp?.platform = ", window.Telegram?.WebApp?.platform);
-            if (window.Telegram?.WebApp?.platform === IOS) {
-                enableFullscreen();
+            function checkIfTelegramScriptReady() {
+                setTimeout(() => {
+                    if (window?.Telegram) {
+                        const platform = window.Telegram?.WebApp?.platform;
+
+                        console.log("window.Telegram?.WebApp?.platform = ", platform);
+
+                        if (platform === IOS || platform === ANDROID) {
+                            enableFullscreen();
+                        }
+                    } else {
+                        checkIfTelegramScriptReady();
+                    }
+                }, 10);
             }
 
-        }); // TODO fullscreen
+            checkIfTelegramScriptReady();
+        });
 
         return () => {
             viewport.unmount();
