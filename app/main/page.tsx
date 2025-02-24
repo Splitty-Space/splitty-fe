@@ -88,9 +88,8 @@ export default function Page() {
         mountViewport().then(() => {
             function checkIfTelegramScriptReady() {
                 setTimeout(() => {
-                    if (window?.Telegram) {
-                        const platform = window.Telegram?.WebApp?.platform;
-
+                    const platform = window.Telegram?.WebApp?.platform;
+                    if (platform) {
                         console.log("window.Telegram?.WebApp?.platform = ", platform);
 
                         if (platform === IOS || platform === ANDROID) {
