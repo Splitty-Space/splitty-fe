@@ -88,9 +88,12 @@ export default function Page() {
         mountViewport().then(() => {
             function checkIfTelegramScriptReady() {
                 setTimeout(() => {
+                    console.log("window?.Telegram = ", window?.Telegram);
+                    console.log("window.Telegram?.WebApp?.platform = ", window.Telegram?.WebApp?.platform);
+
                     if (window?.Telegram && window.Telegram?.WebApp?.platform) {
                         const platform = window.Telegram?.WebApp?.platform;
-                        console.log("window.Telegram?.WebApp?.platform = ", platform);
+                        console.log("window.Telegram?.WebApp?.platform 2 = ", platform);
 
                         if (platform === IOS || platform === ANDROID) {
                             enableFullscreen();
@@ -98,7 +101,7 @@ export default function Page() {
                     } else {
                         checkIfTelegramScriptReady();
                     }
-                }, 10);
+                }, 100);
             }
 
             checkIfTelegramScriptReady();
