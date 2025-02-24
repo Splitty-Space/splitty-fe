@@ -104,7 +104,7 @@ export default function Page() {
                 }, 100);
             }
 
-            checkIfTelegramScriptReady();
+            // checkIfTelegramScriptReady(); // TODO
         });
 
         return () => {
