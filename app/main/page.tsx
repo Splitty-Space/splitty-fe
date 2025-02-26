@@ -23,6 +23,7 @@ import {init, viewport, closingBehavior, swipeBehavior} from "@telegram-apps/sdk
 // import "@/utils/mockTelegramEnv"; // TODO DO NOT UNCOMMENT
 import {DEFAULT_THEME} from "@/const/theme";
 import {ANDROID, IOS} from "@/const/platform";
+import { retrieveLaunchParams } from "@telegram-apps/bridge";
 
 
 init();
@@ -105,6 +106,10 @@ export default function Page() {
             }
 
             // checkIfTelegramScriptReady(); // TODO
+
+            const launchParams = retrieveLaunchParams();
+            console.log("launchParams = ", launchParams);
+            console.log("launchParams.tgWebAppPlatform = ", launchParams.tgWebAppPlatform);
         });
 
         return () => {
