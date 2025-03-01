@@ -12,7 +12,7 @@ import {main} from "@/const/urls";
 import "@/API/axiosConfig";
 import useMe from "@/services/useMe";
 import {DARK, DEFAULT_THEME, THEME_TYPE} from "@/const/theme";
-import {DEFAULT_PLATFORM, IOS, BASE, PLATFORM_TYPE} from "@/const/platform";
+import {DEFAULT_PLATFORM, IOS, PLATFORM_TYPE} from "@/const/platform";
 import {AppRootContext} from "./AppRootContext";
 import "./globals.css";
 
@@ -36,29 +36,12 @@ export default function RootLayout({children}: Readonly<{
         }
     }, [data]);
 
-    const router = useRouter()
+    const router = useRouter();
 
     useEffect(() => {
-        function checkIfTelegramScriptReady() {
-            setTimeout(() => {
-                if (window?.Telegram) {
-                    setPlatform(window.Telegram?.WebApp?.platform === IOS ? IOS : BASE);
-                    setAppearance(window.Telegram.WebApp.colorScheme);
-
-                    // TODO for test
-                    setAppearance(DARK);
-                    setPlatform(IOS);
-
-                    window.Telegram.WebApp.expand();
-
-                    router.push(main);
-                } else {
-                    checkIfTelegramScriptReady();
-                }
-            }, 10);
-        }
-
-        checkIfTelegramScriptReady();
+        setAppearance(DARK);
+        setPlatform(IOS);
+        router.push(main);
     }, [router]);
 
     return (

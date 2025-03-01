@@ -23,7 +23,7 @@ import {init, viewport, closingBehavior, swipeBehavior} from "@telegram-apps/sdk
 // import "@/utils/mockTelegramEnv"; // TODO DO NOT UNCOMMENT
 import {DEFAULT_THEME} from "@/const/theme";
 import {ANDROID, IOS} from "@/const/platform";
-import { retrieveLaunchParams } from "@telegram-apps/bridge";
+import {retrieveLaunchParams} from "@telegram-apps/bridge";
 
 
 init();
@@ -67,14 +67,9 @@ export default function Page() {
             if (viewport.mount.isAvailable()) {
                 try {
                     const promise = viewport.mount();
-                    console.log("viewport.isMounting() = ", viewport.isMounting());
                     await promise;
-                    console.log("viewport.isMounting() = ", viewport.isMounting());
-                    console.log("viewport.isMounted() = ", viewport.isMounted());
                 } catch (err) {
                     console.log("viewport.mountError() = ", viewport.mountError());
-                    console.log("viewport.isMounting() = ", viewport.isMounting());
-                    console.log("viewport.isMounted() = ", viewport.isMounted());
                 }
             }
         };
@@ -82,34 +77,34 @@ export default function Page() {
         const enableFullscreen = async () => {
             if (viewport.requestFullscreen.isAvailable()) {
                 await viewport.requestFullscreen();
-                console.log("viewport.isFullscreen() = ", viewport.isFullscreen());
+            }
+        };
+
+        const expandScreen = () => {
+            if (viewport.expand.isAvailable()) {
+                viewport.expand();
             }
         };
 
         mountViewport().then(() => {
             function checkIfTelegramScriptReady() {
                 setTimeout(() => {
-                    console.log("window?.Telegram = ", window?.Telegram);
-                    console.log("window.Telegram?.WebApp?.platform = ", window.Telegram?.WebApp?.platform);
-
-                    if (window?.Telegram && window.Telegram?.WebApp?.platform) {
-                        const platform = window.Telegram?.WebApp?.platform;
-                        console.log("window.Telegram?.WebApp?.platform 2 = ", platform);
+                    const launchParams = retrieveLaunchParams();
+                    if (launchParams) {
+                        const platform = launchParams.tgWebAppPlatform;
 
                         if (platform === IOS || platform === ANDROID) {
-                            enableFullscreen();
+                            // enableFullscreen(); // TODO
                         }
+
+                        expandScreen();
                     } else {
                         checkIfTelegramScriptReady();
                     }
                 }, 100);
             }
 
-            // checkIfTelegramScriptReady(); // TODO
-
-            const launchParams = retrieveLaunchParams();
-            console.log("launchParams = ", launchParams);
-            console.log("launchParams.tgWebAppPlatform = ", launchParams.tgWebAppPlatform);
+            checkIfTelegramScriptReady();
         });
 
         return () => {
