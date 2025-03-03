@@ -2,6 +2,7 @@
 
 import React, {forwardRef, memo} from "react";
 import classNames from "classnames";
+import {viewport} from "@telegram-apps/sdk";
 
 interface MainProps {
     style?: object,
@@ -19,9 +20,10 @@ const Main = forwardRef<HTMLDivElement, MainProps>(({
     return (
         <main
             ref={ref}
-            style={style ? style : {height: "calc(100% - 4rem)"}}
+            style={style ? style : {height: "calc(100% - 10rem)"}}
             className={classNames("mt-16 pb-20 overflow-auto", {
-                "flex items-center justify-center": center
+                "flex items-center justify-center": center,
+                "mt-40": viewport.isFullscreen(),
             }, className)}
         >
             {children}
