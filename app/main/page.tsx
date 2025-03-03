@@ -94,7 +94,7 @@ export default function Page() {
                         const platform = launchParams.tgWebAppPlatform;
 
                         if (platform === IOS || platform === ANDROID) {
-                            // enableFullscreen(); // TODO
+                            enableFullscreen(); // TODO
                         }
 
                         expandScreen();
