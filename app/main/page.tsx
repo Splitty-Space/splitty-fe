@@ -118,8 +118,6 @@ export default function Page() {
                         mountMiniApp().then(() => {
                             if (
                                 miniApp.setHeaderColor.isAvailable()
-                                // @ts-ignore
-                                && miniApp.setHeaderColor.supports("rgb")
                             ) {
                                 miniApp.setHeaderColor("#00000000");
                                 console.log("miniApp.headerColor() = ", miniApp.headerColor());
