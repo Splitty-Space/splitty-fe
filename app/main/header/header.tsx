@@ -26,7 +26,7 @@ const Header = forwardRef<HTMLDivElement, HeaderProps>(({
                                                             AfterComponent
                                                         }, ref) => {
     return (
-        <header ref={ref} className={classNames("h-16 fixed top-0 left-0 w-full z-40", className)}>
+        <header ref={ref} className={classNames("h-16 fixed top-0 left-0 w-full z-40 header_blur", className)}>
             <FixedLayout vertical="top" className={classNames("px-4 z-10 pt-3 header_blur", {
                 "padding-top-24": viewport.isFullscreen(),
             }, layoutClassName)}>
