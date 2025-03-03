@@ -3,8 +3,8 @@
 import React, {FC, forwardRef, memo, ReactElement} from "react";
 import classNames from "classnames";
 import {FixedLayout} from "@telegram-apps/telegram-ui";
-import "./header.css";
 import {viewport} from "@telegram-apps/sdk";
+import "./header.css";
 
 interface HeaderProps {
     className?: string,
@@ -26,8 +26,8 @@ const Header = forwardRef<HTMLDivElement, HeaderProps>(({
                                                             AfterComponent
                                                         }, ref) => {
     return (
-        <header ref={ref} className={classNames("h-16 fixed top-0 left-0 w-full z-40 header_blur", className)}>
-            <FixedLayout vertical="top" className={classNames("header_layout px-4 z-10 pt-3", {
+        <header ref={ref} className={classNames("h-16 fixed top-0 left-0 w-full z-40", className)}>
+            <FixedLayout vertical="top" className={classNames("px-4 z-10 pt-3 header_blur", {
                 "padding-top-24": viewport.isFullscreen(),
             }, layoutClassName)}>
                 <div className={classNames("flex shrink items-center justify-between mb-3", subHeaderClassName)}>
