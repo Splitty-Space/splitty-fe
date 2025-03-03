@@ -104,13 +104,15 @@ export default function Page() {
                                 try {
                                     const promise = miniApp.mount();
                                     miniApp.isMounting(); // true
+                                    console.log("miniApp.isMounting()= ", miniApp.isMounting());
                                     await promise;
-                                    miniApp.isMounting(); // false
-                                    miniApp.isMounted(); // true
+
+                                    console.log("miniApp.isMounting() = ", miniApp.isMounting());
+                                    console.log("miniApp.isMounted() = ", miniApp.isMounted());
                                 } catch (err) {
-                                    miniApp.mountError(); // equals "err"
-                                    miniApp.isMounting(); // false
-                                    miniApp.isMounted(); // false
+                                    console.log("miniApp.mountError(); = ", miniApp.mountError());
+                                    console.log("miniApp.isMounting() = ", miniApp.isMounting());
+                                    console.log("miniApp.isMounted() = ", miniApp.isMounted());
                                 }
                             }
                         };
@@ -119,7 +121,7 @@ export default function Page() {
                             if (
                                 miniApp.setHeaderColor.isAvailable()
                             ) {
-                                miniApp.setHeaderColor("#c800001a");
+                                miniApp.setHeaderColor("#c80000");
                                 console.log("miniApp.headerColor() = ", miniApp.headerColor());
                             }
                         });
