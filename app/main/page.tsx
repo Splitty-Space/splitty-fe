@@ -119,7 +119,7 @@ export default function Page() {
                             if (
                                 miniApp.setHeaderColor.isAvailable()
                             ) {
-                                miniApp.setHeaderColor("#00000000");
+                                miniApp.setHeaderColor("#c800001a");
                                 console.log("miniApp.headerColor() = ", miniApp.headerColor());
                             }
                         });
