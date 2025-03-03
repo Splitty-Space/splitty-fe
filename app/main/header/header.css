@@ -19,7 +19,7 @@
     display: none;
 }
 
-
-.header_color {
-    background: #212121 !important;
+.header_blur {
+    backdrop-filter: blur(10px);
+    background: #00000080;
 }
