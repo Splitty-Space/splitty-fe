@@ -23,7 +23,7 @@ const Main = forwardRef<HTMLDivElement, MainProps>(({
             style={style ? style : {height: "calc(100% - 10rem)"}}
             className={classNames("mt-16 pb-20 overflow-auto", {
                 "flex items-center justify-center": center,
-                "mt-40": viewport.isFullscreen(),
+                "pt-24": viewport.isFullscreen(),
             }, className)}
         >
             {children}
