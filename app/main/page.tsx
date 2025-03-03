@@ -19,7 +19,7 @@ import "dayjs/locale/uk";
 import {ThemeProvider, createTheme} from "@mui/material/styles";
 import Activity from "@/app/main/activity/activity";
 import useMe from "@/services/useMe";
-import {init, viewport, closingBehavior, swipeBehavior} from "@telegram-apps/sdk";
+import {init, viewport, miniApp, closingBehavior, swipeBehavior} from "@telegram-apps/sdk";
 // import "@/utils/mockTelegramEnv"; // TODO DO NOT UNCOMMENT
 import {DEFAULT_THEME} from "@/const/theme";
 import {ANDROID, IOS} from "@/const/platform";
@@ -98,6 +98,33 @@ export default function Page() {
                         }
 
                         expandScreen();
+
+                        const mountMiniApp = async () => {
+                            if (miniApp.mount.isAvailable()) {
+                                try {
+                                    const promise = miniApp.mount();
+                                    miniApp.isMounting(); // true
+                                    await promise;
+                                    miniApp.isMounting(); // false
+                                    miniApp.isMounted(); // true
+                                } catch (err) {
+                                    miniApp.mountError(); // equals "err"
+                                    miniApp.isMounting(); // false
+                                    miniApp.isMounted(); // false
+                                }
+                            }
+                        };
+
+                        mountMiniApp().then(() => {
+                            if (
+                                miniApp.setHeaderColor.isAvailable()
+                                // @ts-ignore
+                                && miniApp.setHeaderColor.supports("rgb")
+                            ) {
+                                miniApp.setHeaderColor("#00000000");
+                                console.log("miniApp.headerColor() = ", miniApp.headerColor());
+                            }
+                        });
                     } else {
                         checkIfTelegramScriptReady();
                     }
@@ -109,6 +136,7 @@ export default function Page() {
 
         return () => {
             viewport.unmount();
+            miniApp.unmount();
         };
     }, []);
 
