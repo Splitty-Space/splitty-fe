@@ -94,23 +94,6 @@ export default function FriendSettings({friend, friends, refetchFriends, setSubp
                         <Divider/>
                     </>)
                 }
-
-                {/* TODO */}
-                {/*<Cell onClick={() => {*/}
-
-                {/*}}*/}
-                {/*>*/}
-                {/*    Block user*/}
-                {/*</Cell>*/}
-                {/*<Divider/>*/}
-
-                {/*<Cell onClick={() => {*/}
-
-                {/*}}*/}
-                {/*>*/}
-                {/*    Report*/}
-                {/*</Cell>*/}
-                {/*<Divider/>*/}
             </List>
         </>
     );

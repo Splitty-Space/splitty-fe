@@ -16,8 +16,8 @@ import {deleteExpense} from "@/services/deleteExpense";
 import {subPageConst} from "@/const/subPageConst";
 import {TabIds} from "@/const/tabIds";
 import getExpense from "@/services/getExpense";
-import {PageData} from "@/app/main/page";
-import ExpenseHistoryList from "@/app/main/friends/expenseDetails/ExpenseHistoryList";
+import {PageData} from "@/app/store";
+import ExpenseHistoryList from "@/app/friends/expenseDetails/ExpenseHistoryList";
 import "./expenseDetails.css";
 
 export default function ExpenseDetails({

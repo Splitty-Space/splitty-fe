@@ -8,7 +8,7 @@ export default function getCurrentUserId() {
         initData.restore();
         const user = initData.user();
 
-        return user?.id || MASTER_USER_ID;
+        return MASTER_USER_ID;
     }
 
     return MASTER_USER_ID; // TODO Dev env

@@ -13,7 +13,7 @@ import {
     Switch,
     Tappable
 } from "@telegram-apps/telegram-ui";
-import AddGroupsHeader from "@/app/main/groups/addGroup/addGroupHeader/addGroupHeader";
+import AddGroupsHeader from "@/app/groups/add/addGroupHeader/addGroupHeader";
 import {Icon24Close} from "@/Icons";
 import {GROUP_KINDS} from "@/const/groupKinds";
 import useFriends from "@/services/useFriends";

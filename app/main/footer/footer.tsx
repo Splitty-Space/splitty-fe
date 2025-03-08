@@ -4,6 +4,7 @@ import {useCallback, FC} from "react";
 import {Avatar, Tabbar} from "@telegram-apps/telegram-ui";
 import {Icon24Group, Icon24Person, Icon24Stats, PlusIcon} from "@/Icons";
 import {useTranslation} from "react-i18next";
+import {useRouter} from "next/navigation";
 import {TabIds} from "@/const/tabIds";
 import useMe from "@/services/useMe";
 import {subPageConst} from "@/const/subPageConst";
@@ -29,7 +30,7 @@ export default function Footer({
                                    setSearchValue,
                                    setSelectedExpense,
                                }: {
-    currentTab: number,
+    currentTab: TabIds,
     setCurrentTab: Function,
     subpage: subPageConst,
     setSubpage: Function,
@@ -99,6 +100,8 @@ export default function Footer({
         }
     };
 
+    const router = useRouter();
+
     const onBarItemClick = useCallback((id: number) => () => {
         if (id === TabIds.AddExpenseParticipants && currentTab === TabIds.Friends && subpage) {
             setCurrentTab(TabIds.AddExpense);
@@ -118,9 +121,9 @@ export default function Footer({
 
 
         if (id === TabIds.Friends) {
-            setSubpage(subPageConst.FriendsList);
+            router.push("/");
         } else if (id === TabIds.Groups) {
-            setSubpage(subPageConst.GroupsList);
+            router.push("/groups");
         } else if (id === TabIds.Activity) {
             setSubpage(subPageConst.ActivityList);
         }
@@ -130,7 +133,7 @@ export default function Footer({
             hapticFeedback.impactOccurred(style);
         }
 
-    }, [currentTab, subpage, setSearchValue, setSelectedExpense, setCurrentTab, friends, setSelectedFriends, selectedUserId, setSelectedUserId, setSubpage]);
+    }, [currentTab, subpage, setSearchValue, setSelectedExpense, setCurrentTab, friends, setSelectedFriends, selectedUserId, setSelectedUserId, setSubpage, router]);
 
     return (
         <footer className="footer fixed h-20 w-full">

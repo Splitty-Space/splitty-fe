@@ -9,7 +9,7 @@ import classNames from "classnames";
 import {ACTIVITY_TYPE, ACTIVITY_TYPE_TO_TEXT} from "@/entities/Activity";
 import {Expense} from "@/entities";
 import {formatDate} from "@/utils/formatDate";
-import {ExpenseHistoryModal} from "@/app/main/friends/expenseDetails/ExpenseHistoryModal";
+import {ExpenseHistoryModal} from "@/app/friends/expenseDetails/ExpenseHistoryModal";
 
 
 export default function ExpenseHistoryList({
@@ -65,6 +65,7 @@ export default function ExpenseHistoryList({
                                 return activity_type === ACTIVITY_TYPE.EXPENSE_EDITED || activity_type === ACTIVITY_TYPE.PAYMENT_EDITED ?
                                     (
                                         <ExpenseHistoryModal
+                                            key={id}
                                             selectedExpense={selectedExpense}
                                             activity={activityData.data.find((activity) => activity.id === id)}
                                             trigger={

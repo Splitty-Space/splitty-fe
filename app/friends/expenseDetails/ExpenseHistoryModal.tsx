@@ -1,6 +1,6 @@
 import React from "react";
 import {Modal} from "@telegram-apps/telegram-ui";
-import ExpenseHistory from "@/app/main/friends/expenseDetails/ExpenseHistory";
+import ExpenseHistory from "@/app/friends/expenseDetails/ExpenseHistory";
 import Activity from "@/entities/Activity";
 import {Expense} from "@/entities";
 import {

@@ -68,7 +68,7 @@ export default function FriendPage({friend, setSubpage, setSelectedExpense}: {
                 setRowCount(data.data.length);
             }
         }).catch((error) => {
-            console.error({error})
+            console.error({error});
         });
 
         return () => {

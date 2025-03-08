@@ -3,7 +3,7 @@
 import {useTranslation} from "react-i18next";
 import {Avatar, Cell, List, Placeholder, Spinner, Divider, Caption} from "@telegram-apps/telegram-ui";
 import Main from "@/app/main/main/main";
-import FriendsHeader from "@/app/main/friends/friendsList/friendsHeader/friendsHeader";
+import FriendsHeader from "@/app/friends/friendsList/friendsHeader/friendsHeader";
 import {subPageConst} from "@/const/subPageConst";
 import {Friend} from "@/entities";
 import {Arrow} from "@/Icons";

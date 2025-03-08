@@ -3,17 +3,17 @@
 import {useState} from "react";
 import {useTranslation} from "react-i18next";
 import {subPageConst} from "@/const/subPageConst";
-import FriendsList from "@/app/main/friends/friendsList/friendsList";
-import FriendPage from "@/app/main/friends/friend/friendPage";
-import FriendSettings from "@/app/main/friends/friendSettings/friendSettings";
+import FriendsList from "@/app/friends/friendsList/friendsList";
+import FriendPage from "@/app/friends/friend/friendPage";
+import FriendSettings from "@/app/friends/friendSettings/friendSettings";
 import SettleUp from "@/app/main/settleUp/settleUp";
 import SettleUpPayment from "@/app/main/settleUp/settleUpPayment";
-import ExpenseDetails from "@/app/main/friends/expenseDetails/expenseDetails";
+import ExpenseDetails from "@/app/friends/expenseDetails/expenseDetails";
 import {Snackbar} from "@telegram-apps/telegram-ui";
 import {Expense, Friend} from "@/entities";
 import {RefetchFunction} from "axios-hooks";
 import {Icon28Bin} from "@/Icons";
-import {PageData} from "@/app/main/page";
+import {PageData} from "@/app/store";
 
 export default function Friends({
                                     subpage,

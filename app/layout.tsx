@@ -2,19 +2,26 @@
 
 import Script from "next/script";
 import {useRouter} from "next/navigation";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import i18next from "i18next";
 import "@/i18n";
 import {AppRoot} from "@telegram-apps/telegram-ui";
 import "@telegram-apps/telegram-ui/dist/styles.css";
 import classNames from "classnames";
-import {main} from "@/const/urls";
 import "@/API/axiosConfig";
 import useMe from "@/services/useMe";
 import {DARK, DEFAULT_THEME, THEME_TYPE} from "@/const/theme";
-import {DEFAULT_PLATFORM, IOS, PLATFORM_TYPE} from "@/const/platform";
+import {ANDROID, DEFAULT_PLATFORM, IOS, PLATFORM_TYPE} from "@/const/platform";
 import {AppRootContext} from "./AppRootContext";
+import {closingBehavior, swipeBehavior, viewport} from "@telegram-apps/sdk";
+import {retrieveLaunchParams} from "@telegram-apps/bridge";
+import {LocalizationProvider} from "@mui/x-date-pickers";
+import {ThemeProvider, createTheme} from "@mui/material/styles";
+import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import "./globals.css";
+import Footer from "@/app/main/footer/footer";
+import {useStore} from "@/app/store";
+import useFriends from "@/services/useFriends";
 
 // import type {Metadata} from "next";
 // export const metadata: Metadata = {
@@ -22,27 +29,126 @@ import "./globals.css";
 //     description: "",
 // };
 
+const darkTheme = createTheme({
+    palette: {
+        mode: DARK,
+    },
+});
+
 export default function RootLayout({children}: Readonly<{
     children: React.ReactNode;
 }>) {
     const [platform, setPlatform] = useState<PLATFORM_TYPE>(DEFAULT_PLATFORM);
     const [appearance, setAppearance] = useState<THEME_TYPE>(DEFAULT_THEME);
 
-    const {data} = useMe();
+    const {data: me} = useMe();
 
     useEffect(() => {
-        if (data) {
-            i18next.changeLanguage(data.language);
+        if (me) {
+            i18next.changeLanguage(me.language);
         }
-    }, [data]);
+    }, [me]);
 
     const router = useRouter();
 
     useEffect(() => {
         setAppearance(DARK);
         setPlatform(IOS);
-        router.push(main);
     }, [router]);
+
+    useEffect(() => {
+        if (closingBehavior.mount.isAvailable()) {
+            closingBehavior.mount();
+
+            if (closingBehavior.enableConfirmation.isAvailable()) {
+                closingBehavior.enableConfirmation();
+            }
+        }
+
+        if (swipeBehavior.mount.isAvailable()) {
+            swipeBehavior.mount();
+
+            if (swipeBehavior.disableVertical.isAvailable()) {
+                swipeBehavior.disableVertical();
+            }
+        }
+
+        return () => {
+            closingBehavior.unmount();
+            swipeBehavior.unmount();
+        };
+    }, []);
+
+    useEffect(() => {
+        const mountViewport = async () => {
+            if (viewport.mount.isAvailable()) {
+                try {
+                    const promise = viewport.mount();
+                    await promise;
+                } catch (err) {
+                    console.log("viewport.mountError() = ", viewport.mountError());
+                }
+            }
+        };
+
+        const enableFullscreen = async () => {
+            if (viewport.requestFullscreen.isAvailable()) {
+                await viewport.requestFullscreen();
+            }
+        };
+
+        const expandScreen = () => {
+            if (viewport.expand.isAvailable()) {
+                viewport.expand();
+            }
+        };
+
+        mountViewport().then(() => {
+            function checkIfTelegramScriptReady() {
+                setTimeout(() => {
+                    const launchParams = retrieveLaunchParams();
+                    if (launchParams) {
+                        const platform = launchParams.tgWebAppPlatform;
+
+                        if (platform === IOS || platform === ANDROID) {
+                            // enableFullscreen(); // TODO
+                        }
+
+                        expandScreen();
+                    } else {
+                        checkIfTelegramScriptReady();
+                    }
+                }, 100);
+            }
+
+            checkIfTelegramScriptReady();
+        });
+
+        return () => {
+            viewport.unmount();
+        };
+    }, []);
+
+
+    const currentTab = useStore((state) => state.currentTab);
+    const setCurrentTab = useStore((state) => state.setCurrentTab);
+
+    const subpage = useStore((state) => state.subpage);
+    const setSubpage = useStore((state) => state.setSubpage);
+
+    const searchValue = useStore((state) => state.searchValue);
+    const setSearchValue = useStore((state) => state.setSearchValue);
+
+    const selectedUserId = useStore((state) => state.selectedUserId);
+    const setSelectedUserId = useStore((state) => state.setSelectedUserId);
+
+    const setSelectedFriends = useStore((state) => state.setSelectedFriends);
+
+    const setSelectedExpense = useStore((state) => state.setSelectedExpense);
+
+    const {data, loadingFriends, refetchFriends} = useFriends(searchValue)
+
+    const friends = data?.data;
 
     return (
         <html lang="en">
@@ -53,13 +159,31 @@ export default function RootLayout({children}: Readonly<{
         })}>
         {platform && appearance && (
             <AppRootContext.Provider value={{platform, appearance}}>
-                <AppRoot
-                    platform={platform}
-                    appearance={appearance}
-                    className="app-root"
-                >
-                    {data && children}
-                </AppRoot>
+                <LocalizationProvider dateAdapter={AdapterDayjs}
+                                      adapterLocale={i18next?.language === "ua" ? "uk" : i18next?.language}>
+                    <ThemeProvider theme={darkTheme}>
+                        <AppRoot
+                            platform={platform}
+                            appearance={appearance}
+                            className="app-root"
+                        >
+                            {children}
+
+                            <Footer
+                                currentTab={currentTab}
+                                setCurrentTab={setCurrentTab}
+                                subpage={subpage}
+                                setSubpage={setSubpage}
+                                friends={friends}
+                                selectedUserId={selectedUserId}
+                                setSelectedUserId={setSelectedUserId}
+                                setSelectedFriends={setSelectedFriends}
+                                setSearchValue={setSearchValue}
+                                setSelectedExpense={setSelectedExpense}
+                            />
+                        </AppRoot>
+                    </ThemeProvider>
+                </LocalizationProvider>
             </AppRootContext.Provider>)
         }
         </body>
