@@ -18,10 +18,10 @@ import {retrieveLaunchParams} from "@telegram-apps/bridge";
 import {LocalizationProvider} from "@mui/x-date-pickers";
 import {ThemeProvider, createTheme} from "@mui/material/styles";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
-import "./globals.css";
 import Footer from "@/app/main/footer/footer";
 import {useStore} from "@/app/store";
 import useFriends from "@/services/useFriends";
+import "./globals.css";
 
 // import type {Metadata} from "next";
 // export const metadata: Metadata = {

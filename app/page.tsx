@@ -12,9 +12,8 @@ import Activity from "@/app/main/activity/activity";
 import useMe from "@/services/useMe";
 import {useStore} from "@/app/store";
 import {init} from "@telegram-apps/sdk";
+import {useEffect} from "react";
 // import "@/utils/mockTelegramEnv"; // TODO DO NOT UNCOMMENT
-
-init();
 
 export default function Page() {
     const currentTab = useStore((state) => state.currentTab);
@@ -44,6 +43,8 @@ export default function Page() {
     const friends = data?.data;
 
     const {data: me} = useMe();
+
+    useEffect(() => init(), []);
 
     return (
         <>
