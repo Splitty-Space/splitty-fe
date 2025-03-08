@@ -1,5 +1,5 @@
 import {create} from "zustand"
-import {devtools, persist} from "zustand/middleware"
+import {devtools} from "zustand/middleware"
 import {TabIds} from "@/const/tabIds";
 import {subPageConst} from "@/const/subPageConst";
 import {Friend} from "@/entities";
