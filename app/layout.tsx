@@ -24,8 +24,6 @@ import useFriends from "@/services/useFriends";
 import {Icon28Bin} from "@/Icons";
 import {useTranslation} from "react-i18next";
 import "./globals.css";
-import Link from "next/link";
-import {account} from "@/const/urls";
 
 // import type {Metadata} from "next";
 // export const metadata: Metadata = {
@@ -146,7 +144,7 @@ export default function RootLayout({children}: Readonly<{
     const isDeleteExpenseSnackbarShown = useStore((state) => state.isDeleteExpenseSnackbarShown);
     const setIsDeleteExpenseSnackbarShown = useStore((state) => state.setIsDeleteExpenseSnackbarShown);
 
-    const {data, loadingFriends, refetchFriends} = useFriends(searchValue)
+    const {data} = useFriends(searchValue)
     const friends = data?.data;
 
     return (

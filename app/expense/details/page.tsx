@@ -33,7 +33,7 @@ export default function ExpenseDetails() {
     const {data: me, loading: loadingMe} = useMe();
 
     const searchValue = useStore((state) => state.searchValue);
-    const {data, loadingFriends, refetchFriends} = useFriends(searchValue);
+    const {data} = useFriends(searchValue);
     const friends = data?.data;
 
     const [deleteExpenseLoading, setDeleteExpenseLoading] = useState(false);

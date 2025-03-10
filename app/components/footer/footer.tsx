@@ -129,7 +129,7 @@ export default function Footer({
             const style = getHapticStyle(id);
             hapticFeedback.impactOccurred(style);
         }
-    }, [setSearchValue, setSelectedExpense, friends, setSelectedFriends, selectedUserId, setSelectedUserId, router]);
+    }, [pathname, setSearchValue, setSelectedExpense, friends, setSelectedFriends, selectedUserId, setSelectedUserId, router]);
 
     return (
         <footer className="footer fixed h-20 w-full">

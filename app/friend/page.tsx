@@ -37,7 +37,7 @@ export default function FriendPage() {
 
     const searchValue = useStore((state) => state.searchValue);
     const selectedUserId = useStore((state) => state.selectedUserId);
-    const {data, loadingFriends, refetchFriends} = useFriends(searchValue);
+    const {data} = useFriends(searchValue);
     const friend = data?.data?.find(friend => friend.id === selectedUserId);
     const setSelectedExpense = useStore((state) => state.setSelectedExpense);
 

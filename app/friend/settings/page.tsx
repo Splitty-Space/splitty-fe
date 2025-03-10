@@ -18,7 +18,7 @@ export default function FriendSettings() {
     const searchValue = useStore((state) => state.searchValue);
     const setIsDeleteFriendSnackbarShown = useStore((state) => state.setIsDeleteFriendSnackbarShown);
     const selectedUserId = useStore((state) => state.selectedUserId);
-    const {data, loadingFriends, refetchFriends} = useFriends(searchValue);
+    const {data, refetchFriends} = useFriends(searchValue);
     const friend = data?.data?.find(friend => friend.id === selectedUserId);
     const friends = data?.data;
 

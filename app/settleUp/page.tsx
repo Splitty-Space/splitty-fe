@@ -17,7 +17,7 @@ export default function SettleUp() {
     const searchValue = useStore((state) => state.searchValue);
 
     const selectedUserId = useStore((state) => state.selectedUserId);
-    const {data, loadingFriends, refetchFriends} = useFriends(searchValue);
+    const {data} = useFriends(searchValue);
     const selectedFriend = data?.data?.find(friend => friend.id === selectedUserId);
     const friends = [selectedFriend];
 

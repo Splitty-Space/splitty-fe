@@ -16,9 +16,7 @@ import "dayjs/locale/ru";
 import "dayjs/locale/uk";
 import "./friendsList.css";
 
-import "@/utils/mockTelegramEnv";
-import Link from "next/link";
-// TODO DO NOT UNCOMMENT
+// import "@/utils/mockTelegramEnv"; // TODO DO NOT UNCOMMENT
 
 export default function FriendsList() {
     const {t} = useTranslation();
@@ -28,7 +26,7 @@ export default function FriendsList() {
     const setSearchValue = useStore((state) => state.setSearchValue);
     const setSelectedUserId = useStore((state) => state.setSelectedUserId);
 
-    const {data, loadingFriends, refetchFriends} = useFriends(searchValue);
+    const {data, loadingFriends} = useFriends(searchValue);
     const friends = data?.data;
 
     const [isSearchOpen, setIsSearchOpen] = useState(false);

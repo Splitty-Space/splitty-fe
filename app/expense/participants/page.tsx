@@ -25,7 +25,7 @@ export default function AddExpenseParticipants() {
     const selectedFriends = useStore((state) => state.selectedFriends);
     const setSelectedFriends = useStore((state) => state.setSelectedFriends);
 
-    const {data, loadingFriends, refetchFriends} = useFriends("")
+    const {data, loadingFriends} = useFriends("")
     const friends = data?.data ?? [];
 
     const {t} = useTranslation();
