@@ -1,2 +1,12 @@
-export const main = "/main";
-export const addExpense = "/addExpense";
+export const friendsList = "/";
+export const friend = "/friend";
+export const friendSettings = "/friend/settings";
+export const settleUp = "/settleUp";
+export const settleUpPayment = "/settleUpPayment";
+export const expenseDetails = "/expense/details";
+export const groups = "/groups";
+export const addGroups = "/groups/add";
+export const addExpense = "/expense/add";
+export const expenseParticipants = "/expense/participants";
+export const activity = "/activity";
+export const account = "/account";

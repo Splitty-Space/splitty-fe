@@ -1,4 +1,5 @@
-import { mockTelegramEnv, emitEvent } from "@telegram-apps/bridge";
+import {mockTelegramEnv, emitEvent} from "@telegram-apps/bridge";
+import {MASTER_USER_ID} from "@/API/APIConstants";
 
 const noInsets = {
     left: 0,
@@ -27,8 +28,8 @@ mockTelegramEnv({
         tgWebAppThemeParams: themeParams,
         tgWebAppData: new URLSearchParams([
             ["user", JSON.stringify({
-                id: 1,
-                first_name: "Pavel",
+                id: MASTER_USER_ID,
+                first_name: "Mikhail",
             })],
             ["hash", ""],
             ["signature", ""],
@@ -40,7 +41,7 @@ mockTelegramEnv({
     },
     onEvent(e) {
         if (e[0] === "web_app_request_theme") {
-            return emitEvent("theme_changed", { theme_params: themeParams });
+            return emitEvent("theme_changed", {theme_params: themeParams});
         }
         if (e[0] === "web_app_request_viewport") {
             return emitEvent("viewport_changed", {

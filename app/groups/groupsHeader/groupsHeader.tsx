@@ -1,14 +1,14 @@
 "use client"
 
 import {useRouter} from "next/navigation";
-import HeaderWithSearch from "@/app/main/header/headerWithSearch";
+import HeaderWithSearch from "@/app/components/header/headerWithSearch";
 import {IconButton} from "@telegram-apps/telegram-ui";
 import {Icon28AddCircle} from "@telegram-apps/telegram-ui/dist/icons/28/add_circle";
+import {addGroups} from "@/const/urls";
 
-export default function GroupsHeader({searchValue, setSearchValue, setSubpage}: {
+export default function GroupsHeader({searchValue, setSearchValue}: {
     searchValue: string,
     setSearchValue: Function,
-    setSubpage: Function
 }) {
     const router = useRouter();
 
@@ -20,7 +20,7 @@ export default function GroupsHeader({searchValue, setSearchValue, setSubpage}: 
                 <IconButton
                     size="l"
                     mode="bezeled"
-                    onClick={() => router.push("/groups/add")}
+                    onClick={() => router.push(addGroups)}
                 >
                     <Icon28AddCircle/>
                 </IconButton>)

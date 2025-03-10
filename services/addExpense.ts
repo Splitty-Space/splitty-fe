@@ -4,7 +4,7 @@ import getCurrentUserId from "@/utils/getCurrentUserId";
 import {CURRENCIES} from "@/const/currencies";
 
 interface CreateExpenseUser {
-    user_id: number,
+    user_id?: number,
     amount?: number,
 }
 
@@ -20,10 +20,10 @@ export const addExpense = async ({
                                  }: {
     payers: CreateExpenseUser[],
     debtors: CreateExpenseUser[],
-    users: number[],
+    users: (number | undefined)[],
     amount: number,
     payment: boolean,
-    currency: typeof CURRENCIES[number],
+    currency: typeof CURRENCIES[number] | undefined,
     date: Date,
     description?: string,
 }) => {

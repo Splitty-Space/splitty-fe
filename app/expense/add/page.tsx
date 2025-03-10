@@ -1,0 +1,518 @@
+"use client"
+
+import React, {useEffect, useState} from "react";
+import {useTranslation} from "react-i18next";
+import Header from "@/app/components/header/header";
+import Main from "@/app/components/main/main";
+import {
+    Avatar,
+    Button,
+    Caption,
+    Cell,
+    Divider,
+    Headline,
+    Input,
+    List,
+    Switch,
+    Text,
+    Title,
+} from "@telegram-apps/telegram-ui";
+import useMe from "@/services/useMe";
+import {CurrencySelect} from "@/components/CurrencySelect";
+import {DatePicker} from "@mui/x-date-pickers/DatePicker";
+import dayjs, {Dayjs} from "dayjs";
+import {splitNumberIntoParts} from "@/utils/splitNumberIntoParts";
+import {addExpense} from "@/services/addExpense";
+import {putExpense} from "@/services/putExpense";
+import useFriends from "@/services/useFriends";
+import {useStore} from "@/app/store";
+import {useRouter} from "next/navigation";
+import {expenseDetails, friendsList} from "@/const/urls";
+import "./addExpense.css";
+
+interface Payment {
+    id: number;
+    isSelected: boolean;
+    amount?: number;
+    isDirty: boolean;
+}
+
+export default function AddExpense() {
+    const {t} = useTranslation();
+
+    const {data: me} = useMe();
+
+    const searchValue = useStore((state) => state.searchValue);
+    const selectedFriends = useStore((state) => state.selectedFriends);
+    const selectedExpense = useStore((state) => state.selectedExpense);
+
+    const {refetchFriends} = useFriends(searchValue);
+
+    const participants = selectedExpense?.expense_users.map(expense => expense.user) ?? (me ? [me, ...selectedFriends] : [...selectedFriends]);
+
+    const [isSaveDisabled, setIsSaveDisabled] = useState(true);
+    const [isSaveInProgress, setIsSaveInProgress] = useState(false);
+
+    const [expenseName, setExpenseName] = useState(selectedExpense?.description ?? "");
+
+    const [moneySpent, setMoneySpent] = useState<number | null>(Number(selectedExpense?.amount) ?? null);
+    const [currency, setCurrency] = useState<string | undefined>();
+
+    const [date, setDate] = useState(selectedExpense?.date ?? new Date());
+
+    const [isFullyPaidByYou, setIsFullyPaidByYou] = useState<boolean | undefined>();
+    const [paidBy, setPaidBy] = useState<Payment[]>(selectedExpense ?
+        selectedExpense.expense_users.map((expense) => ({
+            id: expense.user.id,
+            amount: Number(expense.lent_amount),
+            isSelected: Number(expense.lent_amount) !== 0,
+            isDirty: false,
+        })) :
+        participants.map((x) => ({
+            id: x.id,
+            isSelected: true,
+            amount: 0,
+            isDirty: false,
+        })));
+
+    const [isSplitEquallyBetweenAll, setIsSplitEquallyBetweenAll] = useState(selectedExpense ?
+        selectedExpense.expense_users.every(e => e.debt_amount === selectedExpense.expense_users[0].debt_amount) :
+        true);
+    const [splitBetween, setSplitBetween] = useState<Payment[]>(selectedExpense ?
+        selectedExpense.expense_users.map((expense) => ({
+            id: expense.user.id,
+            amount: Number(expense.debt_amount),
+            isSelected: Number(expense.debt_amount) !== 0,
+            isDirty: false,
+        })) :
+        participants.map((x) => ({
+            id: x.id,
+            isSelected: true,
+            amount: 0,
+            isDirty: false,
+        })));
+
+    const currentPaidMoneyAmount = paidBy.reduce((acc, value) => value.isSelected && value.amount ? acc + value.amount : acc, 0);
+    const currentSplitBetweenMoneyAmount = splitBetween.reduce((acc, value) => value.isSelected && value.amount ? acc + value.amount : acc, 0);
+
+    useEffect(() => {
+        if (me) {
+            setCurrency(selectedExpense?.currency ?? me?.default_currency);
+            setIsFullyPaidByYou(selectedExpense ?
+                selectedExpense.expense_users
+                    .some(e => e.lent_amount === selectedExpense?.amount && e.user.id === me.id) : true);
+        }
+    }, [me, selectedExpense]);
+
+    useEffect(() => {
+        if (expenseName.length > 0 &&
+            moneySpent && moneySpent > 0 &&
+            (isFullyPaidByYou || paidBy.some(x => x.isSelected)) &&
+            currentPaidMoneyAmount === moneySpent &&
+            (isSplitEquallyBetweenAll || splitBetween.some(x => x.isSelected))
+        ) {
+            setIsSaveDisabled(false);
+        } else {
+            setIsSaveDisabled(true);
+        }
+    }, [expenseName, isFullyPaidByYou, isSplitEquallyBetweenAll, moneySpent, paidBy, splitBetween, currentPaidMoneyAmount]);
+
+    const router = useRouter();
+
+    const onSave = () => {
+        if (isSaveInProgress) {
+            return;
+        }
+
+        setIsSaveInProgress(true);
+
+        const payers = paidBy
+            .map(x => x.isSelected ? x : {...x, amount: 0})
+            .map((x) => ({user_id: x.id, amount: x.amount}));
+        const debtors = splitBetween
+            .map(x => x.isSelected ? x : {...x, amount: 0})
+            .map((x) => ({user_id: x.id, amount: x.amount}));
+        const users = Array.from(new Set([...paidBy, ...splitBetween].map((x) => x.id)));
+        const amount = Number(moneySpent);
+        const description = expenseName;
+
+        if (!selectedExpense) {
+            addExpense({
+                payers,
+                debtors,
+                users,
+                amount,
+                payment: false,
+                currency,
+                date,
+                description,
+            }).then(() => {
+                refetchFriends();
+                router.push(friendsList);
+            });
+        } else {
+            putExpense({
+                expense_id: selectedExpense.id,
+                payers,
+                debtors,
+                users,
+                amount,
+                description
+            }).then(() => {
+                refetchFriends();
+                router.push(expenseDetails);
+            });
+        }
+    };
+
+    const onExpenseNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setExpenseName(e.target.value);
+    };
+
+    const onMoneySpentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const amount = Number(e.target.value.replace(",", "."))
+        const moneySpent = amount === 0 ? null : amount
+        setMoneySpent(moneySpent);
+
+        if (isFullyPaidByYou) {
+            setPaidBy(participants.map((x, index) => ({
+                id: x.id,
+                isSelected: true,
+                amount: index === 0 ? amount : 0,
+                isDirty: false,
+            })));
+        }
+
+        if (isSplitEquallyBetweenAll) {
+            const parts = splitNumberIntoParts(amount, participants.length);
+
+            setSplitBetween(participants.map((x, index) => ({
+                id: x.id,
+                isSelected: true,
+                amount: parts[index],
+                isDirty: false,
+            })));
+        }
+    };
+
+    const onCurrencyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setCurrency(e.target.value);
+    };
+
+    const onDateChange = (newDate: Dayjs | null) => {
+        if (newDate) {
+            setDate(newDate?.toDate());
+        }
+    };
+
+    const onFullyPaidByYouChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setIsFullyPaidByYou(e.target.checked);
+
+        if (!e.target.checked && moneySpent) {
+            const parts = splitNumberIntoParts(moneySpent, participants.length);
+
+            setPaidBy(participants.map((x, index) => ({
+                id: x.id,
+                isSelected: true,
+                amount: parts[index],
+                isDirty: false,
+            })));
+        } else {
+            setPaidBy(participants.map((x, index) => ({
+                id: x.id,
+                isSelected: true,
+                amount: index === 0 && moneySpent ? Number(moneySpent) : 0,
+                isDirty: false,
+            })));
+        }
+    };
+
+    const onPaidByChange = (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPaidBy(paidBy.map(x => x.id === id ? {
+            ...x,
+            isSelected: e.target.checked,
+            isDirty: true,
+        } : x));
+    };
+
+    const onPaidByAmountChange = (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPaidBy(paidBy.map(x => x.id === id ? {
+            ...x,
+            amount: e.target.value ? Number(e.target.value.replace(",", ".")) : undefined,
+            isDirty: true,
+        } : x));
+    };
+
+    const onSplitEquallyBetweenAllChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setIsSplitEquallyBetweenAll(e.target.checked);
+
+        const parts = splitNumberIntoParts(moneySpent ? Number(moneySpent) : 0, participants.length);
+        if (!e.target.checked && moneySpent) {
+            setSplitBetween(participants.map((x, index) => ({
+                id: x.id,
+                isSelected: true,
+                amount: parts[index],
+                isDirty: false,
+            })));
+        } else {
+            setSplitBetween(participants.map((x, index) => ({
+                id: x.id,
+                isSelected: true,
+                amount: parts[index],
+                isDirty: false,
+            })));
+        }
+    };
+
+    const onSplitBetweenChange = (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSplitBetween(splitBetween.map(x => x.id === id ? {
+            ...x,
+            isSelected: e.target.checked,
+            isDirty: true,
+        } : x));
+    };
+
+    const onSplitBetweenAmountChange = (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSplitBetween(splitBetween.map(x => x.id === id ? {
+            ...x,
+            amount: e.target.value ? Number(e.target.value.replace(",", ".")) : undefined,
+            isDirty: true,
+        } : x));
+    };
+
+    return (
+        <>
+            <Header
+                LeftComponent={() => (
+                    <Button
+                        size="l"
+                        mode="plain"
+                        disabled
+                        className="invisible"
+                    >
+                        {t("expenses.Prev")}
+                    </Button>
+                )}
+                CentralComponent={() =>
+                    <Title>{
+                        !selectedExpense ?
+                            t("expenses.AddAnExpense") :
+                            t("expenses.EditAnExpense")}
+                    </Title>}
+                RightComponent={() => (
+                    <Button
+                        size="l"
+                        mode="plain"
+                        onClick={onSave}
+                        disabled={isSaveDisabled}
+                        loading={isSaveInProgress}
+                    >
+                        {t("expenses.Save")}
+                    </Button>
+                )}
+            />
+
+            <Main className="px-4">
+                <div className="my-5 flex flex-col items-center justify-center">
+                    <div className="flex max-w-full overflow-auto pl-4">
+                        {participants?.map(({id, photo_url}) =>
+                            <Avatar
+                                key={id}
+                                size={48}
+                                src={photo_url}
+                                style={{
+                                    marginLeft: "-1rem"
+                                }}
+                            />)}
+                    </div>
+                </div>
+
+                <div>
+                    <Input
+                        autoFocus
+                        value={expenseName}
+                        onChange={onExpenseNameChange}
+                        placeholder={t("expenses.ExpenseName")}
+                        className="mb-2"
+                        status={expenseName.length < 3 ? "error" : "default"}
+                    />
+
+                    <div className="flex items-center justify-between">
+                        <div className="grow mr-1">
+                            <Input
+                                type="number"
+                                inputMode="decimal"
+                                step="any"
+                                // @ts-ignore
+                                value={moneySpent}
+                                onChange={onMoneySpentChange}
+                                placeholder={t("expenses.MoneySpent")}
+                                status={(moneySpent && moneySpent > 0) ? "default" : "error"}
+                            />
+                        </div>
+                        <CurrencySelect
+                            defaultCurrency={currency}
+                            onChange={onCurrencyChange}
+                            disabled={!!selectedExpense}
+                        />
+                    </div>
+                </div>
+
+                <List
+                    className="mt-4 w-full rounded-3xl"
+                    style={{
+                        background: "var(--tgui--bg_color)",
+                    }}>
+                    <Cell
+                        className="p-0 addExpense__cell"
+                        after={
+                            <DatePicker
+                                disabled={!!selectedExpense}
+                                value={dayjs(date)}
+                                onChange={onDateChange}
+                                className="max-w-28 rounded-3xl addExpense"
+                            />}
+                    >
+                        {t("expenses.Date")}
+                    </Cell>
+                    <Divider/>
+
+                    <Cell
+                        className="p-0 addExpense__cell"
+                        after={
+                            <Switch
+                                defaultChecked={isFullyPaidByYou}
+                                onChange={onFullyPaidByYouChange}
+                                style={{"backgroundColor": "red"}}
+                            />
+                        }
+                    >
+                        {t("expenses.FullyPaidByYou")}
+                    </Cell>
+                    <Divider/>
+
+                    <Cell
+                        className="p-0 addExpense__cell"
+                        after={
+                            <Switch
+                                defaultChecked={isSplitEquallyBetweenAll}
+                                onChange={onSplitEquallyBetweenAllChange}
+                            />
+                        }
+                    >
+                        {t("expenses.SplitEquallyBetweenAll")}
+                    </Cell>
+                </List>
+
+                {!isFullyPaidByYou &&
+                    <div className="mb-4">
+                        <div className="mt-4 flex items-center justify-between">
+                            <Headline weight="3">{t("expenses.PaidBy")}:</Headline>
+                        </div>
+                        <Divider className="mt-2 border-2"/>
+
+                        <List className="mt-4 w-full rounded-3xl px-0">
+                            {participants.map(({id, name, photo_url}) =>
+                                (<div key={id} className="flex items-center justify-between">
+                                    <div className="flex items-center w-1/2">
+                                        <Switch
+                                            className="shrink-0"
+                                            defaultChecked={paidBy.find(x => x.id === id)?.isSelected}
+                                            onChange={onPaidByChange(id)}
+                                        />
+
+                                        <Avatar size={48} src={photo_url} className="ml-2"/>
+
+                                        <Text className="ml-4 overflow-hidden text-ellipsis">{name}</Text>
+                                    </div>
+
+                                    <Input
+                                        value={paidBy.find(x => x.id === id)?.amount}
+                                        onChange={onPaidByAmountChange(id)}
+                                        type="number"
+                                        inputMode="decimal"
+                                        step="any"
+                                        className="w-36 ml-auto"
+                                        status={currentPaidMoneyAmount !== moneySpent ? "error" : undefined}
+                                        disabled={!paidBy.find(x => x.id === id)?.isSelected}
+                                        after={
+                                            <Caption
+                                                level="1"
+                                                weight="3"
+                                            >
+                                                {currency}
+                                            </Caption>}
+                                    />
+
+                                </div>))}
+                        </List>
+
+                        {Number(moneySpent) > 0 &&
+                            <Text
+                                weight="3"
+                                className="flex justify-end"
+                            >
+                                {`${currentPaidMoneyAmount} ${t("expenses.Of")} ${moneySpent} ${currency} ${t("expenses.Filled")}.
+                            ${Number(moneySpent) - currentPaidMoneyAmount} ${currency} ${t("expenses.Left")}.`}
+                            </Text>
+                        }
+                    </div>}
+
+                {!isSplitEquallyBetweenAll &&
+                    <div className="mb-4">
+                        <div className="mt-4 flex items-center justify-between">
+                            <Headline weight="3">{t("expenses.Split")}:</Headline>
+
+                            <Headline weight="3" className="invisible">{t("expenses.Split")}:</Headline>
+                        </div>
+                        <Divider className="mt-2 border-2"/>
+
+                        <List className="mt-4 w-full rounded-3xl px-0">
+                            {participants?.map(({id, name, photo_url}) =>
+                                <div key={id} className="flex items-center justify-between">
+                                    <div className="flex items-center w-1/2">
+                                        <Switch
+                                            className="shrink-0"
+                                            defaultChecked={splitBetween.find(x => x.id === id)?.isSelected}
+                                            onChange={onSplitBetweenChange(id)}
+                                        />
+
+                                        <Avatar size={48} src={photo_url} className="ml-2"/>
+
+                                        <Text className="ml-4 overflow-hidden text-ellipsis">{name}</Text>
+                                    </div>
+
+                                    <Input
+                                        value={splitBetween.find(x => x.id === id)?.amount}
+                                        onChange={onSplitBetweenAmountChange(id)}
+                                        type="number"
+                                        inputMode="decimal"
+                                        step="any"
+                                        className="w-36 ml-auto"
+                                        after={
+                                            <Caption
+                                                level="1"
+                                                weight="3"
+                                            >
+                                                {currency}
+                                            </Caption>}
+                                    />
+                                </div>
+                            )}
+                        </List>
+
+                        {Number(moneySpent) > 0 &&
+                            <Text
+                                weight="3"
+                                className="flex justify-end"
+                            >
+                                {currentSplitBetweenMoneyAmount} of {moneySpent} USD
+                                filled. {`${Number(moneySpent) - currentSplitBetweenMoneyAmount} USD left.`}
+                            </Text>
+                        }
+                    </div>
+                }
+            </Main>
+        </>
+    );
+}

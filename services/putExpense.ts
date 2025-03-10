@@ -3,7 +3,7 @@ import {SERVER_URL} from "@/API/APIConstants";
 import getCurrentUserId from "@/utils/getCurrentUserId";
 
 interface CreateExpenseUser {
-    user_id: number,
+    user_id?: number,
     amount?: number,
 }
 
@@ -18,7 +18,7 @@ export const putExpense = async ({
     expense_id: number,
     payers: CreateExpenseUser[],
     debtors: CreateExpenseUser[],
-    users: number[],
+    users: (number | undefined)[],
     amount: number,
     description?: string,
 }) => {

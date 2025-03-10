@@ -4,7 +4,7 @@ import {MouseEventHandler} from "react";
 import {useTranslation} from "react-i18next";
 import classNames from "classnames";
 import {Button} from "@telegram-apps/telegram-ui";
-import HeaderWithSearch from "@/app/main/header/headerWithSearch";
+import HeaderWithSearch from "@/app/components/header/headerWithSearch";
 
 export default function AddGroupsHeader({searchValue, setSearchValue, isPrevVisible, isNextDisabled, onPrev, onNext}: {
     searchValue: string,

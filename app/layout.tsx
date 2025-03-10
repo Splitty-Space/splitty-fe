@@ -5,7 +5,7 @@ import {useRouter} from "next/navigation";
 import React, {useEffect, useState} from "react";
 import i18next from "i18next";
 import "@/i18n";
-import {AppRoot} from "@telegram-apps/telegram-ui";
+import {AppRoot, Snackbar} from "@telegram-apps/telegram-ui";
 import "@telegram-apps/telegram-ui/dist/styles.css";
 import classNames from "classnames";
 import "@/API/axiosConfig";
@@ -18,10 +18,14 @@ import {retrieveLaunchParams} from "@telegram-apps/bridge";
 import {LocalizationProvider} from "@mui/x-date-pickers";
 import {ThemeProvider, createTheme} from "@mui/material/styles";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
-import Footer from "@/app/main/footer/footer";
+import Footer from "@/app/components/footer/footer";
 import {useStore} from "@/app/store";
 import useFriends from "@/services/useFriends";
+import {Icon28Bin} from "@/Icons";
+import {useTranslation} from "react-i18next";
 import "./globals.css";
+import Link from "next/link";
+import {account} from "@/const/urls";
 
 // import type {Metadata} from "next";
 // export const metadata: Metadata = {
@@ -129,30 +133,25 @@ export default function RootLayout({children}: Readonly<{
         };
     }, []);
 
-
-    const currentTab = useStore((state) => state.currentTab);
-    const setCurrentTab = useStore((state) => state.setCurrentTab);
-
-    const subpage = useStore((state) => state.subpage);
-    const setSubpage = useStore((state) => state.setSubpage);
+    const {t} = useTranslation();
 
     const searchValue = useStore((state) => state.searchValue);
     const setSearchValue = useStore((state) => state.setSearchValue);
-
     const selectedUserId = useStore((state) => state.selectedUserId);
     const setSelectedUserId = useStore((state) => state.setSelectedUserId);
-
     const setSelectedFriends = useStore((state) => state.setSelectedFriends);
-
     const setSelectedExpense = useStore((state) => state.setSelectedExpense);
+    const isDeleteFriendSnackbarShown = useStore((state) => state.isDeleteFriendSnackbarShown);
+    const setIsDeleteFriendSnackbarShown = useStore((state) => state.setIsDeleteFriendSnackbarShown);
+    const isDeleteExpenseSnackbarShown = useStore((state) => state.isDeleteExpenseSnackbarShown);
+    const setIsDeleteExpenseSnackbarShown = useStore((state) => state.setIsDeleteExpenseSnackbarShown);
 
     const {data, loadingFriends, refetchFriends} = useFriends(searchValue)
-
     const friends = data?.data;
 
     return (
         <html lang="en">
-        <Script src="https://telegram.org/js/telegram-web-app.js"/>
+        {/*<Script src="https://telegram.org/js/telegram-web-app.js"/> TODO remove? */}
 
         <body className={classNames("overflow-hidden h-screen", {
             "body_dark": appearance === DARK
@@ -170,10 +169,6 @@ export default function RootLayout({children}: Readonly<{
                             {children}
 
                             <Footer
-                                currentTab={currentTab}
-                                setCurrentTab={setCurrentTab}
-                                subpage={subpage}
-                                setSubpage={setSubpage}
                                 friends={friends}
                                 selectedUserId={selectedUserId}
                                 setSelectedUserId={setSelectedUserId}
@@ -181,6 +176,26 @@ export default function RootLayout({children}: Readonly<{
                                 setSearchValue={setSearchValue}
                                 setSelectedExpense={setSelectedExpense}
                             />
+
+                            {isDeleteFriendSnackbarShown && (
+                                <Snackbar
+                                    className="mb-20"
+                                    before={<Icon28Bin/>}
+                                    onClose={() => setIsDeleteFriendSnackbarShown(false)}
+                                >
+                                    {t("friendSettings.FriendDeleted")}
+                                </Snackbar>
+                            )}
+
+                            {isDeleteExpenseSnackbarShown && (
+                                <Snackbar
+                                    className="mb-20"
+                                    before={<Icon28Bin/>}
+                                    onClose={() => setIsDeleteExpenseSnackbarShown(false)}
+                                >
+                                    {t("expenseDetails.ExpenseDeleted")}
+                                </Snackbar>
+                            )}
                         </AppRoot>
                     </ThemeProvider>
                 </LocalizationProvider>

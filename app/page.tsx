@@ -1,102 +1,98 @@
 "use client"
 
-import Friends from "@/app/friends/friends";
-import Account from "@/app/main/account/account";
-import {TabIds} from "@/const/tabIds";
-import AddExpenseParticipants from "@/app/main/expenses/addExpenseParticipants";
+import React, {useEffect, useState} from "react";
+import classNames from "classnames";
+import {useTranslation} from "react-i18next";
+import {init} from "@telegram-apps/sdk";
+import {useRouter} from "next/navigation";
+import {Avatar, Cell, List, Placeholder, Spinner, Divider, Caption} from "@telegram-apps/telegram-ui";
+import Main from "@/app/components/main/main";
+import FriendsHeader from "@/app/components/friendsHeader/friendsHeader";
+import {Arrow} from "@/Icons";
+import {friend} from "@/const/urls";
+import {useStore} from "@/app/store";
 import useFriends from "@/services/useFriends";
-import AddExpense from "@/app/main/expenses/addExpense";
 import "dayjs/locale/ru";
 import "dayjs/locale/uk";
-import Activity from "@/app/main/activity/activity";
-import useMe from "@/services/useMe";
-import {useStore} from "@/app/store";
-import {init} from "@telegram-apps/sdk";
-import {useEffect} from "react";
-// import "@/utils/mockTelegramEnv"; // TODO DO NOT UNCOMMENT
+import "./friendsList.css";
 
-export default function Page() {
-    const currentTab = useStore((state) => state.currentTab);
-    const setCurrentTab = useStore((state) => state.setCurrentTab);
+import "@/utils/mockTelegramEnv";
+import Link from "next/link";
+// TODO DO NOT UNCOMMENT
 
-    const subpage = useStore((state) => state.subpage);
-    const setSubpage = useStore((state) => state.setSubpage);
+export default function FriendsList() {
+    const {t} = useTranslation();
+    const router = useRouter();
 
     const searchValue = useStore((state) => state.searchValue);
     const setSearchValue = useStore((state) => state.setSearchValue);
-
-    const selectedUserId = useStore((state) => state.selectedUserId);
     const setSelectedUserId = useStore((state) => state.setSelectedUserId);
 
-    const selectedFriends = useStore((state) => state.selectedFriends);
-    const setSelectedFriends = useStore((state) => state.setSelectedFriends);
-
-    const selectedExpense = useStore((state) => state.selectedExpense);
-    const setSelectedExpense = useStore((state) => state.setSelectedExpense);
-
-    const pageData = useStore((state) => state.pageData);
-    const setPageData = useStore((state) => state.setPageData);
-
-    const {data, loadingFriends, refetchFriends} = useFriends(searchValue)
-
-    const selectedFriend = data?.data?.find(friend => friend.id === selectedUserId);
+    const {data, loadingFriends, refetchFriends} = useFriends(searchValue);
     const friends = data?.data;
 
-    const {data: me} = useMe();
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     useEffect(() => init(), []);
 
     return (
         <>
-            {currentTab === TabIds.Friends &&
-                <Friends
-                    subpage={subpage}
-                    setSubpage={setSubpage}
-                    setCurrentTab={setCurrentTab}
-                    searchValue={searchValue}
-                    pageData={pageData}
-                    setSearchValue={setSearchValue}
-                    setSelectedUserId={setSelectedUserId}
-                    friends={friends}
-                    loadingFriends={loadingFriends}
-                    refetchFriends={refetchFriends}
-                    // @ts-ignore
-                    selectedFriend={selectedFriend}
-                    setSelectedFriends={setSelectedFriends}
-                    // @ts-ignore
-                    selectedExpense={selectedExpense}
-                    setSelectedExpense={setSelectedExpense}
-                />
-            }
-            {currentTab === TabIds.Activity &&
-                <Activity
-                    subpage={subpage}
-                    setCurrentTab={setCurrentTab}
-                    setSubpage={setSubpage}
-                    setPageData={setPageData}
-                    setSelectedExpense={setSelectedExpense}
-                />}
-            {currentTab === TabIds.Account &&
-                <Account/>}
-            {currentTab === TabIds.AddExpenseParticipants &&
-                <AddExpenseParticipants
-                    selectedFriends={selectedFriends}
-                    friends={friends}
-                    loadingFriends={loadingFriends}
-                    setCurrentTab={setCurrentTab}
-                    setSelectedFriends={setSelectedFriends}
-                />}
-            {currentTab === TabIds.AddExpense &&
-                <AddExpense
-                    me={me}
-                    selectedFriends={selectedFriends}
-                    // @ts-ignore
-                    selectedExpense={selectedExpense}
-                    setSubpage={setSubpage}
-                    setCurrentTab={setCurrentTab}
-                    refetchFriends={refetchFriends}
-                />}
+            <FriendsHeader searchValue={searchValue} setSearchValue={setSearchValue} onSearchChange={setIsSearchOpen}/>
 
+            <Main
+                center={loadingFriends}
+                style={isSearchOpen ? {height: "calc(100% - 8rem)"} : undefined}
+                className={classNames({
+                    "margin-top-32": isSearchOpen
+                })}
+            >
+                {
+                    loadingFriends ?
+                        (<Spinner size="l"/>) :
+                        searchValue === "" && friends?.length === 0 ?
+                            (<Placeholder header={t("friendsList.AddFirstFriend")}>
+                                <Arrow className="ml-16"/>
+                            </Placeholder>) :
+                            friends?.length > 0 ?
+                                (
+                                    <List className="p-0">
+                                        {friends?.map(({id, name, username, photo_url, total}) =>
+                                            <div key={id} className="margin-bottom-0">
+                                                <Cell
+                                                    className="friends-list_shrink-0"
+                                                    before={<Avatar size={48} src={photo_url}/>}
+                                                    subtitle={<span
+                                                        className={classNames("text-ellipsis overflow-hidden", {
+                                                            "invisible": !username
+                                                        })}>
+                                                         {"@" + username}
+                                                    </span>}
+                                                    after={<div className="flex flex-col items-end">
+                                                        {total.slice(0, 2).map(({amount, currency}, index) =>
+                                                            <Caption
+                                                                key={index}
+                                                                weight="3"
+                                                                className={Number(amount) > 0 ? "blue" : "red"}
+                                                            >
+                                                                {`${Number(amount) > 0 ? "owes you" : "you owe"} ${Math.abs(Number(amount))} ${currency}`}
+                                                            </Caption>)
+                                                        }
+                                                    </div>}
+                                                    onClick={() => {
+                                                        setSelectedUserId(id);
+                                                        router.push(friend);
+                                                    }}
+                                                >
+                                                    {name}
+                                                </Cell>
+                                                <Divider className="ml-20 border-2"/>
+                                            </div>
+                                        )
+                                        }
+                                    </List>)
+                                : (<Placeholder header={t("friendsList.FriendNotFound")}/>)
+                }
+            </Main>
         </>
     );
 }
