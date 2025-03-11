@@ -18,6 +18,7 @@ import ExpenseHistoryList from "@/app/expense/details/ExpenseHistoryList";
 import useFriends from "@/services/useFriends";
 import {useRouter} from "next/navigation";
 import {activity, addExpense, friendsList, settleUpPayment} from "@/const/urls";
+import {popup} from "@telegram-apps/sdk";
 import "./expenseDetails.css";
 
 export default function ExpenseDetails() {
@@ -57,20 +58,23 @@ export default function ExpenseDetails() {
         }
     };
 
-    const onDelete = () => {
-        window.Telegram?.WebApp?.showPopup({
+    const onDelete = async () => {
+        if (popup.open.isAvailable()) {
+            const promise = popup.open({
                 title: t("friendSettings.ConfirmDelete"),
                 message: t("expenseDetails.ConfirmMessage"),
                 buttons: [
+                    // @ts-ignore
                     {type: "cancel", text: t("friendSettings.CancelButton")},
                     {id: "confirm", type: "destructive", text: t("friendSettings.DeleteButton")},
                 ]
-            },
-            function (buttonId: string) {
-                if (buttonId === "confirm") {
-                    expenseDelete();
-                }
             });
+
+            const buttonId = await promise;
+            if (buttonId === "confirm") {
+                expenseDelete();
+            }
+        }
     };
 
     const onEdit = () => {

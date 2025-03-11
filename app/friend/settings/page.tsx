@@ -10,6 +10,7 @@ import {useStore} from "@/app/store";
 import useFriends from "@/services/useFriends";
 import {friendsList} from "@/const/urls";
 import {useRouter} from "next/navigation";
+import {popup} from "@telegram-apps/sdk";
 import "./friendSettings.css";
 
 export default function FriendSettings() {
@@ -26,23 +27,26 @@ export default function FriendSettings() {
 
     const router = useRouter();
 
-    const openDeleteConfirmPopup = () => {
-        Telegram?.WebApp?.showPopup({
+    const openDeleteConfirmPopup = async () => {
+        if (popup.open.isAvailable()) {
+            const promise = popup.open({
                 title: t("friendSettings.ConfirmDelete"),
                 message: t("friendSettings.ConfirmMessage"),
                 buttons: [
+                    // @ts-ignore
                     {type: "cancel", text: t("friendSettings.CancelButton")},
                     {id: "confirm", type: "destructive", text: t("friendSettings.DeleteButton")},
                 ]
-            },
-            function (buttonId: string) {
-                if (buttonId === "confirm") {
-                    deleteFriend(friend?.id)
-                        .then(() => setIsDeleteFriendSnackbarShown(true))
-                        .then(() => refetchFriends())
-                        .then(() => router.push(friendsList));
-                }
             });
+
+            const buttonId = await promise;
+            if (buttonId === "confirm") {
+                deleteFriend(friend?.id)
+                    .then(() => setIsDeleteFriendSnackbarShown(true))
+                    .then(() => refetchFriends())
+                    .then(() => router.push(friendsList));
+            }
+        }
     };
 
     const onAddFriend = () => {
