@@ -140,6 +140,8 @@ export default function RootLayout({children}: Readonly<{
                 backButton.show();
                 console.log("backButton.isVisible() = ", backButton.isVisible());
 
+                console.log("backButton.onClick.isAvailable() = ", backButton.onClick.isAvailable());
+
                 if (backButton.onClick.isAvailable()) {
                     function listener() {
                         console.log("Clicked!");
@@ -174,7 +176,7 @@ export default function RootLayout({children}: Readonly<{
 
     return (
         <html lang="en">
-        <Script src="https://telegram.org/js/telegram-web-app.js"/>
+        {/*<Script src="https://telegram.org/js/telegram-web-app.js"/>*/}
 
         <body className={classNames("overflow-hidden h-screen", {
             "body_dark": appearance === DARK
