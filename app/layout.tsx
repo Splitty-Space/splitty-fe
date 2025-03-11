@@ -12,17 +12,17 @@ import useMe from "@/services/useMe";
 import {DARK, DEFAULT_THEME, THEME_TYPE} from "@/const/theme";
 import {ANDROID, DEFAULT_PLATFORM, IOS, PLATFORM_TYPE} from "@/const/platform";
 import {AppRootContext} from "./AppRootContext";
-import {backButton, miniApp, closingBehavior, swipeBehavior, viewport} from "@telegram-apps/sdk";
+import {backButton, closingBehavior, miniApp, swipeBehavior, viewport} from "@telegram-apps/sdk";
 import {retrieveLaunchParams} from "@telegram-apps/bridge";
 import {LocalizationProvider} from "@mui/x-date-pickers";
-import {ThemeProvider, createTheme} from "@mui/material/styles";
+import {createTheme, ThemeProvider} from "@mui/material/styles";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import Footer from "@/app/components/footer/footer";
 import {useStore} from "@/app/store";
 import useFriends from "@/services/useFriends";
 import {Icon28Bin} from "@/Icons";
 import {useTranslation} from "react-i18next";
-import {account, activity, expenseParticipants, friendsList, groups} from "@/const/urls";
+import {account, activity, expenseParticipants, friendsList, groups, urls} from "@/const/urls";
 import "./globals.css";
 
 // import type {Metadata} from "next";
@@ -134,16 +134,9 @@ export default function RootLayout({children}: Readonly<{
             if (miniApp.mount.isAvailable()) {
                 try {
                     const promise = miniApp.mount();
-                    console.log("miniApp.isMounting() = ", miniApp.isMounting());
-
                     await promise;
-
-                    console.log("miniApp.isMounting() = ", miniApp.isMounting());
-                    console.log("miniApp.isMounted() = ", miniApp.isMounted());
                 } catch (err) {
                     console.log("miniApp.mountError() = ", miniApp.mountError());
-                    console.log("miniApp.isMounting() = ", miniApp.isMounting());
-                    console.log("miniApp.isMounted() = ", miniApp.isMounted());
                 }
             }
         }
@@ -151,14 +144,10 @@ export default function RootLayout({children}: Readonly<{
         mountMiniApp().then(() => {
             if (miniApp.setBackgroundColor.isAvailable()) {
                 miniApp.setBackgroundColor("#000000");
-
-                console.log("miniApp.backgroundColor() = ", miniApp.backgroundColor());
             }
 
             if (miniApp.setHeaderColor.isAvailable()) {
                 miniApp.setHeaderColor("#000000");
-
-                console.log("miniApp.headerColor() = ", miniApp.headerColor());
             }
         });
     }, []);
@@ -204,6 +193,12 @@ export default function RootLayout({children}: Readonly<{
             offClick && offClick();
         };
     }, [router, pathname]);
+
+    useEffect(() => {
+        urls.forEach((route) => {
+            router.prefetch(route);
+        });
+    }, [router]);
 
     const {t} = useTranslation();
 

@@ -10,3 +10,18 @@ export const addExpense = "/expense/add";
 export const expenseParticipants = "/expense/participants";
 export const activity = "/activity";
 export const account = "/account";
+
+export const urls = [
+    friendsList,
+    friend,
+    friendSettings,
+    settleUp,
+    settleUpPayment,
+    expenseDetails,
+    groups,
+    addGroups,
+    addExpense,
+    expenseParticipants,
+    activity,
+    account
+];
