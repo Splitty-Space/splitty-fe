@@ -13,7 +13,7 @@ import useMe from "@/services/useMe";
 import {DARK, DEFAULT_THEME, THEME_TYPE} from "@/const/theme";
 import {ANDROID, DEFAULT_PLATFORM, IOS, PLATFORM_TYPE} from "@/const/platform";
 import {AppRootContext} from "./AppRootContext";
-import {closingBehavior, swipeBehavior, viewport} from "@telegram-apps/sdk";
+import {backButton, closingBehavior, swipeBehavior, viewport} from "@telegram-apps/sdk";
 import {retrieveLaunchParams} from "@telegram-apps/bridge";
 import {LocalizationProvider} from "@mui/x-date-pickers";
 import {ThemeProvider, createTheme} from "@mui/material/styles";
@@ -56,7 +56,7 @@ export default function RootLayout({children}: Readonly<{
     useEffect(() => {
         setAppearance(DARK);
         setPlatform(IOS);
-    }, [router]);
+    }, []);
 
     useEffect(() => {
         if (closingBehavior.mount.isAvailable()) {
@@ -131,6 +131,31 @@ export default function RootLayout({children}: Readonly<{
         };
     }, []);
 
+    useEffect(() => {
+        if (backButton.mount.isAvailable()) {
+            backButton.mount();
+            console.log("backButton.isMounted() = ", backButton.isMounted());
+
+            if (backButton.show.isAvailable()) {
+                backButton.show();
+                console.log("backButton.isVisible() = ", backButton.isVisible());
+
+                if (backButton.onClick.isAvailable()) {
+                    function listener() {
+                        console.log("Clicked!");
+                        router.back();
+                    }
+
+                    backButton.onClick(listener);
+                }
+            }
+        }
+        return () => {
+            backButton.unmount();
+            console.log("backButton.isMounted() = ", backButton.isMounted());
+        };
+    }, [router]);
+
     const {t} = useTranslation();
 
     const searchValue = useStore((state) => state.searchValue);
@@ -149,7 +174,7 @@ export default function RootLayout({children}: Readonly<{
 
     return (
         <html lang="en">
-        {/*<Script src="https://telegram.org/js/telegram-web-app.js"/> TODO remove? */}
+        <Script src="https://telegram.org/js/telegram-web-app.js"/>
 
         <body className={classNames("overflow-hidden h-screen", {
             "body_dark": appearance === DARK
