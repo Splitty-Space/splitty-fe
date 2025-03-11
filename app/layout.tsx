@@ -1,7 +1,7 @@
 "use client"
 
 import Script from "next/script";
-import {useRouter} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import React, {useEffect, useState} from "react";
 import i18next from "i18next";
 import "@/i18n";
@@ -24,6 +24,7 @@ import useFriends from "@/services/useFriends";
 import {Icon28Bin} from "@/Icons";
 import {useTranslation} from "react-i18next";
 import "./globals.css";
+import {account, activity, addExpense, friendsList, groups} from "@/const/urls";
 
 // import type {Metadata} from "next";
 // export const metadata: Metadata = {
@@ -50,8 +51,6 @@ export default function RootLayout({children}: Readonly<{
             i18next.changeLanguage(me.language);
         }
     }, [me]);
-
-    const router = useRouter();
 
     useEffect(() => {
         setAppearance(DARK);
@@ -131,32 +130,43 @@ export default function RootLayout({children}: Readonly<{
         };
     }, []);
 
+    const router = useRouter();
+    const pathname = usePathname();
+
     useEffect(() => {
         if (backButton.mount.isAvailable()) {
             backButton.mount();
-            console.log("backButton.isMounted() = ", backButton.isMounted());
-
-            if (backButton.show.isAvailable()) {
-                backButton.show();
-                console.log("backButton.isVisible() = ", backButton.isVisible());
-
-                console.log("backButton.onClick.isAvailable() = ", backButton.onClick.isAvailable());
-
-                if (backButton.onClick.isAvailable()) {
-                    function listener() {
-                        console.log("Clicked!");
-                        router.back();
-                    }
-
-                    backButton.onClick(listener);
-                }
-            }
         }
         return () => {
             backButton.unmount();
-            console.log("backButton.isMounted() = ", backButton.isMounted());
         };
-    }, [router]);
+    }, []);
+
+    useEffect(() => {
+        let offClick: VoidFunction;
+
+        if (pathname === friendsList || pathname === groups || pathname === activity || pathname === account) {
+            if (backButton.hide.isAvailable()) {
+                backButton.hide();
+            }
+        } else {
+            if (backButton.show.isAvailable()) {
+                backButton.show();
+
+                if (backButton.onClick.isAvailable()) {
+                    function listener() {
+                        router.back();
+                    }
+
+                    offClick = backButton.onClick(listener);
+                }
+            }
+        }
+
+        return () => {
+            offClick();
+        };
+    }, [router, pathname]);
 
     const {t} = useTranslation();
 
