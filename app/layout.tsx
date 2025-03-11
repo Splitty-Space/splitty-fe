@@ -164,7 +164,7 @@ export default function RootLayout({children}: Readonly<{
         }
 
         return () => {
-            offClick();
+            offClick && offClick();
         };
     }, [router, pathname]);
 
