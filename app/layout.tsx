@@ -150,13 +150,13 @@ export default function RootLayout({children}: Readonly<{
 
         mountMiniApp().then(() => {
             if (miniApp.setBackgroundColor.isAvailable()) {
-                miniApp.setBackgroundColor("#1c1c1d");
+                miniApp.setBackgroundColor("secondary_bg_color");
 
                 console.log("miniApp.backgroundColor() = ", miniApp.backgroundColor());
             }
 
             if (miniApp.setHeaderColor.isAvailable()) {
-                miniApp.setHeaderColor("#1c1c1d");
+                miniApp.setHeaderColor("secondary_bg_color");
                 miniApp.headerColor();
 
                 console.log("miniApp.headerColor() = ", miniApp.headerColor());
