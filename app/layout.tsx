@@ -1,6 +1,5 @@
 "use client"
 
-import Script from "next/script";
 import {usePathname, useRouter} from "next/navigation";
 import React, {useEffect, useState} from "react";
 import i18next from "i18next";
@@ -13,7 +12,7 @@ import useMe from "@/services/useMe";
 import {DARK, DEFAULT_THEME, THEME_TYPE} from "@/const/theme";
 import {ANDROID, DEFAULT_PLATFORM, IOS, PLATFORM_TYPE} from "@/const/platform";
 import {AppRootContext} from "./AppRootContext";
-import {backButton, closingBehavior, swipeBehavior, viewport} from "@telegram-apps/sdk";
+import {backButton, miniApp, closingBehavior, swipeBehavior, viewport} from "@telegram-apps/sdk";
 import {retrieveLaunchParams} from "@telegram-apps/bridge";
 import {LocalizationProvider} from "@mui/x-date-pickers";
 import {ThemeProvider, createTheme} from "@mui/material/styles";
@@ -23,8 +22,8 @@ import {useStore} from "@/app/store";
 import useFriends from "@/services/useFriends";
 import {Icon28Bin} from "@/Icons";
 import {useTranslation} from "react-i18next";
+import {account, activity, expenseParticipants, friendsList, groups} from "@/const/urls";
 import "./globals.css";
-import {account, activity, addExpense, friendsList, groups} from "@/const/urls";
 
 // import type {Metadata} from "next";
 // export const metadata: Metadata = {
@@ -130,6 +129,41 @@ export default function RootLayout({children}: Readonly<{
         };
     }, []);
 
+    useEffect(() => {
+        const mountMiniApp = async () => {
+            if (miniApp.mount.isAvailable()) {
+                try {
+                    const promise = miniApp.mount();
+                    console.log("miniApp.isMounting() = ", miniApp.isMounting());
+
+                    await promise;
+
+                    console.log("miniApp.isMounting() = ", miniApp.isMounting());
+                    console.log("miniApp.isMounted() = ", miniApp.isMounted());
+                } catch (err) {
+                    console.log("miniApp.mountError() = ", miniApp.mountError());
+                    console.log("miniApp.isMounting() = ", miniApp.isMounting());
+                    console.log("miniApp.isMounted() = ", miniApp.isMounted());
+                }
+            }
+        }
+
+        mountMiniApp().then(() => {
+            if (miniApp.setBackgroundColor.isAvailable()) {
+                miniApp.setBackgroundColor("bg_color");
+
+                console.log("miniApp.backgroundColor() = ", miniApp.backgroundColor());
+            }
+
+            if (miniApp.setHeaderColor.isAvailable()) {
+                miniApp.setHeaderColor("bg_color");
+                miniApp.headerColor();
+
+                console.log("miniApp.headerColor() = ", miniApp.headerColor());
+            }
+        });
+    }, []);
+
     const router = useRouter();
     const pathname = usePathname();
 
@@ -145,7 +179,11 @@ export default function RootLayout({children}: Readonly<{
     useEffect(() => {
         let offClick: VoidFunction;
 
-        if (pathname === friendsList || pathname === groups || pathname === activity || pathname === account) {
+        if (pathname === friendsList ||
+            pathname === groups ||
+            pathname === expenseParticipants ||
+            pathname === activity ||
+            pathname === account) {
             if (backButton.hide.isAvailable()) {
                 backButton.hide();
             }
