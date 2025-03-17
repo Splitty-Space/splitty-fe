@@ -2,7 +2,7 @@
 
 import React, {useState} from "react";
 import {useTranslation} from "react-i18next";
-import {Avatar, Cell, Divider, IconContainer, List, Select, Spinner, Title} from "@telegram-apps/telegram-ui";
+import {Cell, Divider, IconContainer, List, Select, Spinner, Title} from "@telegram-apps/telegram-ui";
 import {Icon28Chat} from "@telegram-apps/telegram-ui/dist/icons/28/chat";
 import {Icon28Devices} from "@telegram-apps/telegram-ui/dist/icons/28/devices";
 import {Icon28Stats} from "@telegram-apps/telegram-ui/dist/icons/28/stats";
@@ -14,11 +14,12 @@ import {CurrencySelect} from "@/components/CurrencySelect";
 import Header from "@/app/components/header/header";
 import Logo from "@/app/components/header/logo";
 import Main from "@/app/components/main/main";
+import Avatar from "@/app/components/avatar/Avatar";
 
 export default function Account() {
     const {t} = useTranslation();
 
-    const {data, refetch} = useMe();
+    const {data: me, refetch} = useMe();
 
     const {updateUserSettings} = useUpdateUserSettings();
 
@@ -58,12 +59,12 @@ export default function Account() {
             />
 
             <Main className="px-4 flex flex-col items-center">
-                {data ?
+                {me ?
                     <>
                         <div className="flex flex-col items-center mt-4">
                             <Avatar
                                 size={96}
-                                src={data.photo_url}
+                                user_id={me.id}
                             />
 
                             <Title
@@ -71,7 +72,7 @@ export default function Account() {
                                 level="1"
                                 weight="1"
                             >
-                                {data.name}
+                                {me.name}
                             </Title>
                         </div>
 
@@ -86,7 +87,7 @@ export default function Account() {
                                 before={<IconContainer><Icon28Stats/></IconContainer>}
                                 after={<CurrencySelect
                                     isLoading={isCurrencyLoading}
-                                    defaultCurrency={data.default_currency}
+                                    defaultCurrency={me.default_currency}
                                     onChange={onCurrencyChange}
                                     className="h-10"
                                 />}
@@ -100,7 +101,7 @@ export default function Account() {
                                 before={<IconContainer><Icon28Devices/></IconContainer>}
                                 after={!isLanguageLoading ?
                                     <Select
-                                        defaultValue={data.language.toUpperCase()}
+                                        defaultValue={me.language.toUpperCase()}
                                         className="ml-8"
                                         onChange={onLanguageChange}
                                     >

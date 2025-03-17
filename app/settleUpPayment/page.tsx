@@ -7,7 +7,7 @@ import dayjs, {Dayjs} from "dayjs";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import Header from "@/app/components/header/header";
 import Logo from "@/app/components/header/logo";
-import {Avatar, Button, Input, Section, Spinner, Text, Title} from "@telegram-apps/telegram-ui";
+import {Button, Input, Section, Spinner, Text, Title} from "@telegram-apps/telegram-ui";
 import {CurrencySelect} from "@/components/CurrencySelect";
 import {addExpense} from "@/services/addExpense";
 import useMe from "@/services/useMe";
@@ -17,6 +17,7 @@ import {useStore} from "@/app/store";
 import useFriends from "@/services/useFriends";
 import {useRouter} from "next/navigation";
 import {friendsList} from "@/const/urls";
+import Avatar from "@/app/components/avatar/Avatar";
 
 export default function SettleUpPayment() {
     const {t} = useTranslation();
@@ -143,11 +144,11 @@ export default function SettleUpPayment() {
                         <div className="flex flex-col items-center">
                             <Avatar
                                 size={48}
-                                src={isYouAreDebtor ? me.photo_url : friend?.photo_url}
+                                user_id={isYouAreDebtor ? me?.id : friend?.id}
                             />
 
                             <Text weight="3">
-                                {isYouAreDebtor ? me.name : friend?.name}
+                                {isYouAreDebtor ? me?.name : friend?.name}
                             </Text>
                         </div>
 
@@ -156,7 +157,7 @@ export default function SettleUpPayment() {
                         <div className="flex flex-col items-center">
                             <Avatar
                                 size={48}
-                                src={isYouAreDebtor ? friend?.photo_url : me.photo_url}
+                                user_id={isYouAreDebtor ? friend?.id : me?.id}
                             />
 
                             <Text weight="3">

@@ -1,7 +1,7 @@
 "use client"
 
 import {useTranslation} from "react-i18next";
-import {Avatar, Caption, Cell, Divider, List, Title} from "@telegram-apps/telegram-ui";
+import {Caption, Cell, Divider, List, Title} from "@telegram-apps/telegram-ui";
 import {Friend} from "@/entities";
 import Header from "@/app/components/header/header";
 import Logo from "@/app/components/header/logo";
@@ -9,6 +9,7 @@ import {useRouter} from "next/navigation";
 import {settleUpPayment} from "@/const/urls";
 import {useStore} from "@/app/store";
 import useFriends from "@/services/useFriends";
+import Avatar from "@/app/components/avatar/Avatar";
 
 export default function SettleUp() {
     const {t} = useTranslation();
@@ -42,7 +43,10 @@ export default function SettleUp() {
                         <div key={friend.id + currency}>
                             <Cell
                                 className="friends-list_shrink-0"
-                                before={<Avatar size={48} src={friend.photo_url}/>}
+                                before={<Avatar
+                                    size={48}
+                                    user_id={friend.id}
+                                />}
                                 after={
                                     <div className="flex flex-col">
                                         <Caption

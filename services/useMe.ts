@@ -7,7 +7,7 @@ export interface Me {
     name: string;
     language: string;
     default_currency: string;
-    photo_url: string;
+    photo: Blob;
     username: string;
     referral_code: string;
 }

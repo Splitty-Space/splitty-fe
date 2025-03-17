@@ -4,7 +4,6 @@ import React, {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {Friend} from "@/entities";
 import {
-    Avatar,
     Button,
     Cell,
     Divider,
@@ -20,6 +19,7 @@ import {useStore} from "@/app/store";
 import useFriends from "@/services/useFriends";
 import {useRouter} from "next/navigation";
 import {addExpense} from "@/const/urls";
+import Avatar from "@/app/components/avatar/Avatar";
 
 export default function AddExpenseParticipants() {
     const selectedFriends = useStore((state) => state.selectedFriends);
@@ -86,11 +86,11 @@ export default function AddExpenseParticipants() {
                         filteredFriends?.length > 0 ?
                             (
                                 <List className="mb-8 px-0">
-                                    {filteredFriends?.map(({id, name, username, photo_url}) =>
+                                    {filteredFriends?.map(({id, name, username}) =>
                                         <div key={id}>
                                             <Cell
                                                 className="h-14"
-                                                before={<Avatar size={48} src={photo_url}/>}
+                                                before={<Avatar size={48} user_id={id}/>}
                                                 subtitle={<span className="text-ellipsis overflow-hidden">
                                                          {"@" + username}
                                                     </span>}

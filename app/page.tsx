@@ -5,13 +5,14 @@ import classNames from "classnames";
 import {useTranslation} from "react-i18next";
 import {init} from "@telegram-apps/sdk";
 import {useRouter} from "next/navigation";
-import {Avatar, Cell, List, Placeholder, Spinner, Divider, Caption} from "@telegram-apps/telegram-ui";
+import {Cell, List, Placeholder, Spinner, Divider, Caption} from "@telegram-apps/telegram-ui";
 import Main from "@/app/components/main/main";
 import FriendsHeader from "@/app/components/friendsHeader/friendsHeader";
 import {Arrow} from "@/Icons";
 import {friend} from "@/const/urls";
 import {useStore} from "@/app/store";
 import useFriends from "@/services/useFriends";
+import Avatar from "@/app/components/avatar/Avatar";
 import "dayjs/locale/ru";
 import "dayjs/locale/uk";
 import "./friendsList.css";
@@ -35,7 +36,12 @@ export default function FriendsList() {
 
     return (
         <>
-            <FriendsHeader searchValue={searchValue} setSearchValue={setSearchValue} onSearchChange={setIsSearchOpen}/>
+            <FriendsHeader
+                searchValue={searchValue}
+                setSearchValue={setSearchValue}
+                onSearchChange={setIsSearchOpen}
+                isSearchDisabled={friends?.length === 0}
+            />
 
             <Main
                 center={loadingFriends}
@@ -54,11 +60,14 @@ export default function FriendsList() {
                             friends?.length > 0 ?
                                 (
                                     <List className="p-0">
-                                        {friends?.map(({id, name, username, photo_url, total}) =>
+                                        {friends?.map(({id, name, username, total}) =>
                                             <div key={id} className="margin-bottom-0">
                                                 <Cell
                                                     className="friends-list_shrink-0"
-                                                    before={<Avatar size={48} src={photo_url}/>}
+                                                    before={<Avatar
+                                                        size={48}
+                                                        user_id={id}
+                                                    />}
                                                     subtitle={<span
                                                         className={classNames("text-ellipsis overflow-hidden", {
                                                             "invisible": !username

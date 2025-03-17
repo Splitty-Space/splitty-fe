@@ -3,14 +3,14 @@
 import React from "react";
 import {useTranslation} from "react-i18next";
 import useMe from "@/services/useMe";
-import {Avatar, Badge, Cell, Divider, List, Spinner, Text} from "@telegram-apps/telegram-ui";
+import {Badge, Cell, Divider, List, Spinner, Text} from "@telegram-apps/telegram-ui";
 import useActivity from "@/services/useActivity";
 import classNames from "classnames";
 import {ACTIVITY_TYPE, ACTIVITY_TYPE_TO_TEXT} from "@/entities/Activity";
 import {Expense} from "@/entities";
 import {formatDate} from "@/utils/formatDate";
 import {ExpenseHistoryModal} from "@/app/expense/details/ExpenseHistoryModal";
-
+import Avatar from "@/app/components/avatar/Avatar";
 
 export default function ExpenseHistoryList({
                                                expanseId,
@@ -73,7 +73,7 @@ export default function ExpenseHistoryList({
                                                     <Cell
                                                         className="p-0"
                                                         subtitle={formatDate(created_at, me.language)}
-                                                        before={<Avatar size={48} src={user.photo_url}/>}
+                                                        before={<Avatar size={48} user_id={user.id}/>}
                                                         after={numberOfExpenseHistoryItems > 0 &&
                                                             (<Badge type="number">
                                                                 {numberOfExpenseHistoryItems}
@@ -91,7 +91,7 @@ export default function ExpenseHistoryList({
                                         <Cell
                                             className="p-0"
                                             subtitle={formatDate(created_at, me.language)}
-                                            before={<Avatar size={48} src={user.photo_url}/>}
+                                            before={<Avatar size={48} user_id={user.id}/>}
                                         >
                                             {activity_type !== ACTIVITY_TYPE.PAYMENT_CREATED ?
                                                 `${user.name} ` + t(`activity.${ACTIVITY_TYPE_TO_TEXT[activity_type]}`) + ` "${expense.description}"` :

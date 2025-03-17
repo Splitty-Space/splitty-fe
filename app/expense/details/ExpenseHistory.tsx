@@ -3,10 +3,11 @@
 import React from "react";
 import {useTranslation} from "react-i18next";
 import useMe from "@/services/useMe";
-import {Avatar, Cell, Divider, List, Spinner, Text} from "@telegram-apps/telegram-ui";
+import {Cell, Divider, List, Spinner, Text} from "@telegram-apps/telegram-ui";
 import Activity from "@/entities/Activity";
 import {formatDate} from "@/utils/formatDate";
 import {Expense} from "@/entities";
+import Avatar from "@/app/components/avatar/Avatar";
 
 type ValueType = {
     [key: string]: {
@@ -41,7 +42,10 @@ export default function ExpenseHistory({activity, selectedExpense}: {
                                                 <Cell
                                                     className="p-0"
                                                     subtitle={formatDate(activity.created_at, me.language)}
-                                                    before={<Avatar size={48} src={activity.user.photo_url}/>}
+                                                    before={<Avatar
+                                                        size={48}
+                                                        user_id={activity.user.id}
+                                                    />}
                                                 >
                                                     {_value && <span className="whitespace-normal">
                                                                 {`${activity.user.name} changed ${selectedExpense.expense_users[Number(_key)].user.name} 
@@ -59,7 +63,10 @@ export default function ExpenseHistory({activity, selectedExpense}: {
                                         <Cell
                                             className="p-0"
                                             subtitle={formatDate(activity.created_at, me.language)}
-                                            before={<Avatar size={48} src={activity.user.photo_url}/>}
+                                            before={<Avatar
+                                                size={48}
+                                                user_id={activity.user.id}
+                                            />}
                                         >
                                                 <span className="whitespace-normal">
                                                     {`${activity.user.name} changed ${key} ${value.old} to ${value.new}`}

@@ -3,14 +3,18 @@
 import React, {useState} from "react";
 import classNames from "classnames";
 import {useTranslation} from "react-i18next";
-import {Avatar, Cell, Input, List, Placeholder, Spinner, Tappable} from "@telegram-apps/telegram-ui";
+import {Cell, Input, List, Placeholder, Spinner, Tappable} from "@telegram-apps/telegram-ui";
 import {Icon24Close, Icon24Search} from "@/Icons";
 import {useSearchFriends} from "@/services/useSearchFriends";
 import {addFriend} from "@/services/addFriend";
 import {RefetchFunction} from "axios-hooks";
 import {friendsList} from "@/const/urls";
 import {useRouter} from "next/navigation";
+import Avatar from "@/app/components/avatar/Avatar";
 
+/**
+ * @deprecated TODO Remove?
+ */
 export default function AddFriend({refetchFriends}: {
     refetchFriends: RefetchFunction<any, any>,
 }) {
@@ -54,14 +58,14 @@ export default function AddFriend({refetchFriends}: {
 
             {searchValue !== "" && data && data?.data?.length > 0 && !error ?
                 (<List className="mb-8 px-0">
-                    {data?.data?.map(({id, name, username, photo_url}: {
-                        id: number, name: string, username: string, photo_url: string
+                    {data?.data?.map(({id, name, username}: {
+                        id: number, name: string, username: string
                     }) =>
                         <Cell
                             key={id}
                             subtitle={"@" + username}
                             onClick={onAddFriend(id)}
-                            before={<Avatar size={48} src={photo_url}/>}
+                            before={<Avatar size={48} user_id={id}/>}
                         >
                             {name}
                         </Cell>)

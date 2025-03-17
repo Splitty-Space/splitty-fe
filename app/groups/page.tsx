@@ -1,10 +1,11 @@
 "use client"
 
 import {useState} from "react";
-import {Avatar, Cell, List, Placeholder, Spinner} from "@telegram-apps/telegram-ui";
+import {Cell, List, Placeholder, Spinner} from "@telegram-apps/telegram-ui";
 import GroupsHeader from "@/app/groups/groupsHeader/groupsHeader";
 import Main from "@/app/components/main/main";
 import useGroups from "@/services/useGroups";
+import Avatar from "@/app/components/avatar/Avatar";
 import {Arrow} from "@/Icons";
 
 export default function GroupsList() {
@@ -19,13 +20,13 @@ export default function GroupsList() {
                 {
                     !!data && data?.data?.length > 0 ? (
                             <List className="mb-8 px-0">
-                                {data?.data?.map(({id, amount, name, photo_url}: {
-                                    id: number, amount: string, name: string, photo_url: string
+                                {data?.data?.map(({id, amount, name}: {
+                                    id: number, amount: string, name: string
                                 }) =>
                                     <Cell
                                         key={id}
                                         subtitle={amount}
-                                        before={<Avatar size={48} src={photo_url}/>}
+                                        before={<Avatar size={48} user_id={id}/>}
                                     >
                                         {name}
                                     </Cell>)

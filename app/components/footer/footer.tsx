@@ -1,5 +1,5 @@
 import {useCallback, FC} from "react";
-import {Avatar, Tabbar} from "@telegram-apps/telegram-ui";
+import {Tabbar} from "@telegram-apps/telegram-ui";
 import {Icon24Group, Icon24Person, Icon24Stats, PlusIcon} from "@/Icons";
 import {useTranslation} from "react-i18next";
 import {usePathname, useRouter} from "next/navigation";
@@ -8,6 +8,7 @@ import useMe from "@/services/useMe";
 import {Friend} from "@/entities";
 import {hapticFeedback, ImpactHapticFeedbackStyle} from "@telegram-apps/sdk";
 import {account, activity, addExpense, expenseParticipants, friend, friendsList, groups} from "@/const/urls";
+import Avatar from "@/app/components/avatar/Avatar";
 import "./footer.css";
 
 interface Tab {
@@ -34,7 +35,7 @@ export default function Footer({
 }) {
     const {t} = useTranslation();
 
-    const {data} = useMe();
+    const {data: me} = useMe();
 
     const tabs: Array<Tab> = [
         {
@@ -74,7 +75,7 @@ export default function Footer({
             Icon: () =>
                 <Avatar
                     size={24}
-                    src={data?.photo_url}
+                    user_id={me?.id}
                 />
         },
     ];

@@ -2,7 +2,6 @@
 
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import {
-    Avatar,
     Cell,
     Divider,
     Placeholder,
@@ -23,6 +22,7 @@ import {Expense} from "@/entities";
 import {useStore} from "@/app/store";
 import {useRouter} from "next/navigation";
 import {expenseDetails} from "@/const/urls";
+import Avatar from "@/app/components/avatar/Avatar";
 
 export default function ActivityPage() {
     const {t} = useTranslation();
@@ -116,7 +116,7 @@ export default function ActivityPage() {
                 <Cell
                     className="friends-list_shrink-0"
                     subtitle={formatDate(created_at, me.language)}
-                    before={<Avatar size={48} src={user.photo_url}/>}
+                    before={<Avatar size={48} user_id={user?.id}/>}
                     onClick={onCellClick(expense)}
                 >
                     {activity_type !== ACTIVITY_TYPE.PAYMENT_CREATED ?

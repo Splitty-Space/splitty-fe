@@ -3,7 +3,7 @@
 import {useTranslation} from "react-i18next";
 import Header from "@/app/components/header/header";
 import Logo from "@/app/components/header/logo";
-import {Avatar, Cell, Divider, List, Text, Title} from "@telegram-apps/telegram-ui";
+import {Cell, Divider, List, Text, Title} from "@telegram-apps/telegram-ui";
 import {addFriend} from "@/services/addFriend";
 import {deleteFriend} from "@/services/deleteFriend";
 import {useStore} from "@/app/store";
@@ -11,6 +11,7 @@ import useFriends from "@/services/useFriends";
 import {friendsList} from "@/const/urls";
 import {useRouter} from "next/navigation";
 import {popup} from "@telegram-apps/sdk";
+import Avatar from "@/app/components/avatar/Avatar";
 import "./friendSettings.css";
 
 export default function FriendSettings() {
@@ -65,7 +66,7 @@ export default function FriendSettings() {
             <div className="flex flex-col items-center justify-center p-4">
                 <Avatar
                     size={96}
-                    src={friend?.photo_url}
+                    user_id={friend?.id}
                 />
 
                 <Title

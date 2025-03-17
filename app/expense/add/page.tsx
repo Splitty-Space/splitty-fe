@@ -5,7 +5,6 @@ import {useTranslation} from "react-i18next";
 import Header from "@/app/components/header/header";
 import Main from "@/app/components/main/main";
 import {
-    Avatar,
     Button,
     Caption,
     Cell,
@@ -28,6 +27,7 @@ import useFriends from "@/services/useFriends";
 import {useStore} from "@/app/store";
 import {useRouter} from "next/navigation";
 import {expenseDetails, friendsList} from "@/const/urls";
+import Avatar from "@/app/components/avatar/Avatar";
 import "./addExpense.css";
 
 interface Payment {
@@ -315,11 +315,11 @@ export default function AddExpense() {
             <Main className="px-4">
                 <div className="my-5 flex flex-col items-center justify-center">
                     <div className="flex max-w-full overflow-auto pl-4">
-                        {participants?.map(({id, photo_url}) =>
+                        {participants?.map(({id}) =>
                             <Avatar
                                 key={id}
                                 size={48}
-                                src={photo_url}
+                                user_id={id}
                                 style={{
                                     marginLeft: "-1rem"
                                 }}
@@ -412,7 +412,7 @@ export default function AddExpense() {
                         <Divider className="mt-2 border-2"/>
 
                         <List className="mt-4 w-full rounded-3xl px-0">
-                            {participants.map(({id, name, photo_url}) =>
+                            {participants.map(({id, name}) =>
                                 (<div key={id} className="flex items-center justify-between">
                                     <div className="flex items-center w-1/2">
                                         <Switch
@@ -421,7 +421,7 @@ export default function AddExpense() {
                                             onChange={onPaidByChange(id)}
                                         />
 
-                                        <Avatar size={48} src={photo_url} className="ml-2"/>
+                                        <Avatar size={48} user_id={id} className="ml-2"/>
 
                                         <Text className="ml-4 overflow-hidden text-ellipsis">{name}</Text>
                                     </div>
@@ -456,9 +456,11 @@ export default function AddExpense() {
                             ${Number(moneySpent) - currentPaidMoneyAmount} ${currency} ${t("expenses.Left")}.`}
                             </Text>
                         }
-                    </div>}
+                    </div>
+                }
 
-                {!isSplitEquallyBetweenAll &&
+                {
+                    !isSplitEquallyBetweenAll &&
                     <div className="mb-4">
                         <div className="mt-4 flex items-center justify-between">
                             <Headline weight="3">{t("expenses.Split")}:</Headline>
@@ -468,7 +470,7 @@ export default function AddExpense() {
                         <Divider className="mt-2 border-2"/>
 
                         <List className="mt-4 w-full rounded-3xl px-0">
-                            {participants?.map(({id, name, photo_url}) =>
+                            {participants?.map(({id, name}) =>
                                 <div key={id} className="flex items-center justify-between">
                                     <div className="flex items-center w-1/2">
                                         <Switch
@@ -477,7 +479,7 @@ export default function AddExpense() {
                                             onChange={onSplitBetweenChange(id)}
                                         />
 
-                                        <Avatar size={48} src={photo_url} className="ml-2"/>
+                                        <Avatar size={48} user_id={id} className="ml-2"/>
 
                                         <Text className="ml-4 overflow-hidden text-ellipsis">{name}</Text>
                                     </div>
@@ -501,7 +503,8 @@ export default function AddExpense() {
                             )}
                         </List>
 
-                        {Number(moneySpent) > 0 &&
+                        {
+                            Number(moneySpent) > 0 &&
                             <Text
                                 weight="3"
                                 className="flex justify-end"

@@ -1,0 +1,31 @@
+import React, {memo} from "react";
+import {useUserPhoto} from "@/utils/useUserPhoto";
+import {Avatar as Avatar_} from "@telegram-apps/telegram-ui";
+
+interface AvatarProps {
+    user_id?: number;
+    size?: 20 | 24 | 28 | 40 | 48 | 96;
+    style?: React.CSSProperties;
+    className?: string;
+}
+
+const Avatar: React.FC<AvatarProps> = memo(({
+                                                user_id,
+                                                size = 40,
+                                                style,
+                                                className
+                                            }) => {
+    const {photoUrl} = useUserPhoto(user_id);
+
+    return <Avatar_
+        size={size}
+        src={photoUrl}
+        alt={`User photo - ${user_id}`}
+        style={style}
+        className={className}
+    />;
+});
+
+Avatar.displayName = "Avatar";
+
+export default Avatar;

@@ -17,6 +17,7 @@ export default function HeaderWithSearch({
                                              LeftComponent,
                                              CentralComponent,
                                              RightComponent,
+                                             isSearchDisabled,
                                          }: {
                                              forceSearchOpen?: boolean,
                                              searchValue?: string,
@@ -25,6 +26,7 @@ export default function HeaderWithSearch({
                                              LeftComponent?: FC,
                                              CentralComponent?: FC,
                                              RightComponent?: FC,
+                                             isSearchDisabled?: boolean
                                          }
 ) {
     const {t} = useTranslation();
@@ -49,7 +51,7 @@ export default function HeaderWithSearch({
 
     const isOpen = isSearchOpen || forceSearchOpen;
 
-    const _LeftComponent = () => LeftComponent ?
+    const _LeftComponent = () => LeftComponent && isSearchDisabled ?
         <LeftComponent/> :
         (<IconButton
             mode="bezeled"

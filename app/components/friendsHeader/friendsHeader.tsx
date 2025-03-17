@@ -6,10 +6,11 @@ import {Icon28PersonAdd} from "@/Icons";
 import {IconButton, Spinner} from "@telegram-apps/telegram-ui";
 import {shareURL} from "@telegram-apps/sdk";
 
-export default function FriendsHeader({searchValue, setSearchValue, onSearchChange}: {
+export default function FriendsHeader({searchValue, setSearchValue, onSearchChange, isSearchDisabled}: {
     searchValue: string,
     setSearchValue: Function,
     onSearchChange: Function,
+    isSearchDisabled: boolean,
 }) {
     const {data: me, loading} = useMe();
 
@@ -17,6 +18,7 @@ export default function FriendsHeader({searchValue, setSearchValue, onSearchChan
         (<Spinner size="l"/>) :
         (
             <HeaderWithSearch
+                isSearchDisabled={isSearchDisabled}
                 searchValue={searchValue}
                 setSearchValue={setSearchValue}
                 onSearchChange={onSearchChange}

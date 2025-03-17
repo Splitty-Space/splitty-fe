@@ -3,7 +3,6 @@
 import {useState} from "react";
 import {useTranslation} from "react-i18next";
 import {
-    Avatar,
     Cell,
     Divider,
     Input,
@@ -18,6 +17,7 @@ import {Icon24Close} from "@/Icons";
 import {GROUP_KINDS} from "@/const/groupKinds";
 import useFriends from "@/services/useFriends";
 import classNames from "classnames";
+import Avatar from "@/app/components/avatar/Avatar";
 
 enum STEPS {
     GroupSettings,
@@ -106,12 +106,15 @@ export default function AddGroup() {
                             loadingFriends ?
                                 (<Spinner size="l"/>) :
                                 (<List className="mb-8 px-0">
-                                    {data?.data?.map(({id, name, photo_url}: {
-                                            id: number, name: string, photo_url: string
+                                    {data?.data?.map(({id, name}: {
+                                            id: number, name: string
                                         }) =>
                                             <div key={id}>
                                                 <Cell
-                                                    before={<Avatar size={48} src={photo_url}/>}
+                                                    before={<Avatar
+                                                        size={48}
+                                                        user_id={id}
+                                                    />}
                                                     after={<Switch
                                                         onChange={(e) => {
                                                             setSelectedUserIds(prev => (

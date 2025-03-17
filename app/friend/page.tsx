@@ -3,7 +3,6 @@
 import {useState, useEffect, useRef} from "react";
 import {useTranslation} from "react-i18next";
 import {
-    Avatar,
     AvatarStack,
     Button,
     Caption,
@@ -28,6 +27,7 @@ import {useRouter} from "next/navigation";
 import {expenseDetails, friendSettings, settleUp} from "@/const/urls";
 import useFriends from "@/services/useFriends";
 import {useStore} from "@/app/store";
+import Avatar from "@/app/components/avatar/Avatar";
 
 
 export default function FriendPage() {
@@ -183,12 +183,9 @@ export default function FriendPage() {
                         <AvatarStack>
                             {participants.map((participant, index, array) =>
                                 <Avatar
-                                    // @ts-ignore
                                     size={avatarSize}
-                                    // @ts-ignore
                                     key={participant.id}
-                                    // @ts-ignore
-                                    src={participant.photo_url}
+                                    user_id={participant.id}
                                     style={{
                                         marginLeft: index > 0 ? Math.max(-0.25 * array.length, -2.5) + "rem" : 0
                                     }}
@@ -272,7 +269,7 @@ export default function FriendPage() {
 
                 <Avatar
                     size={96}
-                    src={friend?.photo_url}
+                    user_id={friend?.id}
                 />
 
                 <Headline

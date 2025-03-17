@@ -5,7 +5,7 @@ import {useTranslation} from "react-i18next";
 import classNames from "classnames";
 import Header from "@/app/components/header/header";
 import Main from "@/app/components/main/main";
-import {Avatar, AvatarStack, Caption, Divider, IconButton, Spinner, Text} from "@telegram-apps/telegram-ui";
+import {AvatarStack, Caption, Divider, IconButton, Spinner, Text} from "@telegram-apps/telegram-ui";
 import {Icon28Edit} from "@telegram-apps/telegram-ui/dist/icons/28/edit";
 import {Icon28Bin} from "@/Icons";
 import Logo from "@/app/components/header/logo";
@@ -19,6 +19,7 @@ import useFriends from "@/services/useFriends";
 import {useRouter} from "next/navigation";
 import {activity, addExpense, friendsList, settleUpPayment} from "@/const/urls";
 import {popup} from "@telegram-apps/sdk";
+import Avatar from "@/app/components/avatar/Avatar";
 import "./expenseDetails.css";
 
 export default function ExpenseDetails() {
@@ -135,23 +136,23 @@ export default function ExpenseDetails() {
                             {selectedExpense?.payment &&
                                 (<AvatarStack>
                                     {selectedExpense.transactions
-                                        .reduce((photoURLs, currentValue) => {
-                                            if (photoURLs.every((photoURL) => photoURL !== currentValue.borrower.photo_url)) {
+                                        .reduce((userIds, currentValue) => {
+                                            if (userIds.every((id) => id !== currentValue.borrower.id)) {
                                                 // @ts-ignore
-                                                photoURLs.push(currentValue.borrower.photo_url);
+                                                userIds.push(currentValue.borrower.id);
                                             }
-                                            if (photoURLs.every((photoURL) => photoURL !== currentValue.debtor.photo_url)) {
+                                            if (userIds.every((id) => id !== currentValue.debtor.id)) {
                                                 // @ts-ignore
-                                                photoURLs.push(currentValue.debtor.photo_url);
+                                                userIds.push(currentValue.debtor.id);
                                             }
 
-                                            return photoURLs;
+                                            return userIds;
                                         }, [])
-                                        .map((photoURL, index, array) =>
+                                        .map((id, index, array) =>
                                             <Avatar
                                                 size={48}
-                                                key={photoURL}
-                                                src={photoURL}
+                                                key={index}
+                                                user_id={id}
                                                 style={{
                                                     marginLeft: index > 0 ? Math.max(-0.25 * array.length, -2.5) + "rem" : 0
                                                 }}
@@ -195,8 +196,8 @@ export default function ExpenseDetails() {
                                             lents.map(({user}, index, array) => (
                                                 <Avatar
                                                     size={48}
-                                                    key={user.photo_url}
-                                                    src={user.photo_url}
+                                                    key={user.id}
+                                                    user_id={user.id}
                                                     style={{
                                                         marginLeft: index > 0 ? Math.max(-0.25 * array.length, -2.5) + "rem" : 0
                                                     }}
@@ -257,7 +258,7 @@ export default function ExpenseDetails() {
                                             <Avatar
                                                 key={id + "avatar"}
                                                 size={48}
-                                                src={user.photo_url}
+                                                user_id={user.id}
                                             />
                                             <div className="flex flex-col ml-4 max-w-65p">
                                                 {Number(lent_amount) !== 0 &&
