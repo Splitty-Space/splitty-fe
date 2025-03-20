@@ -13,7 +13,7 @@ import useMe from "@/services/useMe";
 import {DARK, DEFAULT_THEME, THEME_TYPE} from "@/const/theme";
 import {ANDROID, DEFAULT_PLATFORM, IOS, PLATFORM_TYPE} from "@/const/platform";
 import {AppRootContext} from "./AppRootContext";
-import {backButton, closingBehavior, miniApp, swipeBehavior, viewport} from "@telegram-apps/sdk";
+import {backButton, closingBehavior, miniApp, swipeBehavior, viewport, postEvent} from "@telegram-apps/sdk";
 import {retrieveLaunchParams} from "@telegram-apps/bridge";
 import {LocalizationProvider} from "@mui/x-date-pickers";
 import {createTheme, ThemeProvider} from "@mui/material/styles";
@@ -147,6 +147,10 @@ export default function RootLayout({children}: Readonly<{
         });
     }, []);
 
+    useEffect(() => {
+        postEvent("web_app_toggle_orientation_lock", {locked: true});
+    }, [postEvent]);
+
     const router = useRouter();
     const pathname = usePathname();
 
@@ -215,8 +219,7 @@ export default function RootLayout({children}: Readonly<{
         <html lang="en">
         <Head>
             <title>Splitty</title>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
-            <meta httpEquiv="ScreenOrientation" content="autoRotate:disabled"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
         </Head>
 
         <body className={classNames("overflow-hidden h-screen", {
