@@ -31,11 +31,10 @@ export default function ExpenseDetails() {
     const setIsDeleteExpenseSnackbarShown = useStore((state) => state.setIsDeleteExpenseSnackbarShown);
     const setSettleUpPaymentInfo = useStore((state) => state.setSettleUpPaymentInfo);
 
-
     const {data: me, loading: loadingMe} = useMe();
 
     const searchValue = useStore((state) => state.searchValue);
-    const {data} = useFriends(searchValue);
+    const {data, refetchFriends} = useFriends(searchValue);
     const friends = data?.data;
 
     const [deleteExpenseLoading, setDeleteExpenseLoading] = useState(false);
@@ -51,6 +50,7 @@ export default function ExpenseDetails() {
         if (selectedExpense?.id) {
             setDeleteExpenseLoading(true);
             deleteExpense(selectedExpense.id)
+                .then(() => refetchFriends())
                 .then(() => {
                     setIsDeleteExpenseSnackbarShown(true);
                     setSelectedExpense(null);

@@ -147,10 +147,9 @@ export default function AddExpense() {
                 currency,
                 date,
                 description,
-            }).then(() => {
-                refetchFriends();
-                router.push(friendsList);
-            });
+            })
+                .then(() => refetchFriends())
+                .then(() => router.push(friendsList));
         } else {
             putExpense({
                 expense_id: selectedExpense.id,
@@ -159,10 +158,9 @@ export default function AddExpense() {
                 users,
                 amount,
                 description
-            }).then(() => {
-                refetchFriends();
-                router.push(expenseDetails);
-            });
+            })
+                .then(() => refetchFriends())
+                .then(() => router.push(expenseDetails));
         }
     };
 

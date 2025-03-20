@@ -91,10 +91,9 @@ export default function SettleUpPayment() {
                 users,
                 amount,
                 description
-            }).then(() => {
-                refetchFriends();
-                router.push(friendsList);
-            });
+            })
+                .then(() => refetchFriends())
+                .then(() => router.push(friendsList));
         } else {
             addExpense({
                 payers,
@@ -105,10 +104,9 @@ export default function SettleUpPayment() {
                 currency,
                 date,
                 description,
-            }).then(() => {
-                refetchFriends();
-                router.push(friendsList);
-            });
+            })
+                .then(() => refetchFriends())
+                .then(() => router.push(friendsList));
         }
     };
 
