@@ -18,6 +18,7 @@ import {GROUP_KINDS} from "@/const/groupKinds";
 import useFriends from "@/services/useFriends";
 import classNames from "classnames";
 import Avatar from "@/app/components/avatar/Avatar";
+import {vibration} from "@/utils/vibration";
 
 enum STEPS {
     GroupSettings,
@@ -117,6 +118,8 @@ export default function AddGroup() {
                                                     />}
                                                     after={<Switch
                                                         onChange={(e) => {
+                                                            vibration();
+
                                                             setSelectedUserIds(prev => (
                                                                 e.target.checked ?
                                                                     [...prev, id] :

@@ -20,6 +20,7 @@ import useFriends from "@/services/useFriends";
 import {useRouter} from "next/navigation";
 import {addExpense} from "@/const/urls";
 import Avatar from "@/app/components/avatar/Avatar";
+import {vibration} from "@/utils/vibration";
 
 export default function AddExpenseParticipants() {
     const selectedFriends = useStore((state) => state.selectedFriends);
@@ -50,6 +51,8 @@ export default function AddExpenseParticipants() {
     }, [selectedUserIds]);
 
     const onUserChange = (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+        vibration();
+
         setSelectedUserIds(prev => (
             e.target.checked ?
                 [...prev, id] :

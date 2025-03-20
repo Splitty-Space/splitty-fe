@@ -6,7 +6,7 @@ import {usePathname, useRouter} from "next/navigation";
 import {TabIds} from "@/const/tabIds";
 import useMe from "@/services/useMe";
 import {Friend} from "@/entities";
-import {hapticFeedback, ImpactHapticFeedbackStyle} from "@telegram-apps/sdk";
+import {vibration} from "@/utils/vibration";
 import {account, activity, addExpense, expenseParticipants, friend, friendsList, groups} from "@/const/urls";
 import Avatar from "@/app/components/avatar/Avatar";
 import "./footer.css";
@@ -80,23 +80,6 @@ export default function Footer({
         },
     ];
 
-    const getHapticStyle = (id: number): ImpactHapticFeedbackStyle => {
-        switch (id) {
-            case TabIds.Friends:
-                return "light";
-            case TabIds.Groups:
-                return "medium";
-            case TabIds.AddExpenseParticipants:
-                return "heavy";
-            case TabIds.Activity:
-                return "rigid";
-            case TabIds.Account:
-                return "soft";
-            default:
-                return "light";
-        }
-    };
-
     const router = useRouter();
     const pathname = usePathname();
 
@@ -126,10 +109,7 @@ export default function Footer({
             router.push(account);
         }
 
-        if (hapticFeedback.impactOccurred.isAvailable()) {
-            const style = getHapticStyle(id);
-            hapticFeedback.impactOccurred(style);
-        }
+        vibration();
     }, [pathname, setSearchValue, setSelectedExpense, friends, setSelectedFriends, selectedUserId, setSelectedUserId, router]);
 
     return (

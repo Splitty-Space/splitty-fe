@@ -28,6 +28,7 @@ import {useStore} from "@/app/store";
 import {useRouter} from "next/navigation";
 import {expenseDetails, friendsList} from "@/const/urls";
 import Avatar from "@/app/components/avatar/Avatar";
+import {vibration} from "@/utils/vibration";
 import "./addExpense.css";
 
 interface Payment {
@@ -208,6 +209,8 @@ export default function AddExpense() {
     const onFullyPaidByYouChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setIsFullyPaidByYou(e.target.checked);
 
+        vibration();
+
         if (!e.target.checked && moneySpent) {
             const parts = splitNumberIntoParts(moneySpent, participants.length);
 
@@ -228,6 +231,8 @@ export default function AddExpense() {
     };
 
     const onPaidByChange = (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+        vibration();
+
         setPaidBy(paidBy.map(x => x.id === id ? {
             ...x,
             isSelected: e.target.checked,
@@ -245,6 +250,8 @@ export default function AddExpense() {
 
     const onSplitEquallyBetweenAllChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setIsSplitEquallyBetweenAll(e.target.checked);
+
+        vibration();
 
         const parts = splitNumberIntoParts(moneySpent ? Number(moneySpent) : 0, participants.length);
         if (!e.target.checked && moneySpent) {
@@ -265,6 +272,8 @@ export default function AddExpense() {
     };
 
     const onSplitBetweenChange = (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+        vibration();
+
         setSplitBetween(splitBetween.map(x => x.id === id ? {
             ...x,
             isSelected: e.target.checked,
