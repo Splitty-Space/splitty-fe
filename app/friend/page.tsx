@@ -290,14 +290,16 @@ export default function FriendPage() {
                     </Caption>
                 )}
 
-                <Button
-                    size="s"
-                    mode="filled"
-                    className="mt-4"
-                    onClick={onSettleUp}
-                >
-                    {t("friend.SettleUp")}
-                </Button>
+                {friend && friend?.total?.length > 0 &&
+                    <Button
+                        size="s"
+                        mode="filled"
+                        className="mt-4"
+                        onClick={onSettleUp}
+                    >
+                        {t("friend.SettleUp")}
+                    </Button>
+                }
             </div>
 
             <Main
