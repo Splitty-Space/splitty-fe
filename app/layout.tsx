@@ -4,6 +4,7 @@ import {usePathname, useRouter} from "next/navigation";
 import React, {useEffect, useState} from "react";
 import i18next from "i18next";
 import "@/i18n";
+import Head from "next/head";
 import {AppRoot, Snackbar} from "@telegram-apps/telegram-ui";
 import "@telegram-apps/telegram-ui/dist/styles.css";
 import classNames from "classnames";
@@ -24,12 +25,6 @@ import {Icon28Bin} from "@/Icons";
 import {useTranslation} from "react-i18next";
 import {account, activity, expenseParticipants, friendsList, groups, urls} from "@/const/urls";
 import "./globals.css";
-
-// import type {Metadata} from "next";
-// export const metadata: Metadata = {
-//     title: "Splitty",
-//     description: "",
-// };
 
 const darkTheme = createTheme({
     palette: {
@@ -218,7 +213,11 @@ export default function RootLayout({children}: Readonly<{
 
     return (
         <html lang="en">
-        {/*<Script src="https://telegram.org/js/telegram-web-app.js"/>*/}
+        <Head>
+            <title>Splitty</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+            <meta httpEquiv="ScreenOrientation" content="autoRotate:disabled"/>
+        </Head>
 
         <body className={classNames("overflow-hidden h-screen", {
             "body_dark": appearance === DARK
