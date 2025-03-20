@@ -17,7 +17,7 @@ import {useStore} from "@/app/store";
 import ExpenseHistoryList from "@/app/expense/details/ExpenseHistoryList";
 import useFriends from "@/services/useFriends";
 import {useRouter} from "next/navigation";
-import {activity, addExpense, friendsList, settleUpPayment} from "@/const/urls";
+import {activity, addExpense, friend, friendsList, settleUpPayment} from "@/const/urls";
 import {popup} from "@telegram-apps/sdk";
 import Avatar from "@/app/components/avatar/Avatar";
 import "./expenseDetails.css";
@@ -54,7 +54,7 @@ export default function ExpenseDetails() {
                 .then(() => {
                     setIsDeleteExpenseSnackbarShown(true);
                     setSelectedExpense(null);
-                    router.push(pageData.isFromActivity ? activity : friendsList);
+                    router.push(pageData.isFromActivity ? activity : friend);
                 });
         }
     };
