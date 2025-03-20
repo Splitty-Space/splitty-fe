@@ -13,6 +13,7 @@ import {friend} from "@/const/urls";
 import {useStore} from "@/app/store";
 import useFriends from "@/services/useFriends";
 import Avatar from "@/app/components/avatar/Avatar";
+import Username from "@/app/components/username/username";
 import "dayjs/locale/ru";
 import "dayjs/locale/uk";
 import "./friendsList.css";
@@ -68,12 +69,7 @@ export default function FriendsList() {
                                                         size={48}
                                                         user_id={id}
                                                     />}
-                                                    subtitle={<span
-                                                        className={classNames("text-ellipsis overflow-hidden", {
-                                                            "invisible": !username
-                                                        })}>
-                                                         {"@" + username}
-                                                    </span>}
+                                                    subtitle={<Username username={username}/>}
                                                     after={<div className="flex flex-col items-end">
                                                         {total.slice(0, 2).map(({amount, currency}, index) =>
                                                             <Caption

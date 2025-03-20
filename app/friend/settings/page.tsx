@@ -71,17 +71,21 @@ export default function FriendSettings() {
                         user_id={friend?.id}
                     />
 
-                    <Title
-                        level="1"
-                        weight="1"
-                        className="mt-2"
-                    >
-                        {friend?.name}
-                    </Title>
+                    {friend?.name &&
+                        <Title
+                            level="1"
+                            weight="1"
+                            className="mt-2"
+                        >
+                            {friend?.name}
+                        </Title>
+                    }
 
-                    <Text weight="3" className="opacity-50">
-                        {"@" + friend?.username}
-                    </Text>
+                    {friend?.username &&
+                        <Text weight="3" className="opacity-50">
+                            {"@" + friend?.username}
+                        </Text>
+                    }
                 </div>
 
                 <List>

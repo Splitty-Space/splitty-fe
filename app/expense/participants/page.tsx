@@ -21,6 +21,8 @@ import {useRouter} from "next/navigation";
 import {addExpense} from "@/const/urls";
 import Avatar from "@/app/components/avatar/Avatar";
 import {vibration} from "@/utils/vibration";
+import classNames from "classnames";
+import Username from "@/app/components/username/username";
 
 export default function AddExpenseParticipants() {
     const selectedFriends = useStore((state) => state.selectedFriends);
@@ -94,9 +96,7 @@ export default function AddExpenseParticipants() {
                                             <Cell
                                                 className="h-14"
                                                 before={<Avatar size={48} user_id={id}/>}
-                                                subtitle={<span className="text-ellipsis overflow-hidden">
-                                                         {"@" + username}
-                                                    </span>}
+                                                subtitle={<Username username={username}/>}
                                                 after={<Switch
                                                     defaultChecked={selectedUserIds.includes(id)}
                                                     onChange={onUserChange(id)}

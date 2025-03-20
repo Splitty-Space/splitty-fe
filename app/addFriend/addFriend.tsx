@@ -11,6 +11,7 @@ import {RefetchFunction} from "axios-hooks";
 import {friendsList} from "@/const/urls";
 import {useRouter} from "next/navigation";
 import Avatar from "@/app/components/avatar/Avatar";
+import Username from "@/app/components/username/username";
 
 /**
  * @deprecated TODO Remove?
@@ -63,7 +64,7 @@ export default function AddFriend({refetchFriends}: {
                     }) =>
                         <Cell
                             key={id}
-                            subtitle={"@" + username}
+                            subtitle={<Username username={username}/>}
                             onClick={onAddFriend(id)}
                             before={<Avatar size={48} user_id={id}/>}
                         >
