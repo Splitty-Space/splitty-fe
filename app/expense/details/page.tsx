@@ -54,7 +54,8 @@ export default function ExpenseDetails() {
                 .then(() => {
                     setIsDeleteExpenseSnackbarShown(true);
                     setSelectedExpense(null);
-                    router.push(pageData.isFromActivity ? activity : friend);
+                    // router.push(pageData.isFromActivity ? activity : friend); // TODO test and delete
+                    router.back();
                 });
         }
     };
