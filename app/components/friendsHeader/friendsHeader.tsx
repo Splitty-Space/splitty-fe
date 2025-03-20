@@ -1,9 +1,10 @@
 "use client"
 
+import {useCallback} from "react";
 import useMe from "@/services/useMe";
 import HeaderWithSearch from "@/app/components/header/headerWithSearch";
 import {Icon28PersonAdd} from "@/Icons";
-import {IconButton, Spinner} from "@telegram-apps/telegram-ui";
+import {IconButton} from "@telegram-apps/telegram-ui";
 import {shareURL} from "@telegram-apps/sdk";
 
 export default function FriendsHeader({searchValue, setSearchValue, onSearchChange, isSearchDisabled}: {
@@ -12,31 +13,33 @@ export default function FriendsHeader({searchValue, setSearchValue, onSearchChan
     onSearchChange: Function,
     isSearchDisabled: boolean,
 }) {
-    const {data: me, loading} = useMe();
+    const {data: me} = useMe();
 
-    return loading ?
-        (<Spinner size="l"/>) :
-        (
-            <HeaderWithSearch
-                isSearchDisabled={isSearchDisabled}
-                searchValue={searchValue}
-                setSearchValue={setSearchValue}
-                onSearchChange={onSearchChange}
-                RightComponent={() => (
-                    <IconButton
-                        size="l"
-                        mode="bezeled"
-                        onClick={() => {
-                            if (shareURL.isAvailable()) {
-                                shareURL(
-                                    `https://t.me/splitty_fe_bot?start=${me.referral_code}`,
-                                    "Join me on Splitty and let's split together! Use my invite link to join. 🌟"); // TODO localize text
-                            }
-                        }}
-                    >
-                        <Icon28PersonAdd/>
-                    </IconButton>)
-                }
-            />
-        );
+    const shareSplitty = useCallback(() => {
+        if (shareURL.isAvailable()) {
+            shareURL(
+                `https://t.me/splitty_fe_bot?start=${me.referral_code}`,
+                "Join me on Splitty and let's split together! Use my invite link to join. 🌟"); // TODO localize text
+        }
+    }, [me]);
+
+    const RightComponent = useCallback(() => (
+        <IconButton
+            size="l"
+            mode="bezeled"
+            onClick={shareSplitty}
+        >
+            <Icon28PersonAdd/>
+        </IconButton>), [shareSplitty]);
+
+    return (
+        <HeaderWithSearch
+            layoutClassName="pt-0"
+            isSearchDisabled={isSearchDisabled}
+            searchValue={searchValue}
+            setSearchValue={setSearchValue}
+            onSearchChange={onSearchChange}
+            RightComponent={RightComponent}
+        />
+    );
 }

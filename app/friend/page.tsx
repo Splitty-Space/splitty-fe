@@ -302,8 +302,8 @@ export default function FriendPage() {
 
             <Main
                 ref={refContainer}
-                className="margin-top-0"
-                style={{height: "calc(100%)"}}
+                className="padding-top-0"
+                style={{height: "calc(100% - 4rem)"}}
             >
                 {loadingExpenses ? <Spinner size="l" className="flex flex-col items-center justify-center"/> :
                     expenses?.length > 0 ?

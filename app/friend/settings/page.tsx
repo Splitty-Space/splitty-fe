@@ -12,6 +12,7 @@ import {friendsList} from "@/const/urls";
 import {useRouter} from "next/navigation";
 import {popup} from "@telegram-apps/sdk";
 import Avatar from "@/app/components/avatar/Avatar";
+import Main from "@/app/components/main/main";
 import "./friendSettings.css";
 
 export default function FriendSettings() {
@@ -60,50 +61,52 @@ export default function FriendSettings() {
         <>
             <Header
                 CentralComponent={Logo}
-                subHeaderClassName="justify-content-center mt-6"
+                subHeaderClassName="justify-content-center"
             />
 
-            <div className="flex flex-col items-center justify-center p-4">
-                <Avatar
-                    size={96}
-                    user_id={friend?.id}
-                />
+            <Main>
+                <div className="flex flex-col items-center justify-center p-4">
+                    <Avatar
+                        size={96}
+                        user_id={friend?.id}
+                    />
 
-                <Title
-                    level="1"
-                    weight="1"
-                    className="mt-2"
-                >
-                    {friend?.name}
-                </Title>
+                    <Title
+                        level="1"
+                        weight="1"
+                        className="mt-2"
+                    >
+                        {friend?.name}
+                    </Title>
 
-                <Text weight="3" className="opacity-50">
-                    {"@" + friend?.username}
-                </Text>
-            </div>
+                    <Text weight="3" className="opacity-50">
+                        {"@" + friend?.username}
+                    </Text>
+                </div>
 
-            <List>
-                {isFriend ?
-                    (<>
-                        <Cell
-                            className="friendSettings_delete"
-                            onClick={openDeleteConfirmPopup}
-                        >
-                            Delete from friends
-                        </Cell>
-                        <Divider/>
-                    </>)
-                    :
-                    (<>
-                        <Cell
-                            onClick={onAddFriend}
-                        >
-                            Add friend
-                        </Cell>
-                        <Divider/>
-                    </>)
-                }
-            </List>
+                <List>
+                    {isFriend ?
+                        (<>
+                            <Cell
+                                className="friendSettings_delete"
+                                onClick={openDeleteConfirmPopup}
+                            >
+                                Delete from friends
+                            </Cell>
+                            <Divider/>
+                        </>)
+                        :
+                        (<>
+                            <Cell
+                                onClick={onAddFriend}
+                            >
+                                Add friend
+                            </Cell>
+                            <Divider/>
+                        </>)
+                    }
+                </List>
+            </Main>
         </>
     );
 }

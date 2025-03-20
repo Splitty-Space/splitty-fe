@@ -136,7 +136,7 @@ export default function ActivityPage() {
         <>
             <Header
                 CentralComponent={Logo}
-                subHeaderClassName="justify-content-center mt-6"
+                subHeaderClassName="justify-content-center"
             />
 
             <Main

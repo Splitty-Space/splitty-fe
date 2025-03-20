@@ -18,6 +18,7 @@ import useFriends from "@/services/useFriends";
 import {useRouter} from "next/navigation";
 import {friendsList} from "@/const/urls";
 import Avatar from "@/app/components/avatar/Avatar";
+import Main from "@/app/components/main/main";
 
 export default function SettleUpPayment() {
     const {t} = useTranslation();
@@ -115,6 +116,7 @@ export default function SettleUpPayment() {
         (<Spinner size="l"/>) : (
             <>
                 <Header
+                    className="h-32"
                     CentralComponent={Logo}
                     LeftComponent={() => (
                         <Button
@@ -139,7 +141,7 @@ export default function SettleUpPayment() {
                     AfterComponent={<Title className="flex justify-content-center">{t("settleUp.PaymentInfo")}</Title>}
                 />
 
-                <main className="m-12 mx-4">
+                <Main className="pt-32 px-4">
                     <div className="flex justify-around">
                         <div className="flex flex-col items-center">
                             <Avatar
@@ -194,7 +196,7 @@ export default function SettleUpPayment() {
                             className="w-full rounded-3xl"
                         />
                     </Section>
-                </main>
+                </Main>
             </>
         );
 }

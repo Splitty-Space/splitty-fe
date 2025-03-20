@@ -12,3 +12,5 @@ export {Icon28PersonAdd} from "./28/person_add";
 // custom
 export {Arrow} from "./custom/arrow";
 export {PlusIcon} from "./custom/plusIcon";
+// Logo
+export {Logo} from "./logo/logo";

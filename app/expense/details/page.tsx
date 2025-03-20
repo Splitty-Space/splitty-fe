@@ -130,7 +130,7 @@ export default function ExpenseDetails() {
                     )}
                 />
 
-                <Main className="px-4 pt-4">
+                <Main className="px-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center w-full">
                             {selectedExpense?.payment &&

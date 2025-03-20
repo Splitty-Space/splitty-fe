@@ -21,6 +21,5 @@
 
 .header_blur {
     backdrop-filter: blur(10px);
-    color: #00000080;
     background: #00000080;
 }

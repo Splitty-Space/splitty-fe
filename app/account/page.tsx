@@ -55,7 +55,7 @@ export default function Account() {
         <>
             <Header
                 CentralComponent={Logo}
-                subHeaderClassName="justify-content-center mt-6"
+                subHeaderClassName="justify-content-center"
             />
 
             <Main className="px-4 flex flex-col items-center">
@@ -77,7 +77,7 @@ export default function Account() {
                         </div>
 
                         <List
-                            className="w-11/12 rounded-xl py-0 pr-0 absolute top-1/2 -translate-y--50p"
+                            className="w-11/12 rounded-xl py-0 pr-0 absolute top-1/2 -translate-y--50p mt-4"
                             style={{
                                 background: "var(--tgui--bg_color)",
                             }}

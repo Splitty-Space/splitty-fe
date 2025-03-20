@@ -2,12 +2,12 @@
 
 import React, {FC, useCallback, useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
+import classNames from "classnames";
 import Header from "@/app/components/header/header";
 import {Icon24Search, Icon24Close, Icon28Search} from "@/Icons";
 import {IconButton, Input, Tappable} from "@telegram-apps/telegram-ui";
 import Logo from "@/app/components/header/logo";
 import {hapticFeedback} from "@telegram-apps/sdk";
-import classNames from "classnames";
 
 export default function HeaderWithSearch({
                                              forceSearchOpen,
@@ -18,6 +18,7 @@ export default function HeaderWithSearch({
                                              CentralComponent,
                                              RightComponent,
                                              isSearchDisabled,
+                                             layoutClassName,
                                          }: {
                                              forceSearchOpen?: boolean,
                                              searchValue?: string,
@@ -27,6 +28,7 @@ export default function HeaderWithSearch({
                                              CentralComponent?: FC,
                                              RightComponent?: FC,
                                              isSearchDisabled?: boolean
+                                             layoutClassName?: string
                                          }
 ) {
     const {t} = useTranslation();
@@ -80,7 +82,7 @@ export default function HeaderWithSearch({
 
     return (
         <Header
-            className={isOpen ? "h-32" : "h-16"}
+            layoutClassName={layoutClassName}
             LeftComponent={_LeftComponent}
             CentralComponent={CentralComponent ? CentralComponent : Logo}
             RightComponent={RightComponent}
