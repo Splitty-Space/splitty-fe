@@ -53,11 +53,14 @@ export default function HeaderWithSearch({
 
     const isOpen = isSearchOpen || forceSearchOpen;
 
-    const _LeftComponent = () => LeftComponent && isSearchDisabled ?
+    const _LeftComponent = () => LeftComponent ?
         <LeftComponent/> :
         (<IconButton
             mode="bezeled"
             size="l"
+            className={classNames({
+                "invisible": isSearchDisabled
+            })}
             onClick={() => setIsSearchOpen(isSearchOpen => !isSearchOpen)}
         >
             <Icon28Search/>
