@@ -5,7 +5,7 @@ import {useTranslation} from "react-i18next";
 import classNames from "classnames";
 import Header from "@/app/components/header/header";
 import Main from "@/app/components/main/main";
-import {AvatarStack, Caption, Divider, IconButton, Spinner, Text} from "@telegram-apps/telegram-ui";
+import {AvatarStack, Caption, Divider, IconButton, Spinner, Text, Title} from "@telegram-apps/telegram-ui";
 import {Icon28Edit} from "@telegram-apps/telegram-ui/dist/icons/28/edit";
 import {Icon28Bin} from "@/Icons";
 import Logo from "@/app/components/header/logo";
@@ -161,9 +161,14 @@ export default function ExpenseDetails() {
                             }
 
                             {selectedExpense &&
-                                <div className="flex flex-col ml-4 overflow-hidden">
-                                    <Text weight="3"
-                                          className="text-ellipsis overflow-hidden">{selectedExpense?.description}</Text>
+                                <div className="flex flex-col overflow-hidden">
+                                    <Title
+                                        level="1"
+                                        weight="3"
+                                        className="text-ellipsis overflow-hidden"
+                                    >
+                                        {selectedExpense?.description}
+                                    </Title>
                                     <Caption
                                         weight="3"
                                         className="hint_color"
