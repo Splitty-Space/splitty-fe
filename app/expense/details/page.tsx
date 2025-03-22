@@ -17,7 +17,7 @@ import {useStore} from "@/app/store";
 import ExpenseHistoryList from "@/app/expense/details/ExpenseHistoryList";
 import useFriends from "@/services/useFriends";
 import {useRouter} from "next/navigation";
-import {activity, addExpense, friend, friendsList, settleUpPayment} from "@/const/urls";
+import {addExpense, settleUpPayment} from "@/const/urls";
 import {popup} from "@telegram-apps/sdk";
 import Avatar from "@/app/components/avatar/Avatar";
 import "./expenseDetails.css";
@@ -27,7 +27,6 @@ export default function ExpenseDetails() {
 
     const selectedExpense = useStore((state) => state.selectedExpense);
     const setSelectedExpense = useStore((state) => state.setSelectedExpense);
-    const pageData = useStore((state) => state.pageData);
     const setIsDeleteExpenseSnackbarShown = useStore((state) => state.setIsDeleteExpenseSnackbarShown);
     const setSettleUpPaymentInfo = useStore((state) => state.setSettleUpPaymentInfo);
 
@@ -54,7 +53,6 @@ export default function ExpenseDetails() {
                 .then(() => {
                     setIsDeleteExpenseSnackbarShown(true);
                     setSelectedExpense(null);
-                    // router.push(pageData.isFromActivity ? activity : friend); // TODO test and delete
                     router.back();
                 });
         }

@@ -28,6 +28,9 @@ interface State {
     isDeleteExpenseSnackbarShown: boolean,
     setIsDeleteExpenseSnackbarShown: (newIsDeleteExpenseSnackbarShown: boolean) => void,
 
+    isCreateExpenseSnackbarShown: boolean,
+    setIsCreateExpenseSnackbarShown: (newIsDeleteExpenseSnackbarShown: boolean) => void,
+
     settleUpPaymentInfo: { friend: Friend, currency: string } | null,
     setSettleUpPaymentInfo: (newSettleUpPaymentInfo: { friend: Friend, currency: string } | null) => void,
 }
@@ -57,6 +60,9 @@ export const useStore = create<State>()(
 
             isDeleteExpenseSnackbarShown: false,
             setIsDeleteExpenseSnackbarShown: (newIsDeleteExpenseSnackbarShown) => set(() => ({isDeleteExpenseSnackbarShown: newIsDeleteExpenseSnackbarShown})),
+
+            isCreateExpenseSnackbarShown: false,
+            setIsCreateExpenseSnackbarShown: (newIsCreateExpenseSnackbarShown) => set(() => ({isCreateExpenseSnackbarShown: newIsCreateExpenseSnackbarShown})),
 
             settleUpPaymentInfo: null,
             setSettleUpPaymentInfo: (newSettleUpPaymentInfo) => set(() => ({settleUpPaymentInfo: newSettleUpPaymentInfo})),

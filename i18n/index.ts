@@ -101,6 +101,7 @@ i18n
                     },
                     expenseDetails: {
                         ConfirmMessage: "Are you sure you want to delete this expense?",
+                        ExpenseCreated: "Expense created",
                         ExpenseDeleted: "Expense deleted",
                         people: "people",
                         borrowed: "borrowed",

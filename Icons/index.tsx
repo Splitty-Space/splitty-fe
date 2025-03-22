@@ -9,6 +9,7 @@ export {Icon24Search} from "./24/search";
 export {Icon28Bin} from "./28/bin";
 export {Icon28Search} from "./28/search";
 export {Icon28PersonAdd} from "./28/person_add";
+export {Icon28Check} from "./28/check";
 // custom
 export {Arrow} from "./custom/arrow";
 export {PlusIcon} from "./custom/plusIcon";

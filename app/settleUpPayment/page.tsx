@@ -25,6 +25,7 @@ export default function SettleUpPayment() {
 
     const selectedExpense = useStore((state) => state.selectedExpense);
     const searchValue = useStore((state) => state.searchValue);
+    const setIsCreateExpenseSnackbarShown = useStore((state) => state.setIsCreateExpenseSnackbarShown);
 
     const settleUpPaymentInfo = useStore((state) => state.settleUpPaymentInfo);
     const friend = settleUpPaymentInfo?.friend;
@@ -106,6 +107,7 @@ export default function SettleUpPayment() {
                 description,
             })
                 .then(() => refetchFriends())
+                .then(() => setIsCreateExpenseSnackbarShown(true))
                 .then(() => router.push(friendsList));
         }
     };

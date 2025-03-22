@@ -1,7 +1,7 @@
 "use client"
 
 import {usePathname, useRouter} from "next/navigation";
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import i18next from "i18next";
 import "@/i18n";
 import Head from "next/head";
@@ -21,7 +21,7 @@ import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import Footer from "@/app/components/footer/footer";
 import {useStore} from "@/app/store";
 import useFriends from "@/services/useFriends";
-import {Icon28Bin} from "@/Icons";
+import {Icon28Bin, Icon28Check} from "@/Icons";
 import {useTranslation} from "react-i18next";
 import {account, activity, expenseParticipants, friendsList, groups, urls} from "@/const/urls";
 import "./globals.css";
@@ -211,9 +211,15 @@ export default function RootLayout({children}: Readonly<{
     const setIsDeleteFriendSnackbarShown = useStore((state) => state.setIsDeleteFriendSnackbarShown);
     const isDeleteExpenseSnackbarShown = useStore((state) => state.isDeleteExpenseSnackbarShown);
     const setIsDeleteExpenseSnackbarShown = useStore((state) => state.setIsDeleteExpenseSnackbarShown);
+    const isCreateExpenseSnackbarShown = useStore((state) => state.isCreateExpenseSnackbarShown);
+    const setIsCreateExpenseSnackbarShown = useStore((state) => state.setIsCreateExpenseSnackbarShown);
 
     const {data} = useFriends(searchValue)
     const friends = data?.data;
+
+    const onCloseFriendDeleted = useCallback(() => setIsDeleteFriendSnackbarShown(false), [setIsDeleteFriendSnackbarShown]);
+    const onCloseExpenseCreated = useCallback(() => setIsCreateExpenseSnackbarShown(false), [setIsCreateExpenseSnackbarShown]);
+    const onCloseExpenseDeleted = useCallback(() => setIsDeleteExpenseSnackbarShown(false), [setIsDeleteExpenseSnackbarShown]);
 
     return (
         <html lang="en">
@@ -250,9 +256,19 @@ export default function RootLayout({children}: Readonly<{
                                 <Snackbar
                                     className="mb-20"
                                     before={<Icon28Bin/>}
-                                    onClose={() => setIsDeleteFriendSnackbarShown(false)}
+                                    onClose={onCloseFriendDeleted}
                                 >
                                     {t("friendSettings.FriendDeleted")}
+                                </Snackbar>
+                            )}
+
+                            {isCreateExpenseSnackbarShown && (
+                                <Snackbar
+                                    className="mb-20"
+                                    before={<Icon28Check/>}
+                                    onClose={onCloseExpenseCreated}
+                                >
+                                    {t("expenseDetails.ExpenseCreated")}
                                 </Snackbar>
                             )}
 
@@ -260,7 +276,7 @@ export default function RootLayout({children}: Readonly<{
                                 <Snackbar
                                     className="mb-20"
                                     before={<Icon28Bin/>}
-                                    onClose={() => setIsDeleteExpenseSnackbarShown(false)}
+                                    onClose={onCloseExpenseDeleted}
                                 >
                                     {t("expenseDetails.ExpenseDeleted")}
                                 </Snackbar>
