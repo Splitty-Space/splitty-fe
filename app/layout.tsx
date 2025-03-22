@@ -213,12 +213,15 @@ export default function RootLayout({children}: Readonly<{
     const setIsDeleteExpenseSnackbarShown = useStore((state) => state.setIsDeleteExpenseSnackbarShown);
     const isCreateExpenseSnackbarShown = useStore((state) => state.isCreateExpenseSnackbarShown);
     const setIsCreateExpenseSnackbarShown = useStore((state) => state.setIsCreateExpenseSnackbarShown);
+    const isUpdateExpenseSnackbarShown = useStore((state) => state.isUpdateExpenseSnackbarShown);
+    const setIsUpdateExpenseSnackbarShown = useStore((state) => state.setIsUpdateExpenseSnackbarShown);
 
     const {data} = useFriends(searchValue)
     const friends = data?.data;
 
     const onCloseFriendDeleted = useCallback(() => setIsDeleteFriendSnackbarShown(false), [setIsDeleteFriendSnackbarShown]);
     const onCloseExpenseCreated = useCallback(() => setIsCreateExpenseSnackbarShown(false), [setIsCreateExpenseSnackbarShown]);
+    const onCloseExpenseUpdated = useCallback(() => setIsUpdateExpenseSnackbarShown(false), [setIsUpdateExpenseSnackbarShown]);
     const onCloseExpenseDeleted = useCallback(() => setIsDeleteExpenseSnackbarShown(false), [setIsDeleteExpenseSnackbarShown]);
 
     return (
@@ -269,6 +272,16 @@ export default function RootLayout({children}: Readonly<{
                                     onClose={onCloseExpenseCreated}
                                 >
                                     {t("expenseDetails.ExpenseCreated")}
+                                </Snackbar>
+                            )}
+
+                            {isUpdateExpenseSnackbarShown && (
+                                <Snackbar
+                                    className="mb-20"
+                                    before={<Icon28Check/>}
+                                    onClose={onCloseExpenseUpdated}
+                                >
+                                    {t("expenseDetails.ExpenseUpdated")}
                                 </Snackbar>
                             )}
 

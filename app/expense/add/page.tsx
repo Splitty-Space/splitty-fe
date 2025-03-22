@@ -47,6 +47,7 @@ export default function AddExpense() {
     const selectedFriends = useStore((state) => state.selectedFriends);
     const selectedExpense = useStore((state) => state.selectedExpense);
     const setIsCreateExpenseSnackbarShown = useStore((state) => state.setIsCreateExpenseSnackbarShown);
+    const setIsUpdateExpenseSnackbarShown = useStore((state) => state.setIsUpdateExpenseSnackbarShown);
 
     const {refetchFriends} = useFriends(searchValue);
 
@@ -162,6 +163,7 @@ export default function AddExpense() {
                 description
             })
                 .then(() => refetchFriends())
+                .then(() => setIsUpdateExpenseSnackbarShown(true))
                 .then(() => router.push(expenseDetails));
         }
     };

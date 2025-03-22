@@ -102,6 +102,7 @@ i18n
                     expenseDetails: {
                         ConfirmMessage: "Are you sure you want to delete this expense?",
                         ExpenseCreated: "Expense created",
+                        ExpenseUpdated: "Expense updated",
                         ExpenseDeleted: "Expense deleted",
                         people: "people",
                         borrowed: "borrowed",
@@ -210,6 +211,8 @@ i18n
                     },
                     expenseDetails: {
                         ConfirmMessage: "Вы уверены, что хотите удалить этот расход?",
+                        ExpenseCreated: "Расход создан",
+                        ExpenseUpdated: "Расход обновлен",
                         ExpenseDeleted: "Расход удалён",
                         people: "людей",
                         borrowed: "одолжил",
@@ -318,6 +321,8 @@ i18n
                     },
                     expenseDetails: {
                         ConfirmMessage: "Ви впевнені, що хочете видалити цей рахунок?",
+                        ExpenseCreated: "Витрати створені",
+                        ExpenseUpdated: "Витрати оновлені",
                         ExpenseDeleted: "Споживання видаляється",
                         people: "людей",
                         borrowed: "позичив",
