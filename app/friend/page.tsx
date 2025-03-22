@@ -240,7 +240,7 @@ export default function FriendPage() {
                         router.push(expenseDetails);
                     }}
                 >
-                    {payment ? _owe !== 0 ?
+                    {payment ? _owe === 0 ?
                             `${t("friendPage.You")} ${t("friendPage.Paid")} ${payerName}` :
                             `${payerName} ${t("friendPage.Paid")} ${t("friendPage.you")}` :
                         description}
