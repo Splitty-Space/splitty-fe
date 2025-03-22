@@ -324,12 +324,13 @@ export default function AddExpense() {
             />
 
             <Main className="px-4">
-                <div className="my-5 flex flex-col items-center justify-center">
+                <div className="mb-5 flex flex-col items-center justify-center">
                     <div className="flex max-w-full overflow-auto pl-4">
                         {participants?.map(({id}) =>
                             <Avatar
                                 key={id}
-                                size={48}
+                                // @ts-ignore
+                                size={64}
                                 user_id={id}
                                 style={{
                                     marginLeft: "-1rem"
