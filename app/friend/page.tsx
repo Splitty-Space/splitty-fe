@@ -1,6 +1,6 @@
 "use client"
 
-import {useState, useEffect, useRef} from "react";
+import {useState, useEffect, useRef, useCallback} from "react";
 import {useTranslation} from "react-i18next";
 import {
     AvatarStack,
@@ -24,7 +24,7 @@ import useMe from "@/services/useMe";
 import {formatDate} from "@/utils/formatDate";
 import Main from "@/app/components/main/main";
 import {useRouter} from "next/navigation";
-import {expenseDetails, friendSettings, settleUp} from "@/const/urls";
+import {expenseDetails, friendSettings, settleUp, settleUpPayment} from "@/const/urls";
 import useFriends from "@/services/useFriends";
 import {useStore} from "@/app/store";
 import Avatar from "@/app/components/avatar/Avatar";
@@ -40,6 +40,7 @@ export default function FriendPage() {
     const {data} = useFriends(searchValue);
     const friend = data?.data?.find(friend => friend.id === selectedUserId);
     const setSelectedExpense = useStore((state) => state.setSelectedExpense);
+    const setSettleUpPaymentInfo = useStore((state) => state.setSettleUpPaymentInfo);
 
     const limit = 25;
     const [rowCount, setRowCount] = useState(limit);
@@ -109,9 +110,16 @@ export default function FriendPage() {
 
     const router = useRouter();
 
-    const onSettleUp = () => {
-        router.push(settleUp);
-    };
+    const onSettleUp = useCallback(() => {
+        if (friend) {
+            if (friend.total.length > 1) {
+                router.push(settleUp);
+            } else if (friend.total.length === 1) {
+                setSettleUpPaymentInfo({friend, currency: friend.total[0].currency});
+                router.push(settleUpPayment);
+            }
+        }
+    }, [friend, setSettleUpPaymentInfo, router]);
 
     const rowRenderer = ({index, key, style}: { index: number, key: string, style: object }) => {
         const expense = expenses[index];
