@@ -202,8 +202,8 @@ export default function FriendPage() {
                                     {`${_owe === 0 ? "+" : "-"}${_amount} ${currency}`}
                                 </Text> :
                                 <>
-                                    <div>
-                                        <Caption weight="3" className="overflow-auto text-ellipsis">
+                                    <div className="flex">
+                                        <Caption weight="3" className="max-w-16 overflow-hidden text-ellipsis">
                                             {whoPaid}
                                         </Caption>
                                         <Caption

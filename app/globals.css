@@ -103,3 +103,7 @@ body {
 .-translate-y--50p {
     transform: translateY(-50%);
 }
+
+.friends-list_shrink-0 :nth-child(3) {
+    flex-shrink: 0;
+}

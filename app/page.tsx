@@ -16,7 +16,6 @@ import Avatar from "@/app/components/avatar/Avatar";
 import Username from "@/app/components/username/username";
 import "dayjs/locale/ru";
 import "dayjs/locale/uk";
-import "./friendsList.css";
 
 // import "@/utils/mockTelegramEnv"; // TODO DO NOT UNCOMMENT
 
