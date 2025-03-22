@@ -47,11 +47,17 @@ export default function ExpenseHistory({activity, selectedExpense}: {
                                                         user_id={activity.user.id}
                                                     />}
                                                 >
-                                                    {_value && <span className="whitespace-normal">
+                                                    {_value &&
+                                                        <span className="whitespace-normal">
                                                                 {`${activity.user.name} changed ${selectedExpense.expense_users[Number(_key)].user.name} 
-                                                                ${__key === "debt_amount" ? "debt" : "lent"} amount from 
-                                                                ${__key === "debt_amount" ? _value?.debt_amount.old : _value?.lent_amount.old} to 
-                                                                ${__key === "debt_amount" ? _value?.debt_amount.new : _value?.lent_amount.old}`}
+                                                                ${__key === "debt_amount" ? "debt" : "lent"} amount from `}
+                                                            <span className="red">
+                                                                {__key === "debt_amount" ? _value?.debt_amount.old : _value?.lent_amount.old}
+                                                            </span>
+                                                            {" to "}
+                                                            <span className="green">
+                                                                {__key === "debt_amount" ? _value?.debt_amount.new : _value?.lent_amount.old}
+                                                            </span>
                                                             </span>
                                                     }
                                                 </Cell>
@@ -69,7 +75,10 @@ export default function ExpenseHistory({activity, selectedExpense}: {
                                             />}
                                         >
                                                 <span className="whitespace-normal">
-                                                    {`${activity.user.name} changed ${key} ${value.old} to ${value.new}`}
+                                                    {`${activity.user.name} changed ${key} `}
+                                                    <span className="red">{value.old}</span>
+                                                    {" to "}
+                                                    <span className="green">{value.new}</span>
                                                 </span>
                                         </Cell>
                                         <Divider className="ml-16 border-2"/>
