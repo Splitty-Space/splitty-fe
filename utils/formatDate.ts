@@ -1,12 +1,7 @@
-import {EN} from "@/const/languages";
-
-export function formatDate(date: Date, language: string) {
+export function formatDate(date: Date) {
     return new Intl.DateTimeFormat("en-US", {
         year: "numeric",
-        month: "long",
+        month: "short",
         day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-        hour12: language.toUpperCase() === EN,
     }).format(new Date(date))
 }

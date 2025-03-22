@@ -178,7 +178,7 @@ export default function FriendPage() {
             <div key={key} style={style}>
                 <Cell
                     className="friends-list_shrink-0"
-                    subtitle={formatDate(date, me.language)}
+                    subtitle={formatDate(date)}
                     before={
                         <AvatarStack>
                             {participants.map((participant, index, array) =>
@@ -203,7 +203,7 @@ export default function FriendPage() {
                                 </Text> :
                                 <>
                                     <div className="flex">
-                                        <Caption weight="3" className="max-w-16 overflow-hidden text-ellipsis">
+                                        <Caption weight="3" className="max-w-16 pr-0.5 overflow-hidden text-ellipsis">
                                             {whoPaid}
                                         </Caption>
                                         <Caption

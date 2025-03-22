@@ -10,7 +10,6 @@ import {Icon28Edit} from "@telegram-apps/telegram-ui/dist/icons/28/edit";
 import {Icon28Bin} from "@/Icons";
 import Logo from "@/app/components/header/logo";
 import useMe from "@/services/useMe";
-import {formatDate} from "@/utils/formatDate";
 import {deleteExpense} from "@/services/deleteExpense";
 import getExpense from "@/services/getExpense";
 import {useStore} from "@/app/store";
@@ -20,6 +19,7 @@ import {useRouter} from "next/navigation";
 import {addExpense, settleUpPayment} from "@/const/urls";
 import {popup} from "@telegram-apps/sdk";
 import Avatar from "@/app/components/avatar/Avatar";
+import {formatDateTime} from "@/utils/formatDateTime";
 import "./expenseDetails.css";
 
 export default function ExpenseDetails() {
@@ -167,7 +167,7 @@ export default function ExpenseDetails() {
                                     <Caption
                                         weight="3"
                                         className="hint_color"
-                                    >{formatDate(selectedExpense.date, me.language)}</Caption>
+                                    >{formatDateTime(selectedExpense.date, me.language)}</Caption>
                                 </div>
                             }
                         </div>

@@ -8,7 +8,7 @@ import useActivity from "@/services/useActivity";
 import classNames from "classnames";
 import {ACTIVITY_TYPE, ACTIVITY_TYPE_TO_TEXT} from "@/entities/Activity";
 import {Expense} from "@/entities";
-import {formatDate} from "@/utils/formatDate";
+import {formatDateTime} from "@/utils/formatDateTime";
 import {ExpenseHistoryModal} from "@/app/expense/details/ExpenseHistoryModal";
 import Avatar from "@/app/components/avatar/Avatar";
 
@@ -72,7 +72,7 @@ export default function ExpenseHistoryList({
                                                 <div key={id}>
                                                     <Cell
                                                         className="p-0"
-                                                        subtitle={formatDate(created_at, me.language)}
+                                                        subtitle={formatDateTime(created_at, me.language)}
                                                         before={<Avatar size={48} user_id={user.id}/>}
                                                         after={numberOfExpenseHistoryItems > 0 &&
                                                             (<Badge type="number">
@@ -90,7 +90,7 @@ export default function ExpenseHistoryList({
                                     (<div key={id}>
                                         <Cell
                                             className="p-0"
-                                            subtitle={formatDate(created_at, me.language)}
+                                            subtitle={formatDateTime(created_at, me.language)}
                                             before={<Avatar size={48} user_id={user.id}/>}
                                         >
                                             {activity_type !== ACTIVITY_TYPE.PAYMENT_CREATED ?

@@ -5,7 +5,7 @@ import {useTranslation} from "react-i18next";
 import useMe from "@/services/useMe";
 import {Cell, Divider, List, Spinner, Text} from "@telegram-apps/telegram-ui";
 import Activity from "@/entities/Activity";
-import {formatDate} from "@/utils/formatDate";
+import {formatDateTime} from "@/utils/formatDateTime";
 import {Expense} from "@/entities";
 import Avatar from "@/app/components/avatar/Avatar";
 
@@ -41,7 +41,7 @@ export default function ExpenseHistory({activity, selectedExpense}: {
                                             <div key={activity.id + key + _key + __key}>
                                                 <Cell
                                                     className="p-0"
-                                                    subtitle={formatDate(activity.created_at, me.language)}
+                                                    subtitle={formatDateTime(activity.created_at, me.language)}
                                                     before={<Avatar
                                                         size={48}
                                                         user_id={activity.user.id}
@@ -62,7 +62,7 @@ export default function ExpenseHistory({activity, selectedExpense}: {
                                     (<div key={activity.id + key}>
                                         <Cell
                                             className="p-0"
-                                            subtitle={formatDate(activity.created_at, me.language)}
+                                            subtitle={formatDateTime(activity.created_at, me.language)}
                                             before={<Avatar
                                                 size={48}
                                                 user_id={activity.user.id}

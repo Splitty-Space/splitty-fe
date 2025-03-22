@@ -115,7 +115,7 @@ export default function ActivityPage() {
             <div key={key} style={style}>
                 <Cell
                     className="friends-list_shrink-0"
-                    subtitle={formatDate(created_at, me.language)}
+                    subtitle={formatDate(created_at)}
                     before={<Avatar size={48} user_id={user?.id}/>}
                     onClick={onCellClick(expense)}
                 >
