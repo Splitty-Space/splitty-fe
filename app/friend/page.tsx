@@ -286,7 +286,7 @@ export default function FriendPage() {
                         weight="3"
                         className={`mt-1 ${Number(amount) > 0 ? "blue" : "red"}`}
                     >
-                        {`${Math.abs(Number(amount))} ${currency} ${Number(amount) > 0 ? t("friendPage.OwesYou") : t("friendPage.YouOwe")}`}
+                        {`${Number(amount) > 0 ? t("friendPage.OwesYou") : t("friendPage.YouOwe")} ${Math.abs(Number(amount))} ${currency}`}
                     </Caption>
                 )}
 
