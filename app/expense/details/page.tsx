@@ -177,7 +177,7 @@ export default function ExpenseDetails() {
                                 <Text
                                     key="payment"
                                     weight="3"
-                                    className={_owe === 0 ? "green" : "red"}
+                                    className={"text-nowrap" + (_owe === 0 ? " green" : " red")}
                                 >
                                     {`${_owe === 0 ? "+" : "-"}${_amount} ${selectedExpense.currency}`}
                                 </Text>

@@ -197,9 +197,9 @@ export default function FriendPage() {
                                 <Text
                                     key="payment"
                                     weight="3"
-                                    className={_owe === 0 ? "green" : "red"}
+                                    className={_owe !== 0 ? "green" : "red"}
                                 >
-                                    {`${_owe === 0 ? "+" : "-"}${_amount} ${currency}`}
+                                    {`${_owe !== 0 ? "+" : "-"}${_amount} ${currency}`}
                                 </Text> :
                                 <>
                                     <div className="flex">
