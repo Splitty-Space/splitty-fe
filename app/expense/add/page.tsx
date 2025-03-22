@@ -103,7 +103,7 @@ export default function AddExpense() {
             setCurrency(selectedExpense?.currency ?? me?.default_currency);
             setIsFullyPaidByYou(selectedExpense ?
                 selectedExpense.expense_users
-                    .some(e => e.lent_amount === selectedExpense?.amount && e.user.id === me.id) : true);
+                    .some(e => Number(e.lent_amount) === Number(selectedExpense?.amount) && e.user.id === me.id) : true);
         }
     }, [me, selectedExpense]);
 
@@ -388,19 +388,23 @@ export default function AddExpense() {
                     </Cell>
                     <Divider/>
 
-                    <Cell
-                        className="p-0 addExpense__cell"
-                        after={
-                            <Switch
-                                defaultChecked={isFullyPaidByYou}
-                                onChange={onFullyPaidByYouChange}
-                                style={{"backgroundColor": "red"}}
-                            />
-                        }
-                    >
-                        {t("expenses.FullyPaidByYou")}
-                    </Cell>
-                    <Divider/>
+                    {typeof isFullyPaidByYou === "boolean" &&
+                        <>
+                            <Cell
+                                className="p-0 addExpense__cell"
+                                after={
+                                    <Switch
+                                        defaultChecked={isFullyPaidByYou}
+                                        onChange={onFullyPaidByYouChange}
+                                        style={{"backgroundColor": "red"}}
+                                    />
+                                }
+                            >
+                                {t("expenses.FullyPaidByYou")}
+                            </Cell>
+                            <Divider/>
+                        </>
+                    }
 
                     <Cell
                         className="p-0 addExpense__cell"
