@@ -5,7 +5,7 @@ import {useTranslation} from "react-i18next";
 import classNames from "classnames";
 import Header from "@/app/components/header/header";
 import Main from "@/app/components/main/main";
-import {AvatarStack, Caption, Divider, IconButton, Spinner, Text, Title} from "@telegram-apps/telegram-ui";
+import {AvatarStack, Caption, Divider, IconButton, Spinner, Subheadline, Text, Title} from "@telegram-apps/telegram-ui";
 import {Icon28Edit} from "@telegram-apps/telegram-ui/dist/icons/28/edit";
 import {Icon28Bin} from "@/Icons";
 import Logo from "@/app/components/header/logo";
@@ -266,19 +266,23 @@ export default function ExpenseDetails() {
                                             />
                                             <div className="flex flex-col ml-4 max-w-65p">
                                                 {Number(lent_amount) !== 0 &&
-                                                    <Text
+                                                    <Subheadline
+                                                        level="1"
+                                                        weight="3"
                                                         key={id + "paid"}
                                                         className={classNames("text-ellipsis overflow-hidden hint_color")}
-                                                    >{`${user.name} ${t("friendPage.Paid")} ${Number(lent_amount)} ${selectedExpense.currency}`}</Text>}
+                                                    >{`${user.name} ${t("friendPage.Paid")} ${Number(lent_amount)} ${selectedExpense.currency}`}</Subheadline>}
                                                 {Number(debt_amount) !== 0 &&
-                                                    <Text
+                                                    <Subheadline
+                                                        level="1"
+                                                        weight="3"
                                                         key={id + "borrowed"}
                                                         className={classNames("text-ellipsis overflow-hidden hint_color")}
                                                     >{`${user.name} ${
                                                         Number(lent_amount) !== 0 ?
                                                             t("expenseDetails.paidForYourself") :
                                                             t("expenseDetails.borrowed")
-                                                    } ${Number(debt_amount)} ${selectedExpense.currency}`}</Text>}
+                                                    } ${Number(debt_amount)} ${selectedExpense.currency}`}</Subheadline>}
                                             </div>
                                         </div>)
                                     )}

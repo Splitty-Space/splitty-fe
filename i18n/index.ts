@@ -106,7 +106,7 @@ i18n
                         ExpenseDeleted: "Expense deleted",
                         people: "people",
                         borrowed: "borrowed",
-                        paidForYourself: "paid for himself/herself",
+                        paidForYourself: "paid for him/herself",
                         Expense: "Expense",
                         Payment: "Payment",
                         wasEditedBy: "was edited by",
