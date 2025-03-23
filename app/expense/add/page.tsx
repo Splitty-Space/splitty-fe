@@ -2,6 +2,7 @@
 
 import React, {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
+import classNames from "classnames";
 import Header from "@/app/components/header/header";
 import Main from "@/app/components/main/main";
 import {
@@ -235,9 +236,10 @@ export default function AddExpense() {
     const onPaidByChange = (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
         vibration();
 
-        setPaidBy(paidBy.map(x => x.id === id ? {
+        setPaidBy(paidBy => paidBy.map(x => x.id === id ? {
             ...x,
             isSelected: e.target.checked,
+            amount: e.target.checked ? x.amount : 0,
             isDirty: true,
         } : x));
     };
@@ -276,9 +278,10 @@ export default function AddExpense() {
     const onSplitBetweenChange = (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
         vibration();
 
-        setSplitBetween(splitBetween.map(x => x.id === id ? {
+        setSplitBetween(splitBetween => splitBetween.map(x => x.id === id ? {
             ...x,
             isSelected: e.target.checked,
+            amount: e.target.checked ? x.amount : 0,
             isDirty: true,
         } : x));
     };
@@ -428,18 +431,31 @@ export default function AddExpense() {
                         <Divider className="mt-2 border-2"/>
 
                         <List className="mt-4 w-full rounded-3xl px-0">
-                            {participants.map(({id, name}) =>
-                                (<div key={id} className="flex items-center justify-between">
+                            {participants.map(({id, name}) => {
+
+                                const isItemSelected = paidBy.find(x => x.id === id)?.isSelected;
+
+                                return (<div key={id} className="flex items-center justify-between">
                                     <div className="flex items-center w-1/2">
                                         <Switch
                                             className="shrink-0"
-                                            defaultChecked={paidBy.find(x => x.id === id)?.isSelected}
+                                            defaultChecked={isItemSelected}
                                             onChange={onPaidByChange(id)}
                                         />
 
-                                        <Avatar size={48} user_id={id} className="ml-2"/>
+                                        <Avatar
+                                            size={48}
+                                            user_id={id}
+                                            className={classNames("ml-2", {
+                                                "opacity-50": !isItemSelected
+                                            })}
+                                        />
 
-                                        <Text className="ml-4 overflow-hidden text-ellipsis">{name}</Text>
+                                        <Text className={classNames("ml-4 overflow-hidden text-ellipsis", {
+                                            "hint_color": !isItemSelected
+                                        })}>
+                                            {name}
+                                        </Text>
                                     </div>
 
                                     <Input
@@ -450,7 +466,7 @@ export default function AddExpense() {
                                         step="any"
                                         className="w-36 ml-auto"
                                         status={currentPaidMoneyAmount !== moneySpent ? "error" : undefined}
-                                        disabled={!paidBy.find(x => x.id === id)?.isSelected}
+                                        disabled={!isItemSelected}
                                         after={
                                             <Caption
                                                 level="1"
@@ -460,7 +476,8 @@ export default function AddExpense() {
                                             </Caption>}
                                     />
 
-                                </div>))}
+                                </div>)
+                            })}
                         </List>
 
                         {Number(moneySpent) > 0 &&
@@ -486,36 +503,51 @@ export default function AddExpense() {
                         <Divider className="mt-2 border-2"/>
 
                         <List className="mt-4 w-full rounded-3xl px-0">
-                            {participants?.map(({id, name}) =>
-                                <div key={id} className="flex items-center justify-between">
-                                    <div className="flex items-center w-1/2">
-                                        <Switch
-                                            className="shrink-0"
-                                            defaultChecked={splitBetween.find(x => x.id === id)?.isSelected}
-                                            onChange={onSplitBetweenChange(id)}
+                            {participants?.map(({id, name}) => {
+                                    const isItemSelected = splitBetween.find(x => x.id === id)?.isSelected;
+
+                                    return (<div key={id} className="flex items-center justify-between">
+                                        <div className="flex items-center w-1/2">
+                                            <Switch
+                                                className="shrink-0"
+                                                defaultChecked={isItemSelected}
+                                                onChange={onSplitBetweenChange(id)}
+                                            />
+
+                                            <Avatar
+                                                size={48}
+                                                user_id={id}
+                                                className={classNames("ml-2", {
+                                                    "opacity-50": !isItemSelected
+                                                })}
+                                            />
+
+                                            <Text className={classNames("ml-4 overflow-hidden text-ellipsis", {
+                                                "hint_color": !isItemSelected
+                                            })}>
+                                                {name}
+                                            </Text>
+                                        </div>
+
+                                        <Input
+                                            value={splitBetween.find(x => x.id === id)?.amount}
+                                            onChange={onSplitBetweenAmountChange(id)}
+                                            type="number"
+                                            inputMode="decimal"
+                                            step="any"
+                                            className="w-36 ml-auto"
+                                            status={currentSplitBetweenMoneyAmount !== moneySpent ? "error" : undefined}
+                                            disabled={!isItemSelected}
+                                            after={
+                                                <Caption
+                                                    level="1"
+                                                    weight="3"
+                                                >
+                                                    {currency}
+                                                </Caption>}
                                         />
-
-                                        <Avatar size={48} user_id={id} className="ml-2"/>
-
-                                        <Text className="ml-4 overflow-hidden text-ellipsis">{name}</Text>
-                                    </div>
-
-                                    <Input
-                                        value={splitBetween.find(x => x.id === id)?.amount}
-                                        onChange={onSplitBetweenAmountChange(id)}
-                                        type="number"
-                                        inputMode="decimal"
-                                        step="any"
-                                        className="w-36 ml-auto"
-                                        after={
-                                            <Caption
-                                                level="1"
-                                                weight="3"
-                                            >
-                                                {currency}
-                                            </Caption>}
-                                    />
-                                </div>
+                                    </div>)
+                                }
                             )}
                         </List>
 
