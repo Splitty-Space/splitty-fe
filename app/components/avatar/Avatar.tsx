@@ -1,6 +1,8 @@
 import React, {memo} from "react";
+import classNames from "classnames";
 import {useUserPhoto} from "@/utils/useUserPhoto";
 import {Avatar as Avatar_} from "@telegram-apps/telegram-ui";
+import "./avatar.css";
 
 interface AvatarProps {
     user_id?: number;
@@ -22,7 +24,7 @@ const Avatar: React.FC<AvatarProps> = memo(({
         src={photoUrl}
         alt={`User photo - ${user_id}`}
         style={style}
-        className={className}
+        className={classNames("avatar", className)}
     />;
 });
 
