@@ -23,12 +23,14 @@ import {useStore} from "@/app/store";
 import {useRouter} from "next/navigation";
 import {expenseDetails} from "@/const/urls";
 import Avatar from "@/app/components/avatar/Avatar";
+import {vibration} from "@/utils/vibration";
 
 export default function ActivityPage() {
     const {t} = useTranslation();
 
     const setPageData = useStore((state) => state.setPageData);
     const setSelectedExpense = useStore((state) => state.setSelectedExpense);
+    const setIsCantShowDeletedExpenseSnackbarShown = useStore((state) => state.setIsCantShowDeletedExpenseSnackbarShown);
 
     const {data: me} = useMe();
 
@@ -92,8 +94,11 @@ export default function ActivityPage() {
                 setPageData({isFromActivity: true});
                 router.push(expenseDetails);
             });
+        } else {
+            setIsCantShowDeletedExpenseSnackbarShown(true);
+            vibration("rigid");
         }
-    }, [isLoadingExpense, setSelectedExpense, setPageData, router]);
+    }, [isLoadingExpense, setSelectedExpense, setPageData, router, setIsCantShowDeletedExpenseSnackbarShown]);
 
     const rowRenderer = ({index, key, style}: { index: number, key: string, style: object }) => {
         const activity = activities[index];

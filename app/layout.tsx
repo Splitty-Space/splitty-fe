@@ -21,7 +21,7 @@ import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import Footer from "@/app/components/footer/footer";
 import {useStore} from "@/app/store";
 import useFriends from "@/services/useFriends";
-import {Icon28Bin, Icon28Check} from "@/Icons";
+import {Icon28Bin, Icon28Check, Icon28Warning} from "@/Icons";
 import {useTranslation} from "react-i18next";
 import {account, activity, expenseParticipants, friendsList, groups, urls} from "@/const/urls";
 import "./globals.css";
@@ -215,14 +215,17 @@ export default function RootLayout({children}: Readonly<{
     const setIsCreateExpenseSnackbarShown = useStore((state) => state.setIsCreateExpenseSnackbarShown);
     const isUpdateExpenseSnackbarShown = useStore((state) => state.isUpdateExpenseSnackbarShown);
     const setIsUpdateExpenseSnackbarShown = useStore((state) => state.setIsUpdateExpenseSnackbarShown);
+    const isCantShowDeletedExpenseSnackbarShown = useStore((state) => state.isCantShowDeletedExpenseSnackbarShown);
+    const setIsCantShowDeletedExpenseSnackbarShown = useStore((state) => state.setIsCantShowDeletedExpenseSnackbarShown);
 
-    const {data} = useFriends(searchValue)
+    const {data} = useFriends(searchValue);
     const friends = data?.data;
 
     const onCloseFriendDeleted = useCallback(() => setIsDeleteFriendSnackbarShown(false), [setIsDeleteFriendSnackbarShown]);
     const onCloseExpenseCreated = useCallback(() => setIsCreateExpenseSnackbarShown(false), [setIsCreateExpenseSnackbarShown]);
     const onCloseExpenseUpdated = useCallback(() => setIsUpdateExpenseSnackbarShown(false), [setIsUpdateExpenseSnackbarShown]);
     const onCloseExpenseDeleted = useCallback(() => setIsDeleteExpenseSnackbarShown(false), [setIsDeleteExpenseSnackbarShown]);
+    const onCloseCantShowDeletedExpense = useCallback(() => setIsCantShowDeletedExpenseSnackbarShown(false), [setIsCantShowDeletedExpenseSnackbarShown]);
 
     return (
         <html lang="en">
@@ -292,6 +295,16 @@ export default function RootLayout({children}: Readonly<{
                                     onClose={onCloseExpenseDeleted}
                                 >
                                     {t("expenseDetails.ExpenseDeleted")}
+                                </Snackbar>
+                            )}
+
+                            {isCantShowDeletedExpenseSnackbarShown && (
+                                <Snackbar
+                                    className="mb-20"
+                                    before={<Icon28Warning/>}
+                                    onClose={onCloseCantShowDeletedExpense}
+                                >
+                                    {t("expenseDetails.CantShowDeletedExpense")}
                                 </Snackbar>
                             )}
                         </AppRoot>
