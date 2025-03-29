@@ -44,6 +44,9 @@ export default function AddExpense() {
 
     const {data: me} = useMe();
 
+    const maxExpenseNameLength = 256;
+    const maxMoneySpentLength = 256;
+
     const searchValue = useStore((state) => state.searchValue);
     const selectedFriends = useStore((state) => state.selectedFriends);
     const selectedExpense = useStore((state) => state.selectedExpense);
@@ -170,10 +173,16 @@ export default function AddExpense() {
     };
 
     const onExpenseNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setExpenseName(e.target.value);
+        if (e.target.value.length <= maxExpenseNameLength) {
+            setExpenseName(e.target.value);
+        }
     };
 
     const onMoneySpentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.value.length > maxMoneySpentLength) {
+            return;
+        }
+
         const amount = Number(e.target.value.replace(",", "."))
         const moneySpent = amount === 0 ? null : amount
         setMoneySpent(moneySpent);
@@ -347,6 +356,7 @@ export default function AddExpense() {
                         autoFocus
                         value={expenseName}
                         onChange={onExpenseNameChange}
+                        maxLength={maxExpenseNameLength}
                         placeholder={t("expenses.ExpenseName")}
                         className="mb-2"
                         status={expenseName.length < 3 ? "error" : "default"}
@@ -361,6 +371,7 @@ export default function AddExpense() {
                                 // @ts-ignore
                                 value={moneySpent}
                                 onChange={onMoneySpentChange}
+                                maxLength={maxMoneySpentLength}
                                 placeholder={t("expenses.MoneySpent")}
                                 status={(moneySpent && moneySpent > 0) ? "default" : "error"}
                             />
@@ -480,7 +491,7 @@ export default function AddExpense() {
                             })}
                         </List>
 
-                        {Number(moneySpent) > 0 &&
+                        {Number(moneySpent) > 0 && (Number(moneySpent) - currentPaidMoneyAmount) !== 0 &&
                             <Text
                                 weight="3"
                                 className="flex justify-end"
@@ -552,7 +563,7 @@ export default function AddExpense() {
                         </List>
 
                         {
-                            Number(moneySpent) > 0 &&
+                            Number(moneySpent) > 0 && (Number(moneySpent) - currentSplitBetweenMoneyAmount) !== 0 &&
                             <Text
                                 weight="3"
                                 className="flex justify-end"
