@@ -49,6 +49,9 @@ body {
 
 /*#endregion*/
 
+.bg-surface_dark {
+    background: var(--tgui--surface_dark);
+}
 
 /*#region MARGINS */
 

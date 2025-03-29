@@ -1,3 +1,7 @@
 .avatar {
     border: var(--tgui--white) solid 0.125rem;
 }
+
+.avatar__selected {
+    border: var(--tgui--button_color) solid 0.125rem;
+}

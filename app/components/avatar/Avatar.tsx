@@ -9,13 +9,15 @@ interface AvatarProps {
     size?: 20 | 24 | 28 | 40 | 48 | 96;
     style?: React.CSSProperties;
     className?: string;
+    isSelected?: boolean;
 }
 
 const Avatar: React.FC<AvatarProps> = memo(({
                                                 user_id,
                                                 size = 40,
                                                 style,
-                                                className
+                                                className,
+                                                isSelected
                                             }) => {
     const {photoUrl} = useUserPhoto(user_id);
 
@@ -24,7 +26,9 @@ const Avatar: React.FC<AvatarProps> = memo(({
         src={photoUrl}
         alt={`User photo - ${user_id}`}
         style={style}
-        className={classNames("avatar", className)}
+        className={classNames("avatar", {
+            "avatar__selected": isSelected
+        }, className)}
     />;
 });
 

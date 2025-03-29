@@ -10,7 +10,7 @@ import {
     Caption,
     Cell,
     Divider,
-    Headline,
+    Headline, IconContainer,
     Input,
     List,
     Switch,
@@ -31,6 +31,7 @@ import {expenseDetails, friendsList} from "@/const/urls";
 import Avatar from "@/app/components/avatar/Avatar";
 import {vibration} from "@/utils/vibration";
 import "./addExpense.css";
+import {Icon28Warning} from "@/Icons";
 
 interface Payment {
     id: number;
@@ -441,6 +442,22 @@ export default function AddExpense() {
                         </div>
                         <Divider className="mt-2 border-2"/>
 
+                        {Number(moneySpent) > 0 && (Number(moneySpent) - currentPaidMoneyAmount) !== 0 &&
+                            <div className="flex items-center bg-surface_dark rounded-lg p-2 mt-4">
+                                <IconContainer className="ml-2 red">
+                                    <Icon28Warning/>
+                                </IconContainer>
+
+                                <div className="flex flex-col ml-4">
+                                    <Caption level="1" weight="3">
+                                        {`${currentPaidMoneyAmount} ${t("expenses.Of")} ${moneySpent} ${currency} ${t("expenses.Filled")}`}
+                                    </Caption>
+                                    <Caption level="1" weight="3">
+                                        {`${Number(moneySpent) - currentPaidMoneyAmount} ${currency} ${t("expenses.Left")}`}
+                                    </Caption>
+                                </div>
+                            </div>}
+
                         <List className="mt-4 w-full rounded-3xl px-0">
                             {participants.map(({id, name}) => {
 
@@ -490,16 +507,6 @@ export default function AddExpense() {
                                 </div>)
                             })}
                         </List>
-
-                        {Number(moneySpent) > 0 && (Number(moneySpent) - currentPaidMoneyAmount) !== 0 &&
-                            <Text
-                                weight="3"
-                                className="flex justify-end"
-                            >
-                                {`${currentPaidMoneyAmount} ${t("expenses.Of")} ${moneySpent} ${currency} ${t("expenses.Filled")}.
-                            ${Number(moneySpent) - currentPaidMoneyAmount} ${currency} ${t("expenses.Left")}.`}
-                            </Text>
-                        }
                     </div>
                 }
 
@@ -512,6 +519,22 @@ export default function AddExpense() {
                             <Headline weight="3" className="invisible">{t("expenses.Split")}:</Headline>
                         </div>
                         <Divider className="mt-2 border-2"/>
+
+                        {Number(moneySpent) > 0 && (Number(moneySpent) - currentSplitBetweenMoneyAmount) !== 0 &&
+                            <div className="flex items-center bg-surface_dark rounded-lg p-2 mt-4">
+                                <IconContainer className="ml-2 red">
+                                    <Icon28Warning/>
+                                </IconContainer>
+
+                                <div className="flex flex-col ml-4">
+                                    <Caption level="1" weight="3">
+                                        {`${currentSplitBetweenMoneyAmount} ${t("expenses.Of")} ${moneySpent} ${currency} ${t("expenses.Filled")}`}
+                                    </Caption>
+                                    <Caption level="1" weight="3">
+                                        {`${Number(moneySpent) - currentSplitBetweenMoneyAmount} ${currency} ${t("expenses.Left")}`}
+                                    </Caption>
+                                </div>
+                            </div>}
 
                         <List className="mt-4 w-full rounded-3xl px-0">
                             {participants?.map(({id, name}) => {
@@ -561,17 +584,6 @@ export default function AddExpense() {
                                 }
                             )}
                         </List>
-
-                        {
-                            Number(moneySpent) > 0 && (Number(moneySpent) - currentSplitBetweenMoneyAmount) !== 0 &&
-                            <Text
-                                weight="3"
-                                className="flex justify-end"
-                            >
-                                {currentSplitBetweenMoneyAmount} of {moneySpent} USD
-                                filled. {`${Number(moneySpent) - currentSplitBetweenMoneyAmount} USD left.`}
-                            </Text>
-                        }
                     </div>
                 }
             </Main>

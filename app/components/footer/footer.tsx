@@ -15,7 +15,7 @@ interface Tab {
     id: number;
     path: string;
     text?: string;
-    Icon: FC<{ fill: string }>;
+    Icon: FC<{ isSelected: boolean }>;
 }
 
 export default function Footer({
@@ -37,45 +37,50 @@ export default function Footer({
 
     const {data: me} = useMe();
 
+    const getFillColor = (isSelected: boolean) => isSelected ? "var(--tgui--button_color)" : "var(--tgui--secondary_hint_color)";
+
     const tabs: Array<Tab> = [
         {
             id: TabIds.Friends,
             path: friendsList,
             text: t("footer.Friends"),
-            Icon: ({fill}: { fill: string }) => <Icon24Person fill={fill}/>
+            Icon: ({isSelected}) => <Icon24Person fill={getFillColor(isSelected)}/>
         },
         {
             id: TabIds.Groups,
             path: groups,
             text: t("footer.Groups"),
-            Icon: ({fill}: { fill: string }) => <Icon24Group fill={fill}/>
+            Icon: ({isSelected}) => <Icon24Group fill={getFillColor(isSelected)}/>
         },
         {
             id: TabIds.AddExpenseParticipants,
             path: expenseParticipants,
-            Icon: () =>
+            Icon: ({isSelected}) =>
                 <>
-                    <PlusIcon style={{
-                        position: "absolute",
-                        scale: "0.7",
-                        top: "-2rem",
-                    }}/>
+                    <PlusIcon
+                        stroke={isSelected ? "var(--tgui--button_color)" : "var(--tgui--text_color)"}
+                        style={{
+                            position: "absolute",
+                            scale: "0.7",
+                            top: "-2rem",
+                        }}/>
                 </>
         },
         {
             id: TabIds.Activity,
             path: activity,
             text: t("footer.Activity"),
-            Icon: ({fill}: { fill: string }) => <Icon24Stats fill={fill}/>
+            Icon: ({isSelected}) => <Icon24Stats fill={getFillColor(isSelected)}/>
         },
         {
             id: TabIds.Account,
             path: account,
             text: t("footer.Account"),
-            Icon: () =>
+            Icon: ({isSelected}) =>
                 <Avatar
                     size={24}
                     user_id={me?.id}
+                    isSelected={isSelected}
                 />
         },
     ];
@@ -127,8 +132,7 @@ export default function Footer({
                         selected={path === pathname}
                         onClick={onBarItemClick(id)}
                     >
-                        <Icon
-                            fill={path === pathname ? "var(--tgui--button_color)" : "var(--tgui--secondary_hint_color)"}/>
+                        <Icon isSelected={path === pathname}/>
                     </Tabbar.Item>)}
             </Tabbar>
         </footer>
