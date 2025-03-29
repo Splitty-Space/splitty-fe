@@ -120,87 +120,39 @@ export default function FriendsList() {
                     "margin-top-16": isSearchOpen
                 })}
             >
-                {/*                {
-                    loadingFriends ?
-                        (<Spinner size="l"/>) :
-                        searchValue === "" && friends?.length === 0 ?
-                            (<Placeholder header={t("friendsList.AddFirstFriend")}>
-                                <Arrow className="ml-16"/>
-                            </Placeholder>) :
-                            friends?.length > 0 ?
-                                (
-                                    <List className="p-0">
-                                        {friends?.map(({id, name, username, total}) =>
-                                            <div key={id} className="margin-bottom-0">
-                                                <Cell
-                                                    className="friends-list_shrink-0"
-                                                    before={<Avatar
-                                                        size={48}
-                                                        user_id={id}
-                                                    />}
-                                                    subtitle={<Username username={username}/>}
-                                                    after={<div className="flex flex-col items-end">
-                                                        {total.slice(0, 2).map(({amount, currency}, index) =>
-                                                            <Caption
-                                                                key={index}
-                                                                weight="3"
-                                                                className={Number(amount) > 0 ? "blue" : "red"}
-                                                            >
-                                                                {`${Number(amount) > 0 ? "owes you" : "you owe"} ${Math.abs(Number(amount))} ${currency}`}
-                                                            </Caption>)
-                                                        }
-                                                    </div>}
-                                                    onClick={() => {
-                                                        setSelectedUserId(id);
-                                                        router.push(friend);
-                                                    }}
-                                                >
-                                                    {name}
-                                                </Cell>
-                                                <Divider className="ml-20 border-2"/>
-                                            </div>
-                                        )
-                                        }
-                                    </List>)
-                                : (<Placeholder header={t("friendsList.FriendNotFound")}/>)
-                }*/}
-
                 {loadingFriends ?
                     <Spinner size="l" className="flex flex-col items-center justify-center"/> :
                     searchValue === "" && friends?.length === 0 ?
                         (<Placeholder header={t("friendsList.AddFirstFriend")}>
                             <Arrow className="ml-16"/>
                         </Placeholder>) :
-                        friends?.length > 0 ?
+                        // @ts-ignore
+                        (<InfiniteLoader
+                            isRowLoaded={isRowLoaded}
                             // @ts-ignore
-                            (<InfiniteLoader
-                                isRowLoaded={isRowLoaded}
-                                // @ts-ignore
-                                loadMoreRows={loadMoreRows}
-                                rowCount={rowCount}
-                            >
-                                { // @ts-ignore
-                                    ({onRowsRendered, registerChild}) => (
-                                        // @ts-ignore
-                                        <AutoSizer>
-                                            {({width}) => (
-                                                // @ts-ignore
-                                                <List
-                                                    ref={registerChild}
-                                                    width={width}
-                                                    height={height}
-                                                    rowHeight={68}
-                                                    rowCount={friends?.length}
-                                                    rowRenderer={rowRenderer}
-                                                    onRowsRendered={onRowsRendered}
-                                                    className="pb-20"
-                                                />
-                                            )}
-                                        </AutoSizer>
-                                    )}
-                            </InfiniteLoader>)
-                            :
-                            (<Placeholder header={t("friendsList.FriendNotFound")}/>)
+                            loadMoreRows={loadMoreRows}
+                            rowCount={rowCount}
+                        >
+                            { // @ts-ignore
+                                ({onRowsRendered, registerChild}) => (
+                                    // @ts-ignore
+                                    <AutoSizer>
+                                        {({width}) => (
+                                            // @ts-ignore
+                                            <List
+                                                ref={registerChild}
+                                                width={width}
+                                                height={height}
+                                                rowHeight={68}
+                                                rowCount={friends?.length}
+                                                rowRenderer={rowRenderer}
+                                                onRowsRendered={onRowsRendered}
+                                                className="pb-20"
+                                            />
+                                        )}
+                                    </AutoSizer>
+                                )}
+                        </InfiniteLoader>)
                 }
             </Main>
         </>

@@ -1,14 +1,14 @@
 "use client"
 
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
+import classNames from "classnames";
 import {Friend} from "@/entities";
 import {
     Button,
     Cell,
     Divider,
-    List,
-    Placeholder,
+    Placeholder, Skeleton,
     Spinner,
     Switch,
     Title
@@ -21,8 +21,8 @@ import {useRouter} from "next/navigation";
 import {addExpense} from "@/const/urls";
 import Avatar from "@/app/components/avatar/Avatar";
 import {vibration} from "@/utils/vibration";
-import classNames from "classnames";
 import Username from "@/app/components/username/username";
+import {AutoSizer, InfiniteLoader, List} from "react-virtualized";
 
 export default function AddExpenseParticipants() {
     const selectedFriends = useStore((state) => state.selectedFriends);
@@ -62,9 +62,65 @@ export default function AddExpenseParticipants() {
         ));
     };
 
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+    const refContainer = useRef(null);
+    const [height, setHeight] = useState(0);
+
+    useEffect(() => {
+        // @ts-ignore
+        setHeight(refContainer.current?.clientHeight);
+    }, []);
+
+    const pageSize = 25;
+    const [rowCount, setRowCount] = useState(pageSize);
+
+    useEffect(() => {
+        if (friends) {
+            setRowCount(friends?.length);
+        }
+    }, [friends]);
+
+    const isRowLoaded = ({index}: { index: number }) => {
+        return friends && !!friends[index];
+    };
+
+    const loadMoreRows = () => {
+        return;
+    };
+
     const filteredFriends = friends.filter((friend: Friend) =>
         friend.name.toLowerCase().includes(searchValue.toLowerCase()) ||
         friend.username.toLowerCase().includes(searchValue.toLowerCase()));
+
+    const rowRenderer = ({index, key, style}: { index: number, key: string, style: object }) => {
+        const _friend = filteredFriends[index];
+        if (!_friend) {
+            return (
+                <Skeleton visible withoutAnimation key={key} style={style} className="red">
+                    <Cell> </Cell>
+                </Skeleton>);
+        }
+
+        const {id, name, username} = _friend;
+
+        return (
+            <div key={id} style={style}>
+                <Cell
+                    className="friends-list_shrink-0"
+                    before={<Avatar size={48} user_id={id}/>}
+                    subtitle={<Username username={username}/>}
+                    after={<Switch
+                        defaultChecked={selectedUserIds.includes(id)}
+                        onChange={onUserChange(id)}
+                    />}
+                >
+                    {name}
+                </Cell>
+                <Divider className="ml-20 border-2"/>
+            </div>
+        );
+    };
 
     return (
         <>
@@ -82,34 +138,49 @@ export default function AddExpenseParticipants() {
                 )}
                 searchValue={searchValue}
                 setSearchValue={setSearchValue}
+                onSearchChange={setIsSearchOpen}
             />
 
-            <Main>
-                {
-                    loadingFriends ?
-                        (<Spinner size="l"/>) :
-                        filteredFriends?.length > 0 ?
-                            (
-                                <List className="mb-8 px-0">
-                                    {filteredFriends?.map(({id, name, username}) =>
-                                        <div key={id}>
-                                            <Cell
-                                                className="h-14"
-                                                before={<Avatar size={48} user_id={id}/>}
-                                                subtitle={<Username username={username}/>}
-                                                after={<Switch
-                                                    defaultChecked={selectedUserIds.includes(id)}
-                                                    onChange={onUserChange(id)}
-                                                />}
-                                            >
-                                                {name}
-                                            </Cell>
-                                            <Divider className="ml-20 border-2"/>
-                                        </div>
-                                    )
-                                    }
-                                </List>)
-                            : (<Placeholder header={t("friendsList.FriendNotFound")}/>)
+            <Main
+                ref={refContainer}
+                center={loadingFriends}
+                style={isSearchOpen ? {height: "calc(100% - 4rem)"} : undefined}
+                className={classNames({
+                    "margin-top-8": isSearchOpen
+                })}
+            >
+                {loadingFriends ?
+                    <Spinner size="l" className="flex flex-col items-center justify-center"/> :
+                    filteredFriends?.length > 0 ?
+                        // @ts-ignore
+                        (<InfiniteLoader
+                            isRowLoaded={isRowLoaded}
+                            // @ts-ignore
+                            loadMoreRows={loadMoreRows}
+                            rowCount={rowCount}
+                        >
+                            { // @ts-ignore
+                                ({onRowsRendered, registerChild}) => (
+                                    // @ts-ignore
+                                    <AutoSizer>
+                                        {({width}) => (
+                                            // @ts-ignore
+                                            <List
+                                                ref={registerChild}
+                                                width={width}
+                                                height={height}
+                                                rowHeight={68}
+                                                rowCount={filteredFriends?.length}
+                                                rowRenderer={rowRenderer}
+                                                onRowsRendered={onRowsRendered}
+                                                className="pb-20"
+                                            />
+                                        )}
+                                    </AutoSizer>
+                                )}
+                        </InfiniteLoader>)
+                        :
+                        (<Placeholder header={t("friendsList.FriendNotFound")}/>)
                 }
             </Main>
         </>
