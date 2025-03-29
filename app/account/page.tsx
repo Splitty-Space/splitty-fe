@@ -6,6 +6,7 @@ import {Cell, Divider, IconContainer, List, Select, Spinner, Title} from "@teleg
 import {Icon28Chat} from "@telegram-apps/telegram-ui/dist/icons/28/chat";
 import {Icon28Devices} from "@telegram-apps/telegram-ui/dist/icons/28/devices";
 import {Icon28Stats} from "@telegram-apps/telegram-ui/dist/icons/28/stats";
+import {Icon28Warning} from "@/Icons";
 import {LANGUAGES} from "@/const/languages";
 import useMe from "@/services/useMe";
 import useUpdateUserSettings from "@/services/useUpdateUserSettings";
@@ -128,7 +129,7 @@ export default function Account() {
 
                             <Cell
                                 className="p-0 margin-0 max-h-12"
-                                before={<IconContainer><Icon28Chat/></IconContainer>}
+                                before={<IconContainer><Icon28Warning/></IconContainer>}
                                 onClick={onContactUs}
                             >
                                 {t("account.ReportABug")} / {t("account.ProposeChanges")}

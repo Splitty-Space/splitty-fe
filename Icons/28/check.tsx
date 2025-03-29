@@ -7,5 +7,4 @@ export const Icon28Check = ({...restProps}) => (
             fill="currentColor"
         />
     </svg>
-
 );
