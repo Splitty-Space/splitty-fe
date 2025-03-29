@@ -19,7 +19,7 @@ import {
 } from "@telegram-apps/telegram-ui";
 import useMe from "@/services/useMe";
 import {CurrencySelect} from "@/components/CurrencySelect";
-import {DatePicker} from "@mui/x-date-pickers/DatePicker";
+import {DateTimePicker} from "@mui/x-date-pickers/DateTimePicker";
 import dayjs, {Dayjs} from "dayjs";
 import {splitNumberIntoParts} from "@/utils/splitNumberIntoParts";
 import {addExpense} from "@/services/addExpense";
@@ -381,11 +381,11 @@ export default function AddExpense() {
                     <Cell
                         className="p-0 addExpense__cell"
                         after={
-                            <DatePicker
+                            <DateTimePicker
                                 disabled={!!selectedExpense}
                                 value={dayjs(date)}
                                 onChange={onDateChange}
-                                className="max-w-28 rounded-3xl addExpense"
+                                className="max-w-48 rounded-3xl"
                             />}
                     >
                         {t("expenses.Date")}
