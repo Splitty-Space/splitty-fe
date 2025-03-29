@@ -465,7 +465,7 @@ export default function AddExpense() {
                                         inputMode="decimal"
                                         step="any"
                                         className="w-36 ml-auto"
-                                        status={currentPaidMoneyAmount !== moneySpent ? "error" : undefined}
+                                        status={currentPaidMoneyAmount !== moneySpent && isItemSelected ? "error" : undefined}
                                         disabled={!isItemSelected}
                                         after={
                                             <Caption
