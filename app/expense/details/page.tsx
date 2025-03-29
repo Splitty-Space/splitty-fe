@@ -101,6 +101,9 @@ export default function ExpenseDetails() {
     const lents = selectedExpense?.expense_users
         .filter(({lent_amount}) => lent_amount > 0) ?? [];
 
+    const debts = selectedExpense?.expense_users
+        .filter(({debt_amount}) => debt_amount > 0) ?? [];
+
     return loadingMe ?
         (<Spinner className="flex justify-center " size="l"/>)
         : (
@@ -129,7 +132,7 @@ export default function ExpenseDetails() {
                     )}
                 />
 
-                <Main className="px-4">
+                <Main className="px-4 pt-24">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center w-full">
                             {selectedExpense?.payment &&
@@ -139,10 +142,6 @@ export default function ExpenseDetails() {
                                             if (userIds.every((id) => id !== currentValue.borrower.id)) {
                                                 // @ts-ignore
                                                 userIds.push(currentValue.borrower.id);
-                                            }
-                                            if (userIds.every((id) => id !== currentValue.debtor.id)) {
-                                                // @ts-ignore
-                                                userIds.push(currentValue.debtor.id);
                                             }
 
                                             return userIds;
@@ -161,13 +160,15 @@ export default function ExpenseDetails() {
                             }
 
                             {selectedExpense &&
-                                <div className="flex flex-col overflow-hidden">
+                                <div className="flex flex-col ml-4 overflow-hidden">
                                     <Title
                                         level="1"
                                         weight="3"
                                         className="text-ellipsis overflow-hidden"
                                     >
-                                        {selectedExpense?.description}
+                                        {lents[0].user.id == me.id ?
+                                            `${t("settleUp.YouPaid")} ${debts[0].user.name}` :
+                                            `${lents[0].user.name} ${t("settleUp.PaidYou")}`}
                                     </Title>
                                     <Caption
                                         weight="3"
@@ -182,9 +183,9 @@ export default function ExpenseDetails() {
                                 <Text
                                     key="payment"
                                     weight="3"
-                                    className={"text-nowrap" + (_owe === 0 ? " green" : " red")}
+                                    className={"text-nowrap" + (_owe !== 0 ? " green" : " red")}
                                 >
-                                    {`${_owe === 0 ? "+" : "-"}${_amount} ${selectedExpense.currency}`}
+                                    {`${_owe !== 0 ? "+" : "-"}${_amount} ${selectedExpense.currency}`}
                                 </Text>
                             </div>
                         )}
