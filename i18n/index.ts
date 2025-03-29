@@ -111,7 +111,12 @@ i18n
                         Payment: "Payment",
                         wasEditedBy: "was edited by",
                         expenseHistory: "EXPENSE HISTORY",
-                        detailedChanges: "DETAILED CHANGES"
+                        detailedChanges: "DETAILED CHANGES",
+                        changed: "changed",
+                        debtAmount: "debt amount",
+                        lentAmount: "lent amount",
+                        from: "from",
+                        to: "to"
                     },
                     activity: {
                         NoActivityYet: "No activity yet",
@@ -221,7 +226,12 @@ i18n
                         Payment: "Оплата",
                         wasEditedBy: "был изменён",
                         expenseHistory: "ИСТОРИЯ РАСХОДОВ",
-                        detailedChanges: "ПОДРОБНЫЕ ИЗМЕНЕНИЯ"
+                        detailedChanges: "ПОДРОБНЫЕ ИЗМЕНЕНИЯ",
+                        changed: "изменен",
+                        debtAmount: "сумма долга",
+                        lentAmount: "одолженная сумма",
+                        from: "с",
+                        to: "на"
                     },
                     activity: {
                         NoActivityYet: "Пока нет активностей",
@@ -331,7 +341,12 @@ i18n
                         Payment: "Оплата",
                         wasEditedBy: "був змінений",
                         expenseHistory: "ІСТОРІЯ ВИТРАТ",
-                        detailedChanges: "ДЕТАЛЬНІ ЗМІНИ"
+                        detailedChanges: "ДЕТАЛЬНІ ЗМІНИ",
+                        changed: "змінено",
+                        debtAmount: "сума боргу",
+                        lentAmount: "позичена сума",
+                        from: "з",
+                        to: "на"
                     },
                     activity: {
                         NoActivityYet: "Поки що немає активностей",

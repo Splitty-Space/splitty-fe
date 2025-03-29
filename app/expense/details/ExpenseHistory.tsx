@@ -49,14 +49,21 @@ export default function ExpenseHistory({activity, selectedExpense}: {
                                                 >
                                                     {_value &&
                                                         <span className="whitespace-normal">
-                                                                {`${activity.user.name} changed ${selectedExpense.expense_users[Number(_key)].user.name} 
-                                                                ${__key === "debt_amount" ? "debt" : "lent"} amount from `}
+                                                            <span className="blue">{activity.user.name}</span>
+                                                            {` ${t("expenseDetails.changed")} `}
+                                                            <span className="blue">
+                                                                {selectedExpense.expense_users[Number(_key)].user.name}
+                                                            </span>
+                                                            <span className="purple">
+                                                                {` ${__key === "debt_amount" ? t("expenseDetails.debtAmount") : t("expenseDetails.lentAmount")} `}
+                                                            </span>
+                                                            {`${t("expenseDetails.from")} `}
                                                             <span className="red">
                                                                 {__key === "debt_amount" ? _value?.debt_amount.old : _value?.lent_amount.old}
                                                             </span>
                                                             {" to "}
                                                             <span className="green">
-                                                                {__key === "debt_amount" ? _value?.debt_amount.new : _value?.lent_amount.old}
+                                                                {__key === "debt_amount" ? _value?.debt_amount.new : _value?.lent_amount.new}
                                                             </span>
                                                             </span>
                                                     }
@@ -75,7 +82,9 @@ export default function ExpenseHistory({activity, selectedExpense}: {
                                             />}
                                         >
                                                 <span className="whitespace-normal">
-                                                    {`${activity.user.name} changed ${key} `}
+                                                    <span className="blue">{activity.user.name}</span>
+                                                    {` ${t("expenseDetails.changed")} `}
+                                                    <span className="purple">{key} </span>
                                                     <span className="red">{value.old}</span>
                                                     {" to "}
                                                     <span className="green">{value.new}</span>

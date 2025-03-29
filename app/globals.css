@@ -20,6 +20,9 @@ body {
     height: 100%;
 }
 
+
+/*#region COLORS */
+
 .red {
     color: var(--tgui--destructive_text_color);
 }
@@ -40,9 +43,14 @@ body {
     color: var(--tgui--hint_color);
 }
 
-.justify-content-center {
-    justify-content: center;
+.purple {
+    color: var(--tgui--secondary_code_highlight);
 }
+
+/*#endregion*/
+
+
+/*#region MARGINS */
 
 .margin-0 {
     margin: 0 !important;
@@ -84,6 +92,8 @@ body {
     margin: -3rem !important;
 }
 
+/*#endregion*/
+
 .padding-0 {
     padding: 0 !important;
 }
@@ -106,6 +116,10 @@ body {
 
 .-translate-y--50p {
     transform: translateY(-50%);
+}
+
+.justify-content-center {
+    justify-content: center;
 }
 
 .friends-list_shrink-0 :nth-child(3) {
