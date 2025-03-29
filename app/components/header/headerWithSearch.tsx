@@ -78,11 +78,6 @@ export default function HeaderWithSearch({
         },
         [setSearchValue]);
 
-    const onBlur = useCallback(() => {
-        setIsSearchOpen(false)
-        clearSearch();
-    }, [clearSearch]);
-
     return (
         <Header
             layoutClassName={layoutClassName}
@@ -98,14 +93,13 @@ export default function HeaderWithSearch({
                 })}
                 value={searchValue}
                 onChange={onChange}
-                onBlur={onBlur}
                 before={<Icon24Search/>}
                 after={
                     <Tappable
                         Component="div"
                         onClick={clearSearch}
                     >
-                        <Icon24Close/>
+                        <Icon24Close />
                     </Tappable>}
             />}
         />
