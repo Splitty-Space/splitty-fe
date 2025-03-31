@@ -64,7 +64,7 @@ export default function AddExpense() {
     const [expenseName, setExpenseName] = useState(selectedExpense?.description ?? "");
 
     const [moneySpent, setMoneySpent] = useState<number | null>(Number(selectedExpense?.amount) ?? null);
-    const [rawMoneySpent, setRawMoneySpent] = useState<string | null>(Number(selectedExpense?.amount) ?? null);
+    const [rawMoneySpent, setRawMoneySpent] = useState<string | null>(null);
     const [currency, setCurrency] = useState<string | undefined>();
 
     const [date, setDate] = useState(selectedExpense?.date ?? new Date());
