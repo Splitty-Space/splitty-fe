@@ -46,7 +46,7 @@ export default function AddExpense() {
     const {data: me} = useMe();
 
     const maxExpenseNameLength = 256;
-    const maxMoneySpentLength = 256;
+    const maxMoneySpentLength = 15;
 
     const searchValue = useStore((state) => state.searchValue);
     const selectedFriends = useStore((state) => state.selectedFriends);
@@ -64,7 +64,7 @@ export default function AddExpense() {
     const [expenseName, setExpenseName] = useState(selectedExpense?.description ?? "");
 
     const [moneySpent, setMoneySpent] = useState<number>(Number(selectedExpense?.amount) ?? 0);
-    const [rawMoneySpent, setRawMoneySpent] = useState<string | null>(null);
+    const [rawMoneySpent, setRawMoneySpent] = useState<string>("");
     const [currency, setCurrency] = useState<string | undefined>();
 
     const [date, setDate] = useState(selectedExpense?.date ?? new Date());
@@ -371,19 +371,10 @@ export default function AddExpense() {
                             <Input
                                 type="text"
                                 inputMode="decimal"
-                                // step="any"
-                                // @ts-ignore
-                                value={rawMoneySpent ?? ""}
+                                value={rawMoneySpent}
                                 onChange={onMoneySpentChange}
-                                // maxLength={maxMoneySpentLength}
                                 placeholder={t("expenses.MoneySpent")}
                                 status={(moneySpent && moneySpent > 0) ? "default" : "error"}
-                                onKeyUp={(e) => {
-                                    // Разрешаем: цифры, запятая, точка, Backspace
-                                    if (!/[0-9,.]|Backspace/.test(e.key)) {
-                                        e.preventDefault();
-                                    }
-                                }}
                             />
                         </div>
                         <CurrencySelect
@@ -392,15 +383,6 @@ export default function AddExpense() {
                             disabled={!!selectedExpense}
                         />
                     </div>
-
-                    <div>{moneySpent}</div>
-
-                    <div>{rawMoneySpent}</div>
-
-                    <div>{
-                        rawMoneySpent?.split("").map(((x, index) => <span key={index}
-                                                                          className="m-4">{x.charCodeAt(0)}</span>))
-                    }</div>
                 </div>
 
                 <List
