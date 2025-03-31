@@ -369,21 +369,15 @@ export default function AddExpense() {
                     <div className="flex items-center justify-between">
                         <div className="grow mr-1">
                             <Input
-                                // type="number"
-                                // inputMode="decimal"
-                                // step="any"
+                                type="number"
+                                inputMode="decimal"
+                                step="any"
                                 // @ts-ignore
-                                value={moneySpent ?? ""}
+                                value={moneySpent}
                                 onChange={onMoneySpentChange}
                                 // maxLength={maxMoneySpentLength}
                                 placeholder={t("expenses.MoneySpent")}
                                 status={(moneySpent && moneySpent > 0) ? "default" : "error"}
-                                onKeyUp={(e) => {
-                                    // Разрешаем: цифры, запятая, точка, Backspace
-                                    if (!/[0-9,.]|Backspace/.test(e.key)) {
-                                        e.preventDefault();
-                                    }
-                                }}
                             />
                         </div>
                         <CurrencySelect
@@ -392,6 +386,8 @@ export default function AddExpense() {
                             disabled={!!selectedExpense}
                         />
                     </div>
+
+                    <div>{moneySpent}</div>
 
                     <div>{rawMoneySpent}</div>
 
