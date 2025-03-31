@@ -63,7 +63,7 @@ export default function AddExpense() {
 
     const [expenseName, setExpenseName] = useState(selectedExpense?.description ?? "");
 
-    const [moneySpent, setMoneySpent] = useState<number | null>(Number(selectedExpense?.amount) ?? null);
+    const [moneySpent, setMoneySpent] = useState<number>(Number(selectedExpense?.amount) ?? 0);
     const [rawMoneySpent, setRawMoneySpent] = useState<string | null>(null);
     const [currency, setCurrency] = useState<string | undefined>();
 
@@ -181,15 +181,15 @@ export default function AddExpense() {
     };
 
     const onMoneySpentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setRawMoneySpent(e.target.value);
-
         if (e.target.value.length > maxMoneySpentLength) {
             return;
         }
 
+        setRawMoneySpent(e.target.value);
+
         const amount = Number(e.target.value.replace(/,/g, "."));
-        const moneySpent = amount === 0 ? null : amount;
-        setMoneySpent(moneySpent);
+        // const moneySpent = amount === 0 ? null : amount;
+        setMoneySpent(amount);
 
         if (isFullyPaidByYou) {
             setPaidBy(participants.map((x, index) => ({
@@ -369,15 +369,21 @@ export default function AddExpense() {
                     <div className="flex items-center justify-between">
                         <div className="grow mr-1">
                             <Input
-                                type="number"
+                                type="text"
                                 inputMode="decimal"
-                                step="any"
+                                // step="any"
                                 // @ts-ignore
-                                value={moneySpent}
+                                value={rawMoneySpent ?? ""}
                                 onChange={onMoneySpentChange}
                                 // maxLength={maxMoneySpentLength}
                                 placeholder={t("expenses.MoneySpent")}
                                 status={(moneySpent && moneySpent > 0) ? "default" : "error"}
+                                onKeyUp={(e) => {
+                                    // Разрешаем: цифры, запятая, точка, Backspace
+                                    if (!/[0-9,.]|Backspace/.test(e.key)) {
+                                        e.preventDefault();
+                                    }
+                                }}
                             />
                         </div>
                         <CurrencySelect
