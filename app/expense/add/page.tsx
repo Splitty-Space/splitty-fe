@@ -10,12 +10,12 @@ import {
     Caption,
     Cell,
     Divider,
-    Headline, IconContainer,
+    Headline,
+    IconContainer,
     Input,
     List,
     Switch,
     Text,
-    Title,
 } from "@telegram-apps/telegram-ui";
 import useMe from "@/services/useMe";
 import {CurrencySelect} from "@/components/CurrencySelect";
@@ -64,6 +64,7 @@ export default function AddExpense() {
     const [expenseName, setExpenseName] = useState(selectedExpense?.description ?? "");
 
     const [moneySpent, setMoneySpent] = useState<number | null>(Number(selectedExpense?.amount) ?? null);
+    const [rawMoneySpent, setRawMoneySpent] = useState<string | null>(Number(selectedExpense?.amount) ?? null);
     const [currency, setCurrency] = useState<string | undefined>();
 
     const [date, setDate] = useState(selectedExpense?.date ?? new Date());
@@ -180,12 +181,14 @@ export default function AddExpense() {
     };
 
     const onMoneySpentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setRawMoneySpent(e.target.value);
+
         if (e.target.value.length > maxMoneySpentLength) {
             return;
         }
 
         const amount = Number(e.target.value.replace(",", "."))
-        const moneySpent = amount === 0 ? null : amount
+        const moneySpent = amount === 0 ? null : amount;
         setMoneySpent(moneySpent);
 
         if (isFullyPaidByYou) {
@@ -318,11 +321,11 @@ export default function AddExpense() {
                     </Button>
                 )}
                 CentralComponent={() =>
-                    <Title>{
+                    <Headline weight="3">{
                         !selectedExpense ?
                             t("expenses.AddAnExpense") :
                             t("expenses.EditAnExpense")}
-                    </Title>}
+                    </Headline>}
                 RightComponent={() => (
                     <Button
                         size="l"
@@ -377,6 +380,9 @@ export default function AddExpense() {
                                 status={(moneySpent && moneySpent > 0) ? "default" : "error"}
                             />
                         </div>
+                        <div>{
+                            rawMoneySpent?.split("").map(((x, index) => <span key={index} className="m-4">{x.charCodeAt(0)}</span>))
+                        }</div>
                         <CurrencySelect
                             defaultCurrency={currency}
                             onChange={onCurrencyChange}
@@ -397,10 +403,10 @@ export default function AddExpense() {
                                 disabled={!!selectedExpense}
                                 value={dayjs(date)}
                                 onChange={onDateChange}
-                                className="max-w-48 rounded-3xl"
+                                className="max-w-60 rounded-3xl"
                             />}
                     >
-                        {t("expenses.Date")}
+                        {t("expenses.DateAndTime")}
                     </Cell>
                     <Divider/>
 

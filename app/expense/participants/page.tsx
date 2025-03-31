@@ -8,10 +8,11 @@ import {
     Button,
     Cell,
     Divider,
-    Placeholder, Skeleton,
+    Headline,
+    Placeholder,
+    Skeleton,
     Spinner,
     Switch,
-    Title
 } from "@telegram-apps/telegram-ui";
 import HeaderWithSearch from "@/app/components/header/headerWithSearch";
 import Main from "@/app/components/main/main";
@@ -125,7 +126,7 @@ export default function AddExpenseParticipants() {
     return (
         <>
             <HeaderWithSearch
-                CentralComponent={() => <Title>{t("expenses.AddAnExpense")}</Title>}
+                CentralComponent={() => <Headline weight="3">{t("expenses.AddAnExpense")}</Headline>}
                 RightComponent={() => (
                     <Button
                         size="m"
