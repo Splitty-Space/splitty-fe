@@ -369,15 +369,21 @@ export default function AddExpense() {
                     <div className="flex items-center justify-between">
                         <div className="grow mr-1">
                             <Input
-                                // type="number"
+                                type="text"
                                 inputMode="decimal"
-                                // step="any"
+                                step="any"
                                 // @ts-ignore
-                                value={moneySpent}
+                                value={moneySpent ?? ""}
                                 onChange={onMoneySpentChange}
                                 // maxLength={maxMoneySpentLength}
                                 placeholder={t("expenses.MoneySpent")}
                                 status={(moneySpent && moneySpent > 0) ? "default" : "error"}
+                                onKeyUp={(e) => {
+                                    // Разрешаем: цифры, запятая, точка, Backspace
+                                    if (!/[0-9,.]|Backspace/.test(e.key)) {
+                                        e.preventDefault();
+                                    }
+                                }}
                             />
                         </div>
                         <CurrencySelect
@@ -390,7 +396,8 @@ export default function AddExpense() {
                     <div>{rawMoneySpent}</div>
 
                     <div>{
-                        rawMoneySpent?.split("").map(((x, index) => <span key={index} className="m-4">{x.charCodeAt(0)}</span>))
+                        rawMoneySpent?.split("").map(((x, index) => <span key={index}
+                                                                          className="m-4">{x.charCodeAt(0)}</span>))
                     }</div>
                 </div>
 
@@ -399,7 +406,7 @@ export default function AddExpense() {
                     style={{
                         background: "var(--tgui--bg_color)",
                     }}>
-                <Cell
+                    <Cell
                         className="p-0 addExpense__cell"
                         after={
                             <DateTimePicker
