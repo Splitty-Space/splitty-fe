@@ -188,7 +188,6 @@ export default function AddExpense() {
         setRawMoneySpent(e.target.value);
 
         const amount = Number(e.target.value.replace(/,/g, "."));
-        // const moneySpent = amount === 0 ? null : amount;
         setMoneySpent(amount);
 
         if (isFullyPaidByYou) {
