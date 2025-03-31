@@ -369,9 +369,9 @@ export default function AddExpense() {
                     <div className="flex items-center justify-between">
                         <div className="grow mr-1">
                             <Input
-                                type="text"
-                                inputMode="decimal"
-                                step="any"
+                                // type="number"
+                                // inputMode="decimal"
+                                // step="any"
                                 // @ts-ignore
                                 value={moneySpent ?? ""}
                                 onChange={onMoneySpentChange}
