@@ -396,7 +396,7 @@ export default function AddExpense() {
                                 disabled={!!selectedExpense}
                                 value={dayjs(date)}
                                 onChange={onDateChange}
-                                className="w-60 rounded-3xl"
+                                className="w-52 rounded-3xl"
                             />}
                     >
                         {t("expenses.DateAndTime")}
