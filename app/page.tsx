@@ -147,6 +147,7 @@ export default function FriendsList() {
                                                 rowCount={friends?.length}
                                                 rowRenderer={rowRenderer}
                                                 onRowsRendered={onRowsRendered}
+                                                overscanRowCount={20}
                                                 className="pb-20"
                                             />
                                         )}
