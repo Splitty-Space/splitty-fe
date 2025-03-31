@@ -187,7 +187,7 @@ export default function AddExpense() {
             return;
         }
 
-        const amount = Number(e.target.value.replace(",", "."))
+        const amount = Number(e.target.value.replace(/,/g, "."));
         const moneySpent = amount === 0 ? null : amount;
         setMoneySpent(moneySpent);
 
@@ -369,26 +369,29 @@ export default function AddExpense() {
                     <div className="flex items-center justify-between">
                         <div className="grow mr-1">
                             <Input
-                                type="number"
+                                type="text"
                                 inputMode="decimal"
                                 step="any"
                                 // @ts-ignore
                                 value={moneySpent}
                                 onChange={onMoneySpentChange}
-                                maxLength={maxMoneySpentLength}
+                                // maxLength={maxMoneySpentLength}
                                 placeholder={t("expenses.MoneySpent")}
                                 status={(moneySpent && moneySpent > 0) ? "default" : "error"}
                             />
                         </div>
-                        <div>{
-                            rawMoneySpent?.split("").map(((x, index) => <span key={index} className="m-4">{x.charCodeAt(0)}</span>))
-                        }</div>
                         <CurrencySelect
                             defaultCurrency={currency}
                             onChange={onCurrencyChange}
                             disabled={!!selectedExpense}
                         />
                     </div>
+
+                    <div>{rawMoneySpent}</div>
+
+                    <div>{
+                        rawMoneySpent?.split("").map(((x, index) => <span key={index} className="m-4">{x.charCodeAt(0)}</span>))
+                    }</div>
                 </div>
 
                 <List
@@ -396,7 +399,7 @@ export default function AddExpense() {
                     style={{
                         background: "var(--tgui--bg_color)",
                     }}>
-                    <Cell
+                <Cell
                         className="p-0 addExpense__cell"
                         after={
                             <DateTimePicker
