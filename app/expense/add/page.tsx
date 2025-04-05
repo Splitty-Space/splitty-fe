@@ -393,7 +393,7 @@ export default function AddExpense() {
                 </div>
 
                 <List
-                    className="mt-4 w-full rounded-3xl"
+                    className="mt-4 py-0 w-full rounded-3xl"
                     style={{
                         background: "var(--tgui--bg_color)",
                     }}>
@@ -409,7 +409,7 @@ export default function AddExpense() {
                     >
                         {t("expenses.DateAndTime")}
                     </Cell>
-                    <Divider/>
+                    <Divider className="!m-0"/>
 
                     {typeof isFullyPaidByYou === "boolean" &&
                         <>
@@ -425,7 +425,7 @@ export default function AddExpense() {
                             >
                                 {t("expenses.FullyPaidByYou")}
                             </Cell>
-                            <Divider/>
+                            <Divider className="!m-0"/>
                         </>
                     }
 
