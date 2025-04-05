@@ -14,6 +14,7 @@ import {useStore} from "@/app/store";
 import useFriends from "@/services/useFriends";
 import Avatar from "@/app/components/avatar/Avatar";
 import Username from "@/app/components/username/username";
+import compactNumber from "@/utils/compactNumber";
 import {AutoSizer, InfiniteLoader, List} from "react-virtualized";
 import "dayjs/locale/ru";
 import "dayjs/locale/uk";
@@ -80,14 +81,17 @@ export default function FriendsList() {
                         user_id={id}
                     />}
                     subtitle={<Username username={username}/>}
-                    after={<div className="flex flex-col items-end">
+                    after={<div className="flex flex-col items-end max-w-full">
                         {total.slice(0, 2).map(({amount, currency}, index) =>
                             <Caption
                                 key={index}
                                 weight="3"
-                                className={Number(amount) > 0 ? "blue" : "red"}
+                                className={classNames("max-w-full text-ellipsis overflow-hidden", {
+                                    "blue": Number(amount) > 0,
+                                    "red": Number(amount) < 0,
+                                })}
                             >
-                                {`${Number(amount) > 0 ? "owes you" : "you owe"} ${Math.abs(Number(amount))} ${currency}`}
+                                {`${Number(amount) > 0 ? "owes you" : "you owe"} ${compactNumber(Math.abs(Number(amount)))} ${currency}`}
                             </Caption>)
                         }
                     </div>}

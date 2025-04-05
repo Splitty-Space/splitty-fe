@@ -211,7 +211,7 @@ export default function FriendPage() {
                                 </Text> :
                                 <>
                                     <div className="flex">
-                                        <Caption weight="3" className="max-w-16 pr-0.5 overflow-hidden text-ellipsis">
+                                        <Caption weight="3" className="max-w-12 pr-0.5 overflow-hidden text-ellipsis">
                                             {whoPaid}
                                         </Caption>
                                         <Caption
