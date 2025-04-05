@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
 import classNames from "classnames";
 import Header from "@/app/components/header/header";
@@ -54,6 +54,12 @@ export default function AddExpense() {
     const setIsCreateExpenseSnackbarShown = useStore((state) => state.setIsCreateExpenseSnackbarShown);
     const setIsUpdateExpenseSnackbarShown = useStore((state) => state.setIsUpdateExpenseSnackbarShown);
     const setSelectedExpense = useStore((state) => state.setSelectedExpense);
+
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        inputRef.current?.focus();
+    }, []);
 
     const {refetchFriends} = useFriends(searchValue);
 
@@ -358,7 +364,7 @@ export default function AddExpense() {
 
                 <div>
                     <Input
-                        autoFocus
+                        ref={inputRef}
                         value={expenseName}
                         onChange={onExpenseNameChange}
                         maxLength={maxExpenseNameLength}
