@@ -58,8 +58,42 @@ export default function AddExpense() {
     const EXPENSE_NAME_INPUT_ID = "EXPENSE_NAME_INPUT_ID";
 
     useEffect(() => {
-        document.getElementById(EXPENSE_NAME_INPUT_ID)?.focus();
+        const isVisible = (element: HTMLElement) => {
+            const rect = element.getBoundingClientRect();
+            return (
+                rect.top >= 0 &&
+                rect.left >= 0 &&
+                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+            );
+        };
+
+        const focusInput = () => {
+            const input = document.getElementById(EXPENSE_NAME_INPUT_ID);
+            if (input && isVisible(input)) {
+                input?.focus();
+                return true;
+            }
+            return false;
+        };
+
+        // Первая попытка с задержкой
+        let timeout = setTimeout(() => {
+            if (!focusInput()) {
+                // Если не сработало - повторяем с интервалом
+                const interval = setInterval(() => {
+                    if (focusInput()) clearInterval(interval);
+                }, 50);
+            }
+        }, 300);
+
+        return () => {
+            clearTimeout(timeout);
+        };
     }, []);
+    // useEffect(() => {
+    //     document.getElementById(EXPENSE_NAME_INPUT_ID)?.focus();
+    // }, []);
 
     const {refetchFriends} = useFriends(searchValue);
 
@@ -365,6 +399,7 @@ export default function AddExpense() {
                 <div>
                     <Input
                         id={EXPENSE_NAME_INPUT_ID}
+                        autoFocus
                         value={expenseName}
                         onChange={onExpenseNameChange}
                         maxLength={maxExpenseNameLength}
