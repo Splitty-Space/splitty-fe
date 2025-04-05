@@ -160,7 +160,7 @@ export default function AddExpense() {
                 .then(({data}) => setSelectedExpense({...data}))
                 .then(() => setIsCreateExpenseSnackbarShown(true))
                 .then(() => refetchFriends())
-                .then(() => router.push(expenseDetails));
+                .then(() => router.replace(expenseDetails));
         } else {
             putExpense({
                 expense_id: selectedExpense.id,
