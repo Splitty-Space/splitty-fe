@@ -282,11 +282,10 @@ export default function FriendPage() {
 
                 <Headline
                     weight="3"
-                    className="mt-2 max-w-full overflow-hidden text-ellipsis"
+                    className="mt-2 px-5 max-w-full overflow-hidden text-ellipsis"
                 >
                     {friend?.name}
                 </Headline>
-
 
                 {friend?.total.map(({amount, currency}) =>
                     <Caption
