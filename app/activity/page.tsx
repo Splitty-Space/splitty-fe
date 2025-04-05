@@ -11,7 +11,7 @@ import {
 import {AutoSizer, InfiniteLoader, List} from "react-virtualized";
 import {useTranslation} from "react-i18next";
 import useMe from "@/services/useMe";
-import {formatDate} from "@/utils/formatDate";
+import {formatDateTime} from "@/utils/formatDateTime";
 import Header from "@/app/components/header/header";
 import Logo from "@/app/components/header/logo";
 import Main from "@/app/components/main/main";
@@ -120,7 +120,7 @@ export default function ActivityPage() {
             <div key={key} style={style}>
                 <Cell
                     className="friends-list_shrink-0"
-                    subtitle={formatDate(created_at)}
+                    subtitle={formatDateTime(created_at, me.language)}
                     before={<Avatar size={48} user_id={user?.id}/>}
                     onClick={onCellClick(expense)}
                 >
