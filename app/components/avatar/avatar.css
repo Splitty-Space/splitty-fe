@@ -1,7 +1,8 @@
 .avatar {
-    border: var(--tgui--white) solid 0.125rem;
+    border: #dedede solid 0.1rem;
+    box-shadow: none;
 }
 
 .avatar__selected {
-    border: var(--tgui--button_color) solid 0.125rem;
+    border: var(--tgui--button_color) solid 0.1rem;
 }
