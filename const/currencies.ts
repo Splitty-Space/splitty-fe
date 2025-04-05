@@ -1,1 +1,1 @@
-export const CURRENCIES = ["USD", "UAH", "RUB", "EUR", "PLN", "IDR", "THB", "VND"];
+export const CURRENCIES = ["USD", "UAH", "RUB", "EUR", "PLN", "IDR", "THB", "VND", "USDT", "BTC", "TON", "ETH", "USDC"];
