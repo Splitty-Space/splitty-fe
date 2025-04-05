@@ -25,7 +25,7 @@ export default function HeaderWithSearch({
                                              setSearchValue?: Function,
                                              onSearchChange?: Function,
                                              LeftComponent?: FC,
-                                             CentralComponent?: FC,
+                                             CentralComponent?: FC<{ className: string }>,
                                              RightComponent?: FC,
                                              isSearchDisabled?: boolean
                                              layoutClassName?: string
@@ -99,7 +99,7 @@ export default function HeaderWithSearch({
                         Component="div"
                         onClick={clearSearch}
                     >
-                        <Icon24Close />
+                        <Icon24Close/>
                     </Tappable>}
             />}
         />

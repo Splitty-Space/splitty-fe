@@ -321,8 +321,8 @@ export default function AddExpense() {
                         {t("expenses.Prev")}
                     </Button>
                 )}
-                CentralComponent={() =>
-                    <Headline weight="3">{
+                CentralComponent={({className}) =>
+                    <Headline className={className} weight="3">{
                         !selectedExpense ?
                             t("expenses.AddAnExpense") :
                             t("expenses.EditAnExpense")}

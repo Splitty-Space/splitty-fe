@@ -126,7 +126,8 @@ export default function AddExpenseParticipants() {
     return (
         <>
             <HeaderWithSearch
-                CentralComponent={() => <Headline weight="3">{t("expenses.AddAnExpense")}</Headline>}
+                CentralComponent={({className}) => <Headline className={className}
+                                                             weight="3">{t("expenses.AddAnExpense")}</Headline>}
                 RightComponent={() => (
                     <Button
                         size="l"

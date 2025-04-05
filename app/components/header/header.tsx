@@ -11,7 +11,7 @@ interface HeaderProps {
     layoutClassName?: string,
     subHeaderClassName?: string,
     LeftComponent?: FC,
-    CentralComponent?: FC,
+    CentralComponent?: FC<{ className: string }>,
     RightComponent?: FC,
     AfterComponent?: ReactElement,
 }
@@ -30,10 +30,10 @@ const Header = forwardRef<HTMLDivElement, HeaderProps>(({
             <FixedLayout vertical="top" className={classNames("px-4 z-10 pt-3 h-full", {
                 "padding-top-24": viewport.isFullscreen(),
             }, layoutClassName)}>
-                <div className={classNames("flex shrink items-center justify-between", subHeaderClassName)}>
+                <div className={classNames("flex shrink items-center justify-between h-full", subHeaderClassName)}>
                     {LeftComponent && <LeftComponent/>}
 
-                    {CentralComponent && <CentralComponent/>}
+                    {CentralComponent && <CentralComponent className="absolute left-1/2 -translate-x-1/2"/>}
 
                     {RightComponent && <RightComponent/>}
                 </div>
