@@ -9,6 +9,7 @@ import {Friend} from "@/entities";
 import {vibration} from "@/utils/vibration";
 import {account, activity, addExpense, expenseParticipants, friend, friendsList, groups} from "@/const/urls";
 import Avatar from "@/app/components/avatar/Avatar";
+import {useStore} from "@/app/store";
 import "./footer.css";
 
 interface Tab {
@@ -38,6 +39,8 @@ export default function Footer({
     const {data: me} = useMe();
 
     const getFillColor = (isSelected: boolean) => isSelected ? "var(--tgui--button_color)" : "var(--tgui--secondary_hint_color)";
+
+    const setIsGroupComingSoonSnackbarShown = useStore((state) => state.setIsGroupComingSoonSnackbarShown);
 
     const tabs: Array<Tab> = [
         {
@@ -103,7 +106,8 @@ export default function Footer({
         if (id === TabIds.Friends) {
             router.push(friendsList);
         } else if (id === TabIds.Groups) {
-            router.push(groups);
+            vibration("rigid");
+            setIsGroupComingSoonSnackbarShown(true);
         } else if (id === TabIds.AddExpenseParticipants && pathname === friend) {
             router.push(addExpense);
         } else if (id === TabIds.AddExpenseParticipants) {

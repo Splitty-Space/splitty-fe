@@ -217,6 +217,8 @@ export default function RootLayout({children}: Readonly<{
     const setIsUpdateExpenseSnackbarShown = useStore((state) => state.setIsUpdateExpenseSnackbarShown);
     const isCantShowDeletedExpenseSnackbarShown = useStore((state) => state.isCantShowDeletedExpenseSnackbarShown);
     const setIsCantShowDeletedExpenseSnackbarShown = useStore((state) => state.setIsCantShowDeletedExpenseSnackbarShown);
+    const isGroupComingSoonSnackbarShown = useStore((state) => state.isGroupComingSoonSnackbarShown);
+    const setIsGroupComingSoonSnackbarShown = useStore((state) => state.setIsGroupComingSoonSnackbarShown);
 
     const {data} = useFriends(searchValue);
     const friends = data?.data;
@@ -226,6 +228,7 @@ export default function RootLayout({children}: Readonly<{
     const onCloseExpenseUpdated = useCallback(() => setIsUpdateExpenseSnackbarShown(false), [setIsUpdateExpenseSnackbarShown]);
     const onCloseExpenseDeleted = useCallback(() => setIsDeleteExpenseSnackbarShown(false), [setIsDeleteExpenseSnackbarShown]);
     const onCloseCantShowDeletedExpense = useCallback(() => setIsCantShowDeletedExpenseSnackbarShown(false), [setIsCantShowDeletedExpenseSnackbarShown]);
+    const onCloseGroupComingSoon = useCallback(() => setIsGroupComingSoonSnackbarShown(false), [setIsGroupComingSoonSnackbarShown]);
 
     return (
         <html lang="en">
@@ -308,6 +311,16 @@ export default function RootLayout({children}: Readonly<{
                                     onClose={onCloseCantShowDeletedExpense}
                                 >
                                     {t("expenseDetails.CantShowDeletedExpense")}
+                                </Snackbar>
+                            )}
+
+                            {isGroupComingSoonSnackbarShown && (
+                                <Snackbar
+                                    className="mb-20"
+                                    before={<Icon28Warning/>}
+                                    onClose={onCloseGroupComingSoon}
+                                >
+                                    {t("expenseDetails.ComingSoon")}
                                 </Snackbar>
                             )}
                         </AppRoot>

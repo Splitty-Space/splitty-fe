@@ -37,6 +37,9 @@ interface State {
     isCantShowDeletedExpenseSnackbarShown: boolean,
     setIsCantShowDeletedExpenseSnackbarShown: (newIsCantShowDeletedExpenseSnackbarShown: boolean) => void,
 
+    isGroupComingSoonSnackbarShown: boolean,
+    setIsGroupComingSoonSnackbarShown: (newIsGroupComingSoonSnackbarShown: boolean) => void,
+
     settleUpPaymentInfo: { friend: Friend, currency: string } | null,
     setSettleUpPaymentInfo: (newSettleUpPaymentInfo: { friend: Friend, currency: string } | null) => void,
 }
@@ -75,6 +78,9 @@ export const useStore = create<State>()(
 
             isCantShowDeletedExpenseSnackbarShown: false,
             setIsCantShowDeletedExpenseSnackbarShown: (newIsCantShowDeletedExpenseSnackbarShown) => set(() => ({isCantShowDeletedExpenseSnackbarShown: newIsCantShowDeletedExpenseSnackbarShown})),
+
+            isGroupComingSoonSnackbarShown: false,
+            setIsGroupComingSoonSnackbarShown: (newIsGroupComingSoonSnackbarShown) => set(() => ({isGroupComingSoonSnackbarShown: newIsGroupComingSoonSnackbarShown})),
 
             settleUpPaymentInfo: null,
             setSettleUpPaymentInfo: (newSettleUpPaymentInfo) => set(() => ({settleUpPaymentInfo: newSettleUpPaymentInfo})),
