@@ -55,10 +55,10 @@ export default function AddExpense() {
     const setIsUpdateExpenseSnackbarShown = useStore((state) => state.setIsUpdateExpenseSnackbarShown);
     const setSelectedExpense = useStore((state) => state.setSelectedExpense);
 
-    const INPUT_ID = "INPUT_ID";
+    const EXPENSE_NAME_INPUT_ID = "EXPENSE_NAME_INPUT_ID";
 
     useEffect(() => {
-        document.getElementById(INPUT_ID)?.focus();
+        document.getElementById(EXPENSE_NAME_INPUT_ID)?.focus();
     }, []);
 
     const {refetchFriends} = useFriends(searchValue);
@@ -364,7 +364,7 @@ export default function AddExpense() {
 
                 <div>
                     <Input
-                        id={INPUT_ID}
+                        id={EXPENSE_NAME_INPUT_ID}
                         value={expenseName}
                         onChange={onExpenseNameChange}
                         maxLength={maxExpenseNameLength}

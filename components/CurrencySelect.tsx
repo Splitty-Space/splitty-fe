@@ -1,6 +1,7 @@
 import React, {ChangeEventHandler} from "react";
 import {CURRENCIES} from "@/const/currencies";
 import {Select, Spinner} from "@telegram-apps/telegram-ui";
+import "./currencySelect.css";
 
 export function CurrencySelect({defaultCurrency, isLoading, className, spinnerClassName, onChange, disabled = false}: {
     defaultCurrency?: string,
