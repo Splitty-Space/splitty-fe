@@ -129,7 +129,7 @@ export default function AddExpenseParticipants() {
                 CentralComponent={() => <Headline weight="3">{t("expenses.AddAnExpense")}</Headline>}
                 RightComponent={() => (
                     <Button
-                        size="m"
+                        size="l"
                         mode="plain"
                         onClick={onNext}
                         disabled={isNextDisabled}
