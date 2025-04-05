@@ -231,7 +231,10 @@ export default function RootLayout({children}: Readonly<{
         <html lang="en">
         <Head>
             <title>Splitty</title>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+
+            <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=no, shrink-to-fit=no"/>
+
+            {/*<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>*/}
         </Head>
 
         <body className={classNames("overflow-hidden h-screen", {
