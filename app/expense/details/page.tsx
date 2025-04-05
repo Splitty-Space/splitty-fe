@@ -166,9 +166,12 @@ export default function ExpenseDetails() {
                                         weight="3"
                                         className="text-ellipsis overflow-hidden"
                                     >
-                                        {lents[0].user.id == me.id ?
-                                            `${t("settleUp.YouPaid")} ${debts[0].user.name}` :
-                                            `${lents[0].user.name} ${t("settleUp.PaidYou")}`}
+                                        {selectedExpense.payment ?
+                                            lents[0].user.id == me.id ?
+                                                `${t("settleUp.YouPaid")} ${debts[0].user.name}` :
+                                                `${lents[0].user.name} ${t("settleUp.PaidYou")}` :
+                                            selectedExpense?.description
+                                        }
                                     </Title>
                                     <Caption
                                         weight="3"
