@@ -24,7 +24,7 @@ export const addExpense = async ({
     amount: number,
     payment: boolean,
     currency: typeof CURRENCIES[number] | undefined,
-    date: Date,
+    date: Date | string,
     description?: string,
 }): Promise<any> => {
     return await axios.post(`${SERVER_URL}/expenses`, {
