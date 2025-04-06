@@ -1,6 +1,6 @@
 "use client"
 
-import {useState, useEffect, useRef, useCallback} from "react";
+import React, {useState, useEffect, useRef, useCallback} from "react";
 import {useTranslation} from "react-i18next";
 import {
     AvatarStack,
@@ -10,7 +10,6 @@ import {
     Divider,
     IconButton,
     Spinner,
-    Skeleton,
     Text,
     Placeholder,
     Headline
@@ -28,6 +27,8 @@ import {expenseDetails, friendSettings, settleUp, settleUpPayment} from "@/const
 import useFriends from "@/services/useFriends";
 import {useStore} from "@/app/store";
 import Avatar from "@/app/components/avatar/Avatar";
+import SkeletonCell from "@/app/components/skeletons/skeletonCell";
+import {defaultPageSize} from "@/const/defaultPageSize";
 
 
 export default function FriendPage() {
@@ -42,8 +43,8 @@ export default function FriendPage() {
     const setSelectedExpense = useStore((state) => state.setSelectedExpense);
     const setSettleUpPaymentInfo = useStore((state) => state.setSettleUpPaymentInfo);
 
-    const limit = 25;
-    const [rowCount, setRowCount] = useState(limit);
+    const pageSize = defaultPageSize;
+    const [rowCount, setRowCount] = useState(pageSize);
     const [expenses, setExpenses] = useState<Expense[]>([]);
     const [loadingExpenses, setLoadingExpenses] = useState(true);
 
@@ -61,7 +62,7 @@ export default function FriendPage() {
 
         getExpenses({
             page: 1,
-            limit: limit,
+            limit: pageSize,
             friend_id: friend?.id,
             signal: controller.signal
         }).then(({data}) => {
@@ -69,7 +70,7 @@ export default function FriendPage() {
             setExpenses(data.data);
 
             if (data.meta.has_more) {
-                setRowCount(prevState => prevState + limit);
+                setRowCount(prevState => prevState + pageSize);
             } else {
                 setRowCount(data.data.length);
             }
@@ -87,17 +88,17 @@ export default function FriendPage() {
     };
 
     const loadMoreRows = ({startIndex}: { startIndex: number }) => {
-        if (!Number.isInteger(startIndex / limit)) {
+        if (!Number.isInteger(startIndex / pageSize)) {
             return;
         }
 
         getExpenses({
-            page: startIndex / limit + 1,
-            limit: limit,
+            page: startIndex / pageSize + 1,
+            limit: pageSize,
             friend_id: friend?.id,
         }).then(({data}) => {
             if (data.meta.has_more) {
-                setRowCount(prevState => prevState + limit);
+                setRowCount(prevState => prevState + pageSize);
             } else {
                 setRowCount(expenses.length + data.data.length);
             }
@@ -124,10 +125,7 @@ export default function FriendPage() {
     const rowRenderer = ({index, key, style}: { index: number, key: string, style: object }) => {
         const expense = expenses[index];
         if (!expense) {
-            return (
-                <Skeleton visible withoutAnimation key={key} style={style} className="red">
-                    <Cell> </Cell>
-                </Skeleton>);
+            return (<SkeletonCell key={key} style={style} me={me}/>);
         }
 
         const {

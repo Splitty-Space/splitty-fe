@@ -1,6 +1,6 @@
 import {EN} from "@/const/languages";
 
-export function formatDateTime(date: Date, language: string) {
+export function formatDateTime(date: string, language: string) {
     return new Intl.DateTimeFormat("en-US", {
         year: "numeric",
         month: "short",

@@ -24,6 +24,6 @@ export default interface Activity {
     activity_type: ACTIVITY_TYPE,
     user: UserInfo,
     expense: Expense,
-    created_at: Date,
+    created_at: string,
     data: object,
 }

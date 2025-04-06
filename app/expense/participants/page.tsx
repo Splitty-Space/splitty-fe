@@ -10,7 +10,6 @@ import {
     Divider,
     Headline,
     Placeholder,
-    Skeleton,
     Spinner,
     Switch,
 } from "@telegram-apps/telegram-ui";
@@ -24,8 +23,13 @@ import Avatar from "@/app/components/avatar/Avatar";
 import {vibration} from "@/utils/vibration";
 import Username from "@/app/components/username/username";
 import {AutoSizer, InfiniteLoader, List} from "react-virtualized";
+import SkeletonCell from "@/app/components/skeletons/skeletonCell";
+import useMe from "@/services/useMe";
+import {defaultPageSize} from "@/const/defaultPageSize";
 
 export default function AddExpenseParticipants() {
+    const {data: me} = useMe();
+
     const selectedFriends = useStore((state) => state.selectedFriends);
     const setSelectedFriends = useStore((state) => state.setSelectedFriends);
 
@@ -73,8 +77,7 @@ export default function AddExpenseParticipants() {
         setHeight(refContainer.current?.clientHeight);
     }, []);
 
-    const pageSize = 25;
-    const [rowCount, setRowCount] = useState(pageSize);
+    const [rowCount, setRowCount] = useState(defaultPageSize);
 
     useEffect(() => {
         if (friends) {
@@ -97,10 +100,7 @@ export default function AddExpenseParticipants() {
     const rowRenderer = ({index, key, style}: { index: number, key: string, style: object }) => {
         const _friend = filteredFriends[index];
         if (!_friend) {
-            return (
-                <Skeleton visible withoutAnimation key={key} style={style} className="red">
-                    <Cell> </Cell>
-                </Skeleton>);
+            return (<SkeletonCell key={key} style={style} me={me}/>);
         }
 
         const {id, name, username} = _friend;

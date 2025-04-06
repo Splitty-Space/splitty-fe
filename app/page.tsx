@@ -5,7 +5,7 @@ import classNames from "classnames";
 import {useTranslation} from "react-i18next";
 import {init} from "@telegram-apps/sdk";
 import {useRouter} from "next/navigation";
-import {Cell, Placeholder, Spinner, Divider, Caption, Skeleton} from "@telegram-apps/telegram-ui";
+import {Cell, Placeholder, Spinner, Divider, Caption} from "@telegram-apps/telegram-ui";
 import Main from "@/app/components/main/main";
 import FriendsHeader from "@/app/components/friendsHeader/friendsHeader";
 import {Arrow} from "@/Icons";
@@ -15,6 +15,9 @@ import useFriends from "@/services/useFriends";
 import Avatar from "@/app/components/avatar/Avatar";
 import Username from "@/app/components/username/username";
 import compactNumber from "@/utils/compactNumber";
+import SkeletonCell from "@/app/components/skeletons/skeletonCell";
+import useMe from "@/services/useMe";
+import {defaultPageSize} from "@/const/defaultPageSize";
 import {AutoSizer, InfiniteLoader, List} from "react-virtualized";
 import "dayjs/locale/ru";
 import "dayjs/locale/uk";
@@ -24,6 +27,8 @@ import "dayjs/locale/uk";
 export default function FriendsList() {
     const {t} = useTranslation();
     const router = useRouter();
+
+    const {data: me} = useMe();
 
     const searchValue = useStore((state) => state.searchValue);
     const setSearchValue = useStore((state) => state.setSearchValue);
@@ -36,8 +41,7 @@ export default function FriendsList() {
 
     useEffect(() => init(), []);
 
-    const pageSize = 25;
-    const [rowCount, setRowCount] = useState(pageSize);
+    const [rowCount, setRowCount] = useState(defaultPageSize);
 
     useEffect(() => {
         if (friends) {
@@ -64,10 +68,7 @@ export default function FriendsList() {
     const rowRenderer = ({index, key, style}: { index: number, key: string, style: object }) => {
         const _friend = friends[index];
         if (!_friend) {
-            return (
-                <Skeleton visible withoutAnimation key={key} style={style} className="red">
-                    <Cell> </Cell>
-                </Skeleton>);
+            return (<SkeletonCell key={key} style={style} me={me}/>);
         }
 
         const {id, name, username, total} = _friend;

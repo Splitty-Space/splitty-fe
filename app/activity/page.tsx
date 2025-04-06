@@ -5,7 +5,6 @@ import {
     Cell,
     Divider,
     Placeholder,
-    Skeleton,
     Spinner,
 } from "@telegram-apps/telegram-ui";
 import {AutoSizer, InfiniteLoader, List} from "react-virtualized";
@@ -24,6 +23,8 @@ import {useRouter} from "next/navigation";
 import {expenseDetails} from "@/const/urls";
 import Avatar from "@/app/components/avatar/Avatar";
 import {vibration} from "@/utils/vibration";
+import SkeletonCell from "@/app/components/skeletons/skeletonCell";
+import {defaultPageSize} from "@/const/defaultPageSize";
 
 export default function ActivityPage() {
     const {t} = useTranslation();
@@ -34,7 +35,7 @@ export default function ActivityPage() {
 
     const {data: me} = useMe();
 
-    const pageSize = 25;
+    const pageSize = defaultPageSize;
     const [rowCount, setRowCount] = useState(pageSize);
     const [activities, setActivities] = useState<Activity[]>([]);
     const [isLoaded, setIsLoaded] = useState(false);
@@ -103,10 +104,7 @@ export default function ActivityPage() {
     const rowRenderer = ({index, key, style}: { index: number, key: string, style: object }) => {
         const activity = activities[index];
         if (!activity) {
-            return (
-                <Skeleton visible withoutAnimation key={key} style={style} className="red">
-                    <Cell> </Cell>
-                </Skeleton>);
+            return (<SkeletonCell key={key} style={style} me={me}/>);
         }
 
         const {
