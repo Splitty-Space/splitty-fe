@@ -3,7 +3,7 @@ import type Group from "./Group";
 import type Transaction from "./Transaction";
 
 export default interface Expense {
-    amount: number;
+    amount: string;
     description: string;
     expense_users: ExpenseUser[];
     id: number;

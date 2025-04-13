@@ -55,46 +55,6 @@ export default function AddExpense() {
     const setIsUpdateExpenseSnackbarShown = useStore((state) => state.setIsUpdateExpenseSnackbarShown);
     const setSelectedExpense = useStore((state) => state.setSelectedExpense);
 
-    const EXPENSE_NAME_INPUT_ID = "EXPENSE_NAME_INPUT_ID";
-
-    useEffect(() => {
-        const isVisible = (element: HTMLElement) => {
-            const rect = element.getBoundingClientRect();
-            return (
-                rect.top >= 0 &&
-                rect.left >= 0 &&
-                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-                rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-            );
-        };
-
-        const focusInput = () => {
-            const input = document.getElementById(EXPENSE_NAME_INPUT_ID);
-            if (input && isVisible(input)) {
-                input?.focus();
-                return true;
-            }
-            return false;
-        };
-
-        // Первая попытка с задержкой
-        let timeout = setTimeout(() => {
-            if (!focusInput()) {
-                // Если не сработало - повторяем с интервалом
-                const interval = setInterval(() => {
-                    if (focusInput()) clearInterval(interval);
-                }, 50);
-            }
-        }, 300);
-
-        return () => {
-            clearTimeout(timeout);
-        };
-    }, []);
-    // useEffect(() => {
-    //     document.getElementById(EXPENSE_NAME_INPUT_ID)?.focus();
-    // }, []);
-
     const {refetchFriends} = useFriends(searchValue);
 
     const participants = selectedExpense?.expense_users.map(expense => expense.user) ?? (me ? [me, ...selectedFriends] : [...selectedFriends]);
@@ -105,7 +65,7 @@ export default function AddExpense() {
     const [expenseName, setExpenseName] = useState(selectedExpense?.description ?? "");
 
     const [moneySpent, setMoneySpent] = useState<number>(Number(selectedExpense?.amount) ?? 0);
-    const [rawMoneySpent, setRawMoneySpent] = useState<string>("");
+    const [rawMoneySpent, setRawMoneySpent] = useState<string>(selectedExpense ? String(Number(selectedExpense?.amount)) : "");
     const [currency, setCurrency] = useState<string | undefined>();
 
     const [date, setDate] = useState(selectedExpense?.date ?? new Date());
@@ -398,7 +358,6 @@ export default function AddExpense() {
 
                 <div>
                     <Input
-                        id={EXPENSE_NAME_INPUT_ID}
                         autoFocus
                         value={expenseName}
                         onChange={onExpenseNameChange}
