@@ -104,6 +104,7 @@ export default function Account() {
                                     <Select
                                         defaultValue={me.language.toUpperCase()}
                                         className="ml-8"
+                                        style={{paddingRight: "69px"}}
                                         onChange={onLanguageChange}
                                     >
                                         {LANGUAGES.map((language) => (
