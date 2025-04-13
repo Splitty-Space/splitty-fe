@@ -310,7 +310,7 @@ export default function FriendPage() {
             <Main
                 ref={refContainer}
                 className="padding-top-0"
-                style={{height: "calc(100% - 4rem)"}}
+                style={{height: expenses?.length > 0 ? "100%" : "calc(100% - 16rem)"}}
             >
                 {loadingExpenses ? <Spinner size="l" className="flex flex-col items-center justify-center"/> :
                     expenses?.length > 0 ?
@@ -334,16 +334,16 @@ export default function FriendPage() {
                                             rowCount={rowCount}
                                             rowRenderer={rowRenderer}
                                             onRowsRendered={onRowsRendered}
-                                            className="pb-20"
+                                            className="pb-4"
                                         />
                                     )}
                                 </AutoSizer>
                             )}
                         </InfiniteLoader>
                         :
-                        <div className="flex flex-col items-center justify-center relative">
+                        <div className="flex flex-col items-center justify-end  relative h-full pb-4">
                             <Placeholder header={t("friend.AddFirstExpense")}/>
-                            <Arrow className="rotate-[160deg] "/>
+                            <Arrow className="rotate-[150deg] "/>
                         </div>
                 }
             </Main>
