@@ -81,7 +81,7 @@ export default function FriendPage() {
         return () => {
             controller.abort();
         }
-    }, [friend]);
+    }, [friend, pageSize]);
 
     const isRowLoaded = ({index}: { index: number }) => {
         return expenses && !!expenses[index];
