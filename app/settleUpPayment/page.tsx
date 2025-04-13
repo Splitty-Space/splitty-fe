@@ -118,7 +118,6 @@ export default function SettleUpPayment() {
         (<Spinner size="l"/>) : (
             <>
                 <Header
-                    CentralComponent={Logo}
                     LeftComponent={() => (
                         <Button
                             size="l"
@@ -128,6 +127,12 @@ export default function SettleUpPayment() {
                             {t("addGroup.Prev")}
                         </Button>
                     )}
+                    CentralComponent={({className}) =>
+                        <Title
+                            className={classNames(className, "flex justify-content-center")}>
+                            {t("settleUp.PaymentInfo")}
+                        </Title>
+                    }
                     RightComponent={() => (
                         <Button
                             size="l"
@@ -139,7 +144,6 @@ export default function SettleUpPayment() {
                             {t("settleUp.Save")}
                         </Button>
                     )}
-                    AfterComponent={<Title className="flex justify-content-center">{t("settleUp.PaymentInfo")}</Title>}
                 />
 
                 <Main className="pt-32 px-4">
