@@ -123,8 +123,8 @@ body {
 
 .friends-list_shrink-0 :nth-child(3) {
     justify-content: flex-end;
-    flex: 0 0 33.333%;
-    max-width: 33.333%;
+    flex: 0 0 40%;
+    max-width: 40%;
 
     box-sizing: border-box;
 
