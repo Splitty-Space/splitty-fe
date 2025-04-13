@@ -75,7 +75,7 @@ export default function FriendPage() {
                 setRowCount(data.data.length);
             }
         }).catch((error) => {
-            console.error({error});
+            console.log({error});
         });
 
         return () => {
@@ -105,7 +105,7 @@ export default function FriendPage() {
 
             setExpenses(prevState => [...prevState, ...data.data]);
         }).catch((error) => {
-            console.error({error})
+            console.log({error});
         });
     };
 

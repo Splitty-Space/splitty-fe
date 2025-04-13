@@ -95,13 +95,15 @@ export default function Footer({
         if (id === TabIds.AddExpenseParticipants && pathname === friend) {
             const selectedFriend = friends.find(x => x.id === selectedUserId);
             setSelectedFriends([selectedFriend]);
-        } else {
+        } else if (id !== TabIds.Groups) {
             setSelectedFriends([]);
             setSelectedUserId(null);
         }
 
-        setSearchValue("");
-        setSelectedExpense(null);
+        if (id !== TabIds.Groups) {
+            setSearchValue("");
+            setSelectedExpense(null);
+        }
 
         if (id === TabIds.Friends) {
             router.push(friendsList);
@@ -118,7 +120,9 @@ export default function Footer({
             router.push(account);
         }
 
-        vibration();
+        if (id !== TabIds.Groups) {
+            vibration();
+        }
     }, [pathname, setSearchValue, setSelectedExpense, friends, setSelectedFriends, selectedUserId, setSelectedUserId, router]);
 
     return (
