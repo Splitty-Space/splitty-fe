@@ -6,7 +6,6 @@ import classNames from "classnames";
 import dayjs, {Dayjs} from "dayjs";
 import {DateTimePicker} from "@mui/x-date-pickers/DateTimePicker";
 import Header from "@/app/components/header/header";
-import Logo from "@/app/components/header/logo";
 import {Button, Input, Section, Spinner, Text, Title} from "@telegram-apps/telegram-ui";
 import {CurrencySelect} from "@/components/CurrencySelect";
 import {addExpense} from "@/services/addExpense";
@@ -16,7 +15,7 @@ import {putExpense} from "@/services/putExpense";
 import {useStore} from "@/app/store";
 import useFriends from "@/services/useFriends";
 import {useRouter} from "next/navigation";
-import {friendsList} from "@/const/urls";
+import {friend as friendURL} from "@/const/urls";
 import Avatar from "@/app/components/avatar/Avatar";
 import Main from "@/app/components/main/main";
 
@@ -96,7 +95,7 @@ export default function SettleUpPayment() {
             })
                 .then(() => refetchFriends())
                 .then(() => setIsUpdateExpenseSnackbarShown(true))
-                .then(() => router.push(friendsList));
+                .then(() => router.push(friendURL));
         } else {
             addExpense({
                 payers,
@@ -110,7 +109,7 @@ export default function SettleUpPayment() {
             })
                 .then(() => refetchFriends())
                 .then(() => setIsCreateExpenseSnackbarShown(true))
-                .then(() => router.push(friendsList));
+                .then(() => router.push(friendURL));
         }
     };
 
