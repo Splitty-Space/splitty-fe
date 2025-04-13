@@ -121,8 +121,11 @@ export default function AddExpenseParticipants() {
     return (
         <>
             <HeaderWithSearch
-                CentralComponent={({className}) => <Headline className={className}
-                                                             weight="3">{t("expenses.AddAnExpense")}</Headline>}
+                CentralComponent={({className}) =>
+                    <Headline className={className} weight="3">
+                        {t("expenses.AddAnExpense")}
+                    </Headline>
+                }
                 RightComponent={() => (
                     <Button
                         size="l"
@@ -143,7 +146,7 @@ export default function AddExpenseParticipants() {
                 center={loadingFriends}
                 style={isSearchOpen ? {height: "calc(100% - 4rem)"} : undefined}
                 className={classNames({
-                    "margin-top-8": isSearchOpen
+                    "margin-top-16": isSearchOpen
                 })}
             >
                 {loadingFriends ?
