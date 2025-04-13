@@ -33,7 +33,6 @@ export default function SettleUp() {
     return (
         <>
             <Header
-                className="h-32"
                 subHeaderClassName="justify-content-center"
                 CentralComponent={Logo}
                 AfterComponent={<Title className="flex justify-content-center">{t("settleUp.SettleUp")}</Title>}

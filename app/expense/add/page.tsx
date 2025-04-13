@@ -27,11 +27,11 @@ import {putExpense} from "@/services/putExpense";
 import useFriends from "@/services/useFriends";
 import {useStore} from "@/app/store";
 import {useRouter} from "next/navigation";
-import {expenseDetails, friendsList} from "@/const/urls";
+import {expenseDetails} from "@/const/urls";
 import Avatar from "@/app/components/avatar/Avatar";
 import {vibration} from "@/utils/vibration";
-import "./addExpense.css";
 import {Icon28Warning} from "@/Icons";
+import "./addExpense.css";
 
 interface Payment {
     id: number;
@@ -436,9 +436,9 @@ export default function AddExpense() {
                         className="p-0 addExpense__cell"
                         after={
                             <DateTimePicker
-                                disabled={!!selectedExpense}
                                 value={dayjs(date)}
                                 onChange={onDateChange}
+                                disabled={!!selectedExpense}
                                 className="w-52 rounded-3xl"
                             />}
                     >

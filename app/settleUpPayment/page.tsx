@@ -4,7 +4,7 @@ import React, {useState} from "react";
 import {useTranslation} from "react-i18next";
 import classNames from "classnames";
 import dayjs, {Dayjs} from "dayjs";
-import {DatePicker} from "@mui/x-date-pickers/DatePicker";
+import {DateTimePicker} from "@mui/x-date-pickers/DateTimePicker";
 import Header from "@/app/components/header/header";
 import Logo from "@/app/components/header/logo";
 import {Button, Input, Section, Spinner, Text, Title} from "@telegram-apps/telegram-ui";
@@ -118,7 +118,6 @@ export default function SettleUpPayment() {
         (<Spinner size="l"/>) : (
             <>
                 <Header
-                    className="h-32"
                     CentralComponent={Logo}
                     LeftComponent={() => (
                         <Button
@@ -191,7 +190,7 @@ export default function SettleUpPayment() {
                     </Section>
 
                     <Section header="Date of payment">
-                        <DatePicker
+                        <DateTimePicker
                             value={dayjs(date)}
                             onChange={onDateChange}
                             disabled={!!selectedExpense}
