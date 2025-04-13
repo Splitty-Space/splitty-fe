@@ -114,7 +114,7 @@ export default function FriendsList() {
                 searchValue={searchValue}
                 setSearchValue={setSearchValue}
                 onSearchChange={setIsSearchOpen}
-                isSearchDisabled={friends?.length === 0}
+                isSearchDisabled={friends?.length === 0 && searchValue === ""}
             />
 
             <Main
