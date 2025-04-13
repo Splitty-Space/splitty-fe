@@ -49,13 +49,7 @@ export default function FriendsList() {
         }
     }, [friends]);
 
-    const refContainer = useRef(null);
-    const [height, setHeight] = useState(0);
-
-    useEffect(() => {
-        // @ts-ignore
-        setHeight(refContainer.current?.clientHeight);
-    }, []);
+    const [refContainer, height] = useContentHeight();
 
     const isRowLoaded = ({index}: { index: number }) => {
         return friends && !!friends[index];
@@ -153,7 +147,6 @@ export default function FriendsList() {
                                                 rowRenderer={rowRenderer}
                                                 onRowsRendered={onRowsRendered}
                                                 overscanRowCount={20}
-                                                className="pb-20"
                                             />
                                         )}
                                     </AutoSizer>

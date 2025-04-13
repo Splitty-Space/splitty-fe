@@ -38,7 +38,7 @@ export default function SettleUp() {
         router.push(settleUpPayment);
     };
 
-    const [ref, height] = useContentHeight();
+    const [refContainer, height] = useContentHeight();
 
     const rowRenderer = ({index, key, style}: { index: number, key: string, style: object }) => {
         const {currency, amount} = selectedFriend?.total[index] || {currency: ""};
@@ -86,7 +86,7 @@ export default function SettleUp() {
                 }
             />
 
-            <Main ref={ref}>
+            <Main ref={refContainer}>
                 {/* @ts-ignore */}
                 <AutoSizer>
                     {({width}) => (
@@ -98,7 +98,6 @@ export default function SettleUp() {
                             rowCount={selectedFriend?.total.length || 0}
                             rowRenderer={rowRenderer}
                             overscanRowCount={20}
-                            className="pb-20"
                         />
                     )}
                 </AutoSizer>

@@ -26,6 +26,7 @@ import {AutoSizer, InfiniteLoader, List} from "react-virtualized";
 import SkeletonCell from "@/app/components/skeletons/skeletonCell";
 import useMe from "@/services/useMe";
 import {defaultPageSize} from "@/const/defaultPageSize";
+import useContentHeight from "@/hooks/useContentHeight";
 
 export default function AddExpenseParticipants() {
     const {data: me} = useMe();
@@ -69,13 +70,7 @@ export default function AddExpenseParticipants() {
 
     const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-    const refContainer = useRef(null);
-    const [height, setHeight] = useState(0);
-
-    useEffect(() => {
-        // @ts-ignore
-        setHeight(refContainer.current?.clientHeight);
-    }, []);
+    const [refContainer, height] = useContentHeight();
 
     const [rowCount, setRowCount] = useState(defaultPageSize);
 
@@ -175,7 +170,6 @@ export default function AddExpenseParticipants() {
                                                 rowCount={filteredFriends?.length}
                                                 rowRenderer={rowRenderer}
                                                 onRowsRendered={onRowsRendered}
-                                                className="pb-20"
                                             />
                                         )}
                                     </AutoSizer>

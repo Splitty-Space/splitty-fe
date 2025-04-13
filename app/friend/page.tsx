@@ -29,6 +29,7 @@ import {useStore} from "@/app/store";
 import Avatar from "@/app/components/avatar/Avatar";
 import SkeletonCell from "@/app/components/skeletons/skeletonCell";
 import {defaultPageSize} from "@/const/defaultPageSize";
+import useContentHeight from "@/hooks/useContentHeight";
 
 
 export default function FriendPage() {
@@ -48,14 +49,7 @@ export default function FriendPage() {
     const [expenses, setExpenses] = useState<Expense[]>([]);
     const [loadingExpenses, setLoadingExpenses] = useState(true);
 
-    const refContainer = useRef(null);
-    const refHeader = useRef(null);
-    const [height, setHeight] = useState(0)
-
-    useEffect(() => {
-        // @ts-ignore
-        setHeight(refContainer.current?.clientHeight - refHeader.current.clientHeight);
-    }, []);
+    const [refContainer, height] = useContentHeight();
 
     useEffect(() => {
         const controller = new AbortController();
@@ -257,9 +251,8 @@ export default function FriendPage() {
     };
 
     return (
-        <>
+        <div className="h-full flex flex-col">
             <div
-                ref={refHeader}
                 className="flex flex-col items-center justify-center p-4 pt-8"
             >
                 <IconButton
@@ -309,8 +302,8 @@ export default function FriendPage() {
 
             <Main
                 ref={refContainer}
-                className="padding-top-0"
-                style={{height: expenses?.length > 0 ? "100%" : "calc(100% - 16rem)"}}
+                className="padding-top-0 grow"
+                style={{height: expenses?.length > 0 ? "auto" : "calc(100% - 16rem)"}}
             >
                 {loadingExpenses ? <Spinner size="l" className="flex flex-col items-center justify-center"/> :
                     expenses?.length > 0 ?
@@ -334,7 +327,7 @@ export default function FriendPage() {
                                             rowCount={rowCount}
                                             rowRenderer={rowRenderer}
                                             onRowsRendered={onRowsRendered}
-                                            className="pb-4"
+                                            // className={`pb-${friend?.total.length}`}
                                         />
                                     )}
                                 </AutoSizer>
@@ -347,6 +340,6 @@ export default function FriendPage() {
                         </div>
                 }
             </Main>
-        </>
+        </div>
     );
 }

@@ -25,6 +25,7 @@ import Avatar from "@/app/components/avatar/Avatar";
 import {vibration} from "@/utils/vibration";
 import SkeletonCell from "@/app/components/skeletons/skeletonCell";
 import {defaultPageSize} from "@/const/defaultPageSize";
+import useContentHeight from "@/hooks/useContentHeight";
 
 export default function ActivityPage() {
     const {t} = useTranslation();
@@ -41,13 +42,7 @@ export default function ActivityPage() {
     const [isLoaded, setIsLoaded] = useState(false);
     const [isLoadingExpense, setIsLoadingExpense] = useState(false);
 
-    const refContainer = useRef(null);
-    const [height, setHeight] = useState(0);
-
-    useEffect(() => {
-        // @ts-ignore
-        setHeight(refContainer.current?.clientHeight);
-    }, []);
+    const [refContainer, height] = useContentHeight();
 
     const loadPage = (page: number) => {
         const controller = new AbortController();
@@ -59,7 +54,7 @@ export default function ActivityPage() {
         }).then(({data}) => {
             setIsLoaded(true);
             setRowCount(data.meta.total_records);
-            setActivities(prevState => [...prevState, ...data.data]);
+            setActivities(prevState => page === 1 ? data.data : [...prevState, ...data.data]);
         }).catch((error) => {
             console.error({error})
         });
@@ -170,7 +165,6 @@ export default function ActivityPage() {
                                                 rowCount={rowCount}
                                                 rowRenderer={rowRenderer}
                                                 onRowsRendered={onRowsRendered}
-                                                className="pb-20"
                                             />
                                         )}
                                     </AutoSizer>
