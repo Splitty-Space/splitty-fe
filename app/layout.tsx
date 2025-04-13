@@ -24,6 +24,7 @@ import useFriends from "@/services/useFriends";
 import {Icon28Bin, Icon28Check, Icon28Warning} from "@/Icons";
 import {useTranslation} from "react-i18next";
 import {account, activity, expenseParticipants, friendsList, groups, urls} from "@/const/urls";
+import {DEFAULT_SNACKBAR_DURATION} from "@/const/defaultSnackbarDuration";
 import "./globals.css";
 
 const darkTheme = createTheme({
@@ -269,6 +270,7 @@ export default function RootLayout({children}: Readonly<{
                                     className="mb-20"
                                     before={<Icon28Bin/>}
                                     onClose={onCloseFriendDeleted}
+                                    duration={DEFAULT_SNACKBAR_DURATION}
                                 >
                                     {t("friendSettings.FriendDeleted")}
                                 </Snackbar>
@@ -279,6 +281,7 @@ export default function RootLayout({children}: Readonly<{
                                     className="mb-20"
                                     before={<Icon28Check/>}
                                     onClose={onCloseExpenseCreated}
+                                    duration={DEFAULT_SNACKBAR_DURATION}
                                 >
                                     {t("expenseDetails.ExpenseCreated")}
                                 </Snackbar>
@@ -289,6 +292,7 @@ export default function RootLayout({children}: Readonly<{
                                     className="mb-20"
                                     before={<Icon28Check/>}
                                     onClose={onCloseExpenseUpdated}
+                                    duration={DEFAULT_SNACKBAR_DURATION}
                                 >
                                     {t("expenseDetails.ExpenseUpdated")}
                                 </Snackbar>
@@ -299,6 +303,7 @@ export default function RootLayout({children}: Readonly<{
                                     className="mb-20"
                                     before={<Icon28Bin/>}
                                     onClose={onCloseExpenseDeleted}
+                                    duration={DEFAULT_SNACKBAR_DURATION}
                                 >
                                     {t("expenseDetails.ExpenseDeleted")}
                                 </Snackbar>
@@ -309,6 +314,7 @@ export default function RootLayout({children}: Readonly<{
                                     className="mb-20"
                                     before={<Icon28Warning/>}
                                     onClose={onCloseCantShowDeletedExpense}
+                                    duration={DEFAULT_SNACKBAR_DURATION}
                                 >
                                     {t("expenseDetails.CantShowDeletedExpense")}
                                 </Snackbar>
@@ -319,6 +325,7 @@ export default function RootLayout({children}: Readonly<{
                                     className="mb-20"
                                     before={<Icon28Warning/>}
                                     onClose={onCloseGroupComingSoon}
+                                    duration={DEFAULT_SNACKBAR_DURATION}
                                 >
                                     {t("expenseDetails.ComingSoon")}
                                 </Snackbar>

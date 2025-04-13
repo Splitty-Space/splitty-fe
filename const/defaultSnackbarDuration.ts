@@ -1,0 +1,1 @@
+export const DEFAULT_SNACKBAR_DURATION = 2000; // 2 seconds
