@@ -19,6 +19,7 @@ import SkeletonCell from "@/app/components/skeletons/skeletonCell";
 import useMe from "@/services/useMe";
 import {defaultPageSize} from "@/const/defaultPageSize";
 import {AutoSizer, InfiniteLoader, List} from "react-virtualized";
+import useContentHeight from "@/hooks/useContentHeight";
 import "dayjs/locale/ru";
 import "dayjs/locale/uk";
 
