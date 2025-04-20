@@ -2,6 +2,7 @@
 
 import {useCallback} from "react";
 import useMe from "@/services/useMe";
+import {useTranslation} from "react-i18next";
 import HeaderWithSearch from "@/app/components/header/headerWithSearch";
 import {Icon28PersonAdd} from "@/Icons";
 import {IconButton} from "@telegram-apps/telegram-ui";
@@ -14,6 +15,7 @@ export default function FriendsHeader({searchValue, setSearchValue, onSearchChan
     onSearchChange: Function,
     isSearchDisabled: boolean,
 }) {
+    const {t} = useTranslation();
     const {data: me} = useMe();
 
     const setIsFriendRequestSentSnackbarShown = useStore((state) => state.setIsFriendRequestSentSnackbarShown);
@@ -22,11 +24,11 @@ export default function FriendsHeader({searchValue, setSearchValue, onSearchChan
         if (shareURL.isAvailable()) {
             shareURL(
                 `https://t.me/splitty_fe_bot?start=${me.referral_code}`,
-                "Join me on Splitty and let's split together! Use my invite link to join. 🌟"); // TODO localize text
+                t("friend.AddFriendMessage"));
 
             setIsFriendRequestSentSnackbarShown(true);
         }
-    }, [me, setIsFriendRequestSentSnackbarShown]);
+    }, [me.referral_code, setIsFriendRequestSentSnackbarShown, t]);
 
     const RightComponent = useCallback(() => (
         <IconButton

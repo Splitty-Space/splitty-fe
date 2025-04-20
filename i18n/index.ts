@@ -34,7 +34,8 @@ i18n
                     },
                     friend: {
                         SettleUp: "Settle up",
-                        AddFirstExpense: "Add first expense"
+                        AddFirstExpense: "Add first expense",
+                        AddFriendMessage: "Join me on Splitty and let's split together! Use my invite link to join 🌟",
                     },
                     friendPage: {
                         YouBorrowed: "You borrowed",
@@ -152,7 +153,9 @@ i18n
                         FriendNotFound: "Друг не найден"
                     },
                     friend: {
-                        SettleUp: "Рассчитаться"
+                        SettleUp: "Рассчитаться",
+                        AddFirstExpense: "Добавить первый расход",
+                        AddFriendMessage: "Присоединяйтесь ко мне в Splitty и давайте делится вместе! Используйте мою ссылку, чтобы присоединиться 🌟",
                     },
                     friendPage: {
                         YouBorrowed: "Вы одолжили",
@@ -223,6 +226,7 @@ i18n
                         ExpenseUpdated: "Расход обновлен",
                         ExpenseDeleted: "Расход удалён",
                         CantShowDeletedExpense: "Невозможно показать удаленный расход!",
+                        FriendRequestSent: "Запрос на добавление в друзья отправлен",
                         ComingSoon: "Скоро",
                         people: "людей",
                         borrowed: "одолжил",
@@ -269,7 +273,9 @@ i18n
                         FriendNotFound: "Друга не знайдено"
                     },
                     friend: {
-                        SettleUp: "Розраховуватися"
+                        SettleUp: "Розраховуватися",
+                        AddFirstExpense: "Додати першу витрату",
+                        AddFriendMessage: "Приєднуйтесь до мене у Splitty та давайте ділиться разом! Використовуйте моє посилання, щоб приєднатися 🌟",
                     },
                     friendPage: {
                         YouBorrowed: "Ви позичили",
@@ -340,6 +346,7 @@ i18n
                         ExpenseUpdated: "Витрати оновлені",
                         ExpenseDeleted: "Споживання видаляється",
                         CantShowDeletedExpense: "Неможливо показати видалену витрату!",
+                        FriendRequestSent: "Запит на дружбу надіслано",
                         ComingSoon: "Скоро",
                         people: "людей",
                         borrowed: "позичив",
