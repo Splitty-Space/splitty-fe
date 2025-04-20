@@ -38,6 +38,7 @@ interface Payment {
     id: number;
     isSelected: boolean;
     amount?: number;
+    amountRaw?: string;
     isDirty: boolean;
 }
 
@@ -76,6 +77,7 @@ export default function AddExpense() {
         selectedExpense.expense_users.map((expense) => ({
             id: expense.user.id,
             amount: Number(expense.lent_amount),
+            amountRaw: String(expense.lent_amount),
             isSelected: Number(expense.lent_amount) !== 0,
             isDirty: false,
         })) :
@@ -83,6 +85,7 @@ export default function AddExpense() {
             id: x.id,
             isSelected: true,
             amount: 0,
+            amountRaw: "0",
             isDirty: false,
         })));
 
@@ -93,6 +96,7 @@ export default function AddExpense() {
         selectedExpense.expense_users.map((expense) => ({
             id: expense.user.id,
             amount: Number(expense.debt_amount),
+            amountRaw: String(expense.debt_amount),
             isSelected: Number(expense.debt_amount) !== 0,
             isDirty: false,
         })) :
@@ -100,6 +104,7 @@ export default function AddExpense() {
             id: x.id,
             isSelected: true,
             amount: 0,
+            amountRaw: "0",
             isDirty: false,
         })));
 
@@ -184,13 +189,14 @@ export default function AddExpense() {
     };
 
     const onMoneySpentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.value.length > maxMoneySpentLength) {
+        const value = e.target.value;
+        if (value.length > maxMoneySpentLength) {
             return;
         }
 
-        setRawMoneySpent(e.target.value);
+        setRawMoneySpent(value);
 
-        const amount = Number(e.target.value.replace(/,/g, "."));
+        const amount = Number(value.replace(/,/g, "."));
         setMoneySpent(amount);
 
         if (isFullyPaidByYou) {
@@ -198,6 +204,7 @@ export default function AddExpense() {
                 id: x.id,
                 isSelected: true,
                 amount: index === 0 ? amount : 0,
+                amountRaw: index === 0 ? value : "0",
                 isDirty: false,
             })));
         }
@@ -209,6 +216,7 @@ export default function AddExpense() {
                 id: x.id,
                 isSelected: true,
                 amount: parts[index],
+                amountRaw: parts[index],
                 isDirty: false,
             })));
         }
@@ -236,6 +244,7 @@ export default function AddExpense() {
                 id: x.id,
                 isSelected: true,
                 amount: parts[index],
+                amountRaw: parts[index],
                 isDirty: false,
             })));
         } else {
@@ -243,6 +252,7 @@ export default function AddExpense() {
                 id: x.id,
                 isSelected: true,
                 amount: index === 0 && moneySpent ? Number(moneySpent) : 0,
+                amountRaw: index === 0 && moneySpent ? String(moneySpent) : "0",
                 isDirty: false,
             })));
         }
@@ -255,6 +265,7 @@ export default function AddExpense() {
             ...x,
             isSelected: e.target.checked,
             amount: e.target.checked ? x.amount : 0,
+            amountRaw: e.target.checked ? x.amountRaw : "0",
             isDirty: true,
         } : x));
     };
@@ -262,7 +273,8 @@ export default function AddExpense() {
     const onPaidByAmountChange = (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
         setPaidBy(paidBy.map(x => x.id === id ? {
             ...x,
-            amount: e.target.value ? Number(e.target.value.replace(",", ".")) : undefined,
+            amount: e.target.value ? Number(e.target.value.replace(/,/g, ".")) : undefined,
+            amountRaw: e.target.value,
             isDirty: true,
         } : x));
     };
@@ -278,6 +290,7 @@ export default function AddExpense() {
                 id: x.id,
                 isSelected: true,
                 amount: parts[index],
+                amountRaw: parts[index],
                 isDirty: false,
             })));
         } else {
@@ -285,6 +298,7 @@ export default function AddExpense() {
                 id: x.id,
                 isSelected: true,
                 amount: parts[index],
+                amountRaw: parts[index],
                 isDirty: false,
             })));
         }
@@ -297,6 +311,7 @@ export default function AddExpense() {
             ...x,
             isSelected: e.target.checked,
             amount: e.target.checked ? x.amount : 0,
+            amountRaw: e.target.checked ? x.amountRaw : "0",
             isDirty: true,
         } : x));
     };
@@ -304,7 +319,8 @@ export default function AddExpense() {
     const onSplitBetweenAmountChange = (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
         setSplitBetween(splitBetween.map(x => x.id === id ? {
             ...x,
-            amount: e.target.value ? Number(e.target.value.replace(",", ".")) : undefined,
+            amount: e.target.value ? Number(e.target.value.replace(/,/g, ".")) : undefined,
+            amountRaw: e.target.value,
             isDirty: true,
         } : x));
     };
@@ -489,11 +505,10 @@ export default function AddExpense() {
                                     </div>
 
                                     <Input
-                                        value={paidBy.find(x => x.id === id)?.amount}
-                                        onChange={onPaidByAmountChange(id)}
-                                        type="number"
+                                        type="text"
                                         inputMode="decimal"
-                                        step="any"
+                                        value={paidBy.find(x => x.id === id)?.amountRaw}
+                                        onChange={onPaidByAmountChange(id)}
                                         className="w-36 ml-auto"
                                         status={currentPaidMoneyAmount !== moneySpent && isItemSelected ? "error" : undefined}
                                         disabled={!isItemSelected}
@@ -566,11 +581,10 @@ export default function AddExpense() {
                                         </div>
 
                                         <Input
-                                            value={splitBetween.find(x => x.id === id)?.amount}
-                                            onChange={onSplitBetweenAmountChange(id)}
-                                            type="number"
+                                            type="text"
                                             inputMode="decimal"
-                                            step="any"
+                                            value={splitBetween.find(x => x.id === id)?.amountRaw}
+                                            onChange={onSplitBetweenAmountChange(id)}
                                             className="w-36 ml-auto"
                                             status={currentSplitBetweenMoneyAmount !== moneySpent ? "error" : undefined}
                                             disabled={!isItemSelected}
