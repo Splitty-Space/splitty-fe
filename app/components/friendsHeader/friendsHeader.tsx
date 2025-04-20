@@ -28,7 +28,7 @@ export default function FriendsHeader({searchValue, setSearchValue, onSearchChan
 
             setIsFriendRequestSentSnackbarShown(true);
         }
-    }, [me.referral_code, setIsFriendRequestSentSnackbarShown, t]);
+    }, [me, setIsFriendRequestSentSnackbarShown, t]);
 
     const RightComponent = useCallback(() => (
         <IconButton
