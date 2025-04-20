@@ -37,6 +37,9 @@ interface State {
     isCantShowDeletedExpenseSnackbarShown: boolean,
     setIsCantShowDeletedExpenseSnackbarShown: (newIsCantShowDeletedExpenseSnackbarShown: boolean) => void,
 
+    isFriendRequestSentSnackbarShown: boolean,
+    setIsFriendRequestSentSnackbarShown: (newIsFriendRequestSentSnackbarShown: boolean) => void,
+
     isGroupComingSoonSnackbarShown: boolean,
     setIsGroupComingSoonSnackbarShown: (newIsGroupComingSoonSnackbarShown: boolean) => void,
 
@@ -78,6 +81,9 @@ export const useStore = create<State>()(
 
             isCantShowDeletedExpenseSnackbarShown: false,
             setIsCantShowDeletedExpenseSnackbarShown: (newIsCantShowDeletedExpenseSnackbarShown) => set(() => ({isCantShowDeletedExpenseSnackbarShown: newIsCantShowDeletedExpenseSnackbarShown})),
+
+            isFriendRequestSentSnackbarShown: false,
+            setIsFriendRequestSentSnackbarShown: (newIsFriendRequestSentSnackbarShown) => set(() => ({isGroupComingSoonSnackbarShown: newIsFriendRequestSentSnackbarShown})),
 
             isGroupComingSoonSnackbarShown: false,
             setIsGroupComingSoonSnackbarShown: (newIsGroupComingSoonSnackbarShown) => set(() => ({isGroupComingSoonSnackbarShown: newIsGroupComingSoonSnackbarShown})),

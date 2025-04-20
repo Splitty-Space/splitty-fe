@@ -105,6 +105,7 @@ i18n
                         ExpenseUpdated: "Expense updated",
                         ExpenseDeleted: "Expense deleted",
                         CantShowDeletedExpense: "Can't show deleted expense!",
+                        FriendRequestSent: "Friend request sent",
                         ComingSoon: "Coming soon",
                         people: "people",
                         borrowed: "borrowed",

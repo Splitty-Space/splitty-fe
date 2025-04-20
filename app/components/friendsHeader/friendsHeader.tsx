@@ -6,6 +6,7 @@ import HeaderWithSearch from "@/app/components/header/headerWithSearch";
 import {Icon28PersonAdd} from "@/Icons";
 import {IconButton} from "@telegram-apps/telegram-ui";
 import {shareURL} from "@telegram-apps/sdk";
+import {useStore} from "@/app/store";
 
 export default function FriendsHeader({searchValue, setSearchValue, onSearchChange, isSearchDisabled}: {
     searchValue: string,
@@ -15,13 +16,17 @@ export default function FriendsHeader({searchValue, setSearchValue, onSearchChan
 }) {
     const {data: me} = useMe();
 
+    const setIsFriendRequestSentSnackbarShown = useStore((state) => state.setIsFriendRequestSentSnackbarShown);
+
     const shareSplitty = useCallback(() => {
         if (shareURL.isAvailable()) {
             shareURL(
                 `https://t.me/splitty_fe_bot?start=${me.referral_code}`,
                 "Join me on Splitty and let's split together! Use my invite link to join. 🌟"); // TODO localize text
+
+            setIsFriendRequestSentSnackbarShown(true);
         }
-    }, [me]);
+    }, [me, setIsFriendRequestSentSnackbarShown]);
 
     const RightComponent = useCallback(() => (
         <IconButton

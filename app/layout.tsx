@@ -218,6 +218,8 @@ export default function RootLayout({children}: Readonly<{
     const setIsUpdateExpenseSnackbarShown = useStore((state) => state.setIsUpdateExpenseSnackbarShown);
     const isCantShowDeletedExpenseSnackbarShown = useStore((state) => state.isCantShowDeletedExpenseSnackbarShown);
     const setIsCantShowDeletedExpenseSnackbarShown = useStore((state) => state.setIsCantShowDeletedExpenseSnackbarShown);
+    const isFriendRequestSentSnackbarShown = useStore((state) => state.isFriendRequestSentSnackbarShown);
+    const setIsFriendRequestSentSnackbarShown = useStore((state) => state.setIsFriendRequestSentSnackbarShown);
     const isGroupComingSoonSnackbarShown = useStore((state) => state.isGroupComingSoonSnackbarShown);
     const setIsGroupComingSoonSnackbarShown = useStore((state) => state.setIsGroupComingSoonSnackbarShown);
 
@@ -229,6 +231,7 @@ export default function RootLayout({children}: Readonly<{
     const onCloseExpenseUpdated = useCallback(() => setIsUpdateExpenseSnackbarShown(false), [setIsUpdateExpenseSnackbarShown]);
     const onCloseExpenseDeleted = useCallback(() => setIsDeleteExpenseSnackbarShown(false), [setIsDeleteExpenseSnackbarShown]);
     const onCloseCantShowDeletedExpense = useCallback(() => setIsCantShowDeletedExpenseSnackbarShown(false), [setIsCantShowDeletedExpenseSnackbarShown]);
+    const onCloseFriendRequestSent = useCallback(() => setIsFriendRequestSentSnackbarShown(false), [setIsFriendRequestSentSnackbarShown]);
     const onCloseGroupComingSoon = useCallback(() => setIsGroupComingSoonSnackbarShown(false), [setIsGroupComingSoonSnackbarShown]);
 
     return (
@@ -236,7 +239,8 @@ export default function RootLayout({children}: Readonly<{
         <Head>
             <title>Splitty</title>
 
-            <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=no, shrink-to-fit=no"/>
+            <meta name="viewport"
+                  content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=no, shrink-to-fit=no"/>
 
             {/*<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>*/}
         </Head>
@@ -328,6 +332,17 @@ export default function RootLayout({children}: Readonly<{
                                     duration={DEFAULT_SNACKBAR_DURATION}
                                 >
                                     {t("expenseDetails.ComingSoon")}
+                                </Snackbar>
+                            )}
+
+                            {isFriendRequestSentSnackbarShown && (
+                                <Snackbar
+                                    className="mb-20"
+                                    before={<Icon28Check/>}
+                                    onClose={onCloseFriendRequestSent}
+                                    duration={DEFAULT_SNACKBAR_DURATION}
+                                >
+                                    {t("expenseDetails.FriendRequestSent")}
                                 </Snackbar>
                             )}
                         </AppRoot>
