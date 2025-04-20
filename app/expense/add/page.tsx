@@ -22,6 +22,7 @@ import {CurrencySelect} from "@/components/CurrencySelect";
 import {DateTimePicker} from "@mui/x-date-pickers/DateTimePicker";
 import dayjs, {Dayjs} from "dayjs";
 import {splitNumberIntoParts} from "@/utils/splitNumberIntoParts";
+import {ExpenseNameInputId} from "@/app/expense/add/focusOnExpenseNameInput";
 import {addExpense} from "@/services/addExpense";
 import {putExpense} from "@/services/putExpense";
 import useFriends from "@/services/useFriends";
@@ -358,7 +359,7 @@ export default function AddExpense() {
 
                 <div>
                     <Input
-                        autoFocus
+                        id={ExpenseNameInputId}
                         value={expenseName}
                         onChange={onExpenseNameChange}
                         maxLength={maxExpenseNameLength}

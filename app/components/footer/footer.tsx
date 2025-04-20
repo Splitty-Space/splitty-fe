@@ -8,6 +8,7 @@ import useMe from "@/services/useMe";
 import {Friend} from "@/entities";
 import {vibration} from "@/utils/vibration";
 import {account, activity, addExpense, expenseParticipants, friend, friendsList, groups} from "@/const/urls";
+import {focusOnExpenseNameInput} from "@/app/expense/add/focusOnExpenseNameInput";
 import Avatar from "@/app/components/avatar/Avatar";
 import {useStore} from "@/app/store";
 import "./footer.css";
@@ -112,6 +113,7 @@ export default function Footer({
             setIsGroupComingSoonSnackbarShown(true);
         } else if (id === TabIds.AddExpenseParticipants && pathname === friend) {
             router.push(addExpense);
+            focusOnExpenseNameInput();
         } else if (id === TabIds.AddExpenseParticipants) {
             router.push(expenseParticipants);
         } else if (id === TabIds.Activity) {

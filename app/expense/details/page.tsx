@@ -20,6 +20,7 @@ import {addExpense, settleUpPayment} from "@/const/urls";
 import {popup} from "@telegram-apps/sdk";
 import Avatar from "@/app/components/avatar/Avatar";
 import {formatDateTime} from "@/utils/formatDateTime";
+import {focusOnExpenseNameInput} from "@/app/expense/add/focusOnExpenseNameInput";
 import "./expenseDetails.css";
 
 export default function ExpenseDetails() {
@@ -92,6 +93,7 @@ export default function ExpenseDetails() {
             }
         } else {
             router.push(addExpense);
+            focusOnExpenseNameInput();
         }
     };
 

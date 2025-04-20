@@ -27,6 +27,7 @@ import SkeletonCell from "@/app/components/skeletons/skeletonCell";
 import useMe from "@/services/useMe";
 import {defaultPageSize} from "@/const/defaultPageSize";
 import useContentHeight from "@/hooks/useContentHeight";
+import {focusOnExpenseNameInput} from "@/app/expense/add/focusOnExpenseNameInput";
 
 export default function AddExpenseParticipants() {
     const {data: me} = useMe();
@@ -52,6 +53,7 @@ export default function AddExpenseParticipants() {
         setSelectedFriends(selectedFriends);
 
         router.push(addExpense);
+        focusOnExpenseNameInput();
     };
 
     useEffect(() => {
