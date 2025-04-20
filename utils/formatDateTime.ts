@@ -3,7 +3,7 @@ import {EN} from "@/const/languages";
 export function formatDateTime(date: string, language: string) {
     return new Intl.DateTimeFormat("en-US", {
         year: "numeric",
-        month: "short",
+        month: "long",
         day: "numeric",
         hour: "numeric",
         minute: "numeric",
