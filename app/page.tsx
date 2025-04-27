@@ -20,6 +20,7 @@ import useMe from "@/services/useMe";
 import {defaultPageSize} from "@/const/defaultPageSize";
 import {AutoSizer, InfiniteLoader, List} from "react-virtualized";
 import useContentHeight from "@/hooks/useContentHeight";
+import PullToRefresh from "react-simple-pull-to-refresh";
 import "dayjs/locale/ru";
 import "dayjs/locale/uk";
 
@@ -35,7 +36,7 @@ export default function FriendsList() {
     const setSearchValue = useStore((state) => state.setSearchValue);
     const setSelectedUserId = useStore((state) => state.setSelectedUserId);
 
-    const {data, loadingFriends} = useFriends(searchValue);
+    const {data, loadingFriends, refetchFriends} = useFriends(searchValue);
     const friends = data?.data;
 
     const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -103,6 +104,10 @@ export default function FriendsList() {
         );
     };
 
+    const onRefresh = () => {
+        return refetchFriends();
+    };
+
     return (
         <>
             <FriendsHeader
@@ -126,33 +131,44 @@ export default function FriendsList() {
                         (<Placeholder header={t("friendsList.AddFirstFriend")}>
                             <Arrow className="ml-16"/>
                         </Placeholder>) :
-                        // @ts-ignore
-                        (<InfiniteLoader
-                            isRowLoaded={isRowLoaded}
-                            // @ts-ignore
-                            loadMoreRows={loadMoreRows}
-                            rowCount={rowCount}
-                        >
-                            { // @ts-ignore
-                                ({onRowsRendered, registerChild}) => (
+                        (
+                            <PullToRefresh
+                                onRefresh={onRefresh}
+                                pullingContent={<></>}
+                                refreshingContent={
+                                    <Spinner size="m"
+                                             className="flex flex-col items-center justify-center"/>
+                                }
+                            >
+                                {/* @ts-ignore */}
+                                <InfiniteLoader
+                                    isRowLoaded={isRowLoaded}
                                     // @ts-ignore
-                                    <AutoSizer>
-                                        {({width}) => (
+                                    loadMoreRows={loadMoreRows}
+                                    rowCount={rowCount}
+                                >
+                                    { // @ts-ignore
+                                        ({onRowsRendered, registerChild}) => (
                                             // @ts-ignore
-                                            <List
-                                                ref={registerChild}
-                                                width={width}
-                                                height={height}
-                                                rowHeight={68}
-                                                rowCount={friends?.length}
-                                                rowRenderer={rowRenderer}
-                                                onRowsRendered={onRowsRendered}
-                                                overscanRowCount={20}
-                                            />
+                                            <AutoSizer>
+                                                {({width}) => (
+                                                    // @ts-ignore
+                                                    <List
+                                                        ref={registerChild}
+                                                        width={width}
+                                                        height={height}
+                                                        rowHeight={68}
+                                                        rowCount={friends?.length}
+                                                        rowRenderer={rowRenderer}
+                                                        onRowsRendered={onRowsRendered}
+                                                        overscanRowCount={20}
+                                                    />
+                                                )}
+                                            </AutoSizer>
                                         )}
-                                    </AutoSizer>
-                                )}
-                        </InfiniteLoader>)
+                                </InfiniteLoader>
+                            </PullToRefresh>
+                        )
                 }
             </Main>
         </>
