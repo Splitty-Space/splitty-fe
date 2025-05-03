@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import classNames from "classnames";
 import {Friend} from "@/entities";
@@ -10,7 +10,6 @@ import {
     Divider,
     Headline,
     Placeholder,
-    Spinner,
     Switch,
 } from "@telegram-apps/telegram-ui";
 import HeaderWithSearch from "@/app/components/header/headerWithSearch";
@@ -28,6 +27,7 @@ import useMe from "@/services/useMe";
 import {defaultPageSize} from "@/const/defaultPageSize";
 import useContentHeight from "@/hooks/useContentHeight";
 import {focusOnExpenseNameInput} from "@/app/expense/add/focusOnExpenseNameInput";
+import Loader from "@/app/components/loader/loader";
 
 export default function AddExpenseParticipants() {
     const {data: me} = useMe();
@@ -152,7 +152,7 @@ export default function AddExpenseParticipants() {
                 })}
             >
                 {loadingFriends ?
-                    <Spinner size="l" className="flex flex-col items-center justify-center"/> :
+                    <Loader/> :
                     filteredFriends?.length > 0 ?
                         // @ts-ignore
                         (<InfiniteLoader

@@ -1,11 +1,11 @@
 "use client"
 
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import classNames from "classnames";
 import {useTranslation} from "react-i18next";
 import {init} from "@telegram-apps/sdk";
 import {useRouter} from "next/navigation";
-import {Cell, Placeholder, Spinner, Divider, Caption} from "@telegram-apps/telegram-ui";
+import {Cell, Placeholder, Divider, Caption} from "@telegram-apps/telegram-ui";
 import Main from "@/app/components/main/main";
 import FriendsHeader from "@/app/components/friendsHeader/friendsHeader";
 import {Arrow} from "@/Icons";
@@ -21,6 +21,7 @@ import {defaultPageSize} from "@/const/defaultPageSize";
 import {AutoSizer, InfiniteLoader, List} from "react-virtualized";
 import useContentHeight from "@/hooks/useContentHeight";
 import PullToRefresh from "react-simple-pull-to-refresh";
+import Loader from "@/app/components/loader/loader";
 import "dayjs/locale/ru";
 import "dayjs/locale/uk";
 
@@ -126,7 +127,7 @@ export default function FriendsList() {
                 })}
             >
                 {loadingFriends ?
-                    <Spinner size="l" className="flex flex-col items-center justify-center"/> :
+                    <Loader/> :
                     searchValue === "" && friends?.length === 0 ?
                         (<Placeholder header={t("friendsList.AddFirstFriend")}>
                             <Arrow className="ml-16"/>
@@ -136,8 +137,9 @@ export default function FriendsList() {
                                 onRefresh={onRefresh}
                                 pullingContent={<></>}
                                 refreshingContent={
-                                    <Spinner size="m"
-                                             className="flex flex-col items-center justify-center"/>
+                                    <div className="flex flex-col items-center mt-4">
+                                        <Loader/>
+                                    </div>
                                 }
                             >
                                 {/* @ts-ignore */}

@@ -1,11 +1,11 @@
 "use client"
 
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import classNames from "classnames";
 import Header from "@/app/components/header/header";
 import Main from "@/app/components/main/main";
-import {AvatarStack, Caption, Divider, IconButton, Spinner, Subheadline, Text, Title} from "@telegram-apps/telegram-ui";
+import {AvatarStack, Caption, Divider, IconButton, Subheadline, Text, Title} from "@telegram-apps/telegram-ui";
 import {Icon28Edit} from "@telegram-apps/telegram-ui/dist/icons/28/edit";
 import {Icon28Bin} from "@/Icons";
 import Logo from "@/app/components/header/logo";
@@ -22,6 +22,7 @@ import Avatar from "@/app/components/avatar/Avatar";
 import {formatDateTime} from "@/utils/formatDateTime";
 import {focusOnExpenseNameInput} from "@/app/expense/add/focusOnExpenseNameInput";
 import "./expenseDetails.css";
+import Loader from "@/app/components/loader/loader";
 
 export default function ExpenseDetails() {
     const {t} = useTranslation();
@@ -107,21 +108,21 @@ export default function ExpenseDetails() {
         .filter(({debt_amount}) => debt_amount > 0) ?? [];
 
     return loadingMe ?
-        (<Spinner className="flex justify-center " size="l"/>)
+        (<Loader/>)
         : (
             <>
                 <Header
                     layoutClassName="p-0 py-4"
-                    LeftComponent={() => deleteExpenseLoading ? (
-                        <Spinner className="flex justify-center " size="m"/>) : (
-                        <IconButton
-                            size="l"
-                            mode="bezeled"
-                            onClick={onDelete}
-                        >
-                            <Icon28Bin color={"var(--tgui--destructive_text_color)"}/>
-                        </IconButton>
-                    )}
+                    LeftComponent={() => deleteExpenseLoading ?
+                        (<Loader/>) : (
+                            <IconButton
+                                size="l"
+                                mode="bezeled"
+                                onClick={onDelete}
+                            >
+                                <Icon28Bin color={"var(--tgui--destructive_text_color)"}/>
+                            </IconButton>
+                        )}
                     CentralComponent={Logo}
                     RightComponent={() => (
                         <IconButton

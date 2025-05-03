@@ -6,7 +6,7 @@ import classNames from "classnames";
 import dayjs, {Dayjs} from "dayjs";
 import {DateTimePicker} from "@mui/x-date-pickers/DateTimePicker";
 import Header from "@/app/components/header/header";
-import {Button, Input, Section, Spinner, Text, Title} from "@telegram-apps/telegram-ui";
+import {Button, Input, Section, Text, Title} from "@telegram-apps/telegram-ui";
 import {CurrencySelect} from "@/components/CurrencySelect";
 import {addExpense} from "@/services/addExpense";
 import useMe from "@/services/useMe";
@@ -18,6 +18,7 @@ import {useRouter} from "next/navigation";
 import {friend as friendURL} from "@/const/urls";
 import Avatar from "@/app/components/avatar/Avatar";
 import Main from "@/app/components/main/main";
+import Loader from "@/app/components/loader/loader";
 
 export default function SettleUpPayment() {
     const {t} = useTranslation();
@@ -114,8 +115,8 @@ export default function SettleUpPayment() {
     };
 
     return loading ?
-        (<Spinner size="l"/>) : (
-            <>
+        (<Loader/>) :
+        (<>
                 <Header
                     LeftComponent={() => (
                         <Button

@@ -2,7 +2,7 @@
 
 import React, {useState} from "react";
 import {useTranslation} from "react-i18next";
-import {Cell, Divider, IconContainer, List, Select, Spinner, Title} from "@telegram-apps/telegram-ui";
+import {Cell, Divider, IconContainer, List, Select, Title} from "@telegram-apps/telegram-ui";
 import {Icon28Chat} from "@telegram-apps/telegram-ui/dist/icons/28/chat";
 import {Icon28Devices} from "@telegram-apps/telegram-ui/dist/icons/28/devices";
 import {Icon28Stats} from "@telegram-apps/telegram-ui/dist/icons/28/stats";
@@ -16,6 +16,7 @@ import Header from "@/app/components/header/header";
 import Logo from "@/app/components/header/logo";
 import Main from "@/app/components/main/main";
 import Avatar from "@/app/components/avatar/Avatar";
+import Loader from "@/app/components/loader/loader";
 
 export default function Account() {
     const {t} = useTranslation();
@@ -90,7 +91,6 @@ export default function Account() {
                                     isLoading={isCurrencyLoading}
                                     defaultCurrency={me.default_currency}
                                     onChange={onCurrencyChange}
-                                    className="h-10"
                                 />}
                             >
                                 {t("account.DefaultCurrency")}
@@ -112,7 +112,7 @@ export default function Account() {
                                         ))}
                                     </Select>
                                     :
-                                    <Spinner size="s" className="ml-8 my-2.5"/>
+                                    <Loader className="mr-4 mt-4"/>
                                 }
                             >
                                 {t("account.Language")}
@@ -138,7 +138,7 @@ export default function Account() {
                         </List>
                     </>
                     :
-                    <Spinner size="l"/>
+                    <Loader/>
                 }
             </Main>
         </>

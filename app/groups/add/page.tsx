@@ -1,6 +1,6 @@
 "use client"
 
-import {useState} from "react";
+import React, {useState} from "react";
 import {useTranslation} from "react-i18next";
 import {
     Cell,
@@ -8,7 +8,6 @@ import {
     Input,
     List,
     Select,
-    Spinner,
     Switch,
     Tappable
 } from "@telegram-apps/telegram-ui";
@@ -19,6 +18,7 @@ import useFriends from "@/services/useFriends";
 import classNames from "classnames";
 import Avatar from "@/app/components/avatar/Avatar";
 import {vibration} from "@/utils/vibration";
+import Loader from "@/app/components/loader/loader";
 
 enum STEPS {
     GroupSettings,
@@ -105,7 +105,7 @@ export default function AddGroup() {
                     <>
                         {
                             loadingFriends ?
-                                (<Spinner size="l"/>) :
+                                (<Loader/>) :
                                 (<List className="mb-8 px-0">
                                     {data?.data?.map(({id, name}: {
                                             id: number, name: string

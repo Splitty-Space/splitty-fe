@@ -3,7 +3,7 @@
 import React from "react";
 import {useTranslation} from "react-i18next";
 import useMe from "@/services/useMe";
-import {Badge, Cell, Divider, List, Spinner, Text} from "@telegram-apps/telegram-ui";
+import {Badge, Cell, Divider, List, Text} from "@telegram-apps/telegram-ui";
 import useActivity from "@/services/useActivity";
 import classNames from "classnames";
 import {ACTIVITY_TYPE, ACTIVITY_TYPE_TO_TEXT} from "@/entities/Activity";
@@ -11,6 +11,7 @@ import {Expense} from "@/entities";
 import {formatDateTime} from "@/utils/formatDateTime";
 import {ExpenseHistoryModal} from "@/app/expense/details/ExpenseHistoryModal";
 import Avatar from "@/app/components/avatar/Avatar";
+import Loader from "@/app/components/loader/loader";
 
 export default function ExpenseHistoryList({
                                                expanseId,
@@ -53,7 +54,7 @@ export default function ExpenseHistoryList({
                         <div className={classNames({
                             " flex items-center justify-center": loading
                         })}>
-                            <Spinner size="l"/>
+                            <Loader/>
                         </div>
                     ) :
                     (<List className="px-0">

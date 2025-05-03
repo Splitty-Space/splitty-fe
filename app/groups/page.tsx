@@ -1,12 +1,13 @@
 "use client"
 
 import {useState} from "react";
-import {Cell, List, Placeholder, Spinner} from "@telegram-apps/telegram-ui";
+import {Cell, List, Placeholder} from "@telegram-apps/telegram-ui";
 import GroupsHeader from "@/app/groups/groupsHeader/groupsHeader";
 import Main from "@/app/components/main/main";
 import useGroups from "@/services/useGroups";
 import Avatar from "@/app/components/avatar/Avatar";
 import {Arrow} from "@/Icons";
+import Loader from "@/app/components/loader/loader";
 
 export default function GroupsList() {
     const [searchValue, setSearchValue] = useState<string>("");
@@ -33,7 +34,7 @@ export default function GroupsList() {
                                 }
                             </List>) :
                         loading ? (
-                            <Spinner size="l"/>
+                            <Loader/>
                         ) : (
                             <Placeholder header="Add you first group">
                                 <Arrow className="ml-16"/>

@@ -1,6 +1,7 @@
 import React, {ChangeEventHandler} from "react";
 import {CURRENCIES} from "@/const/currencies";
-import {Select, Spinner} from "@telegram-apps/telegram-ui";
+import {Select} from "@telegram-apps/telegram-ui";
+import Loader from "@/app/components/loader/loader";
 import "./currencySelect.css";
 
 export function CurrencySelect({defaultCurrency, isLoading, className, spinnerClassName, onChange, disabled = false}: {
@@ -27,6 +28,6 @@ export function CurrencySelect({defaultCurrency, isLoading, className, spinnerCl
                 }
             </Select>
             :
-            <Spinner size="s" className={spinnerClassName}/>
+            <Loader className="mr-4 mt-4"/>
     );
 }

@@ -1,11 +1,10 @@
 "use client"
 
-import React, {useCallback, useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {
     Cell,
     Divider,
     Placeholder,
-    Spinner,
 } from "@telegram-apps/telegram-ui";
 import {AutoSizer, InfiniteLoader, List} from "react-virtualized";
 import {useTranslation} from "react-i18next";
@@ -26,6 +25,7 @@ import {vibration} from "@/utils/vibration";
 import SkeletonCell from "@/app/components/skeletons/skeletonCell";
 import {defaultPageSize} from "@/const/defaultPageSize";
 import useContentHeight from "@/hooks/useContentHeight";
+import Loader from "@/app/components/loader/loader";
 
 export default function ActivityPage() {
     const {t} = useTranslation();
@@ -142,7 +142,7 @@ export default function ActivityPage() {
                 center={activities?.length === 0}
             >
                 {!isLoaded || isLoadingExpense ?
-                    <Spinner size="l" className="flex flex-col items-center justify-center"/> :
+                    <Loader/>:
                     activities?.length > 0 ?
                         // @ts-ignore
                         <InfiniteLoader

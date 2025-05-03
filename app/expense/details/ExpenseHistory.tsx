@@ -3,11 +3,12 @@
 import React from "react";
 import {useTranslation} from "react-i18next";
 import useMe from "@/services/useMe";
-import {Cell, Divider, List, Spinner, Text} from "@telegram-apps/telegram-ui";
+import {Cell, Divider, List, Text} from "@telegram-apps/telegram-ui";
 import Activity from "@/entities/Activity";
 import {formatDateTime} from "@/utils/formatDateTime";
 import {Expense} from "@/entities";
 import Avatar from "@/app/components/avatar/Avatar";
+import Loader from "@/app/components/loader/loader";
 
 type ValueType = {
     [key: string]: {
@@ -25,7 +26,7 @@ export default function ExpenseHistory({activity, selectedExpense}: {
     const {data: me, loading: loadingMe} = useMe();
 
     return loadingMe ?
-        (<Spinner className="flex justify-center " size="l"/>)
+        <Loader/>
         : (
             <div className="m-4 mb-12">
                 <Text weight="3">{t("expenseDetails.detailedChanges")}</Text>

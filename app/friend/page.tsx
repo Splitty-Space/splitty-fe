@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useState, useEffect, useRef, useCallback} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import {useTranslation} from "react-i18next";
 import {
     AvatarStack,
@@ -9,7 +9,6 @@ import {
     Cell,
     Divider,
     IconButton,
-    Spinner,
     Text,
     Placeholder,
     Headline
@@ -30,6 +29,7 @@ import Avatar from "@/app/components/avatar/Avatar";
 import SkeletonCell from "@/app/components/skeletons/skeletonCell";
 import {defaultPageSize} from "@/const/defaultPageSize";
 import useContentHeight from "@/hooks/useContentHeight";
+import Loader from "@/app/components/loader/loader";
 
 
 export default function FriendPage() {
@@ -305,7 +305,8 @@ export default function FriendPage() {
                 className="padding-top-0 grow"
                 style={{height: expenses?.length > 0 ? "auto" : "calc(100% - 16rem)"}}
             >
-                {loadingExpenses ? <Spinner size="l" className="flex flex-col items-center justify-center"/> :
+                {loadingExpenses ?
+                    <Loader/> :
                     expenses?.length > 0 ?
                         // @ts-ignore
                         <InfiniteLoader
