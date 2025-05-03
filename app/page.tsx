@@ -20,8 +20,8 @@ import useMe from "@/services/useMe";
 import {defaultPageSize} from "@/const/defaultPageSize";
 import {AutoSizer, InfiniteLoader, List} from "react-virtualized";
 import useContentHeight from "@/hooks/useContentHeight";
-import PullToRefresh from "react-simple-pull-to-refresh";
 import Loader from "@/app/components/loader/loader";
+import PullToRefresh from "@/app/components/pullToRefresh/pullToRefresh";
 import "dayjs/locale/ru";
 import "dayjs/locale/uk";
 
@@ -132,16 +132,7 @@ export default function FriendsList() {
                         (<Placeholder header={t("friendsList.AddFirstFriend")}>
                             <Arrow className="ml-16"/>
                         </Placeholder>) :
-                        (
-                            <PullToRefresh
-                                onRefresh={onRefresh}
-                                pullingContent={<></>}
-                                refreshingContent={
-                                    <div className="flex flex-col items-center mt-4">
-                                        <Loader/>
-                                    </div>
-                                }
-                            >
+                        (<PullToRefresh onRefresh={onRefresh}>
                                 {/* @ts-ignore */}
                                 <InfiniteLoader
                                     isRowLoaded={isRowLoaded}

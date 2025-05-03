@@ -30,6 +30,8 @@ import SkeletonCell from "@/app/components/skeletons/skeletonCell";
 import {defaultPageSize} from "@/const/defaultPageSize";
 import useContentHeight from "@/hooks/useContentHeight";
 import Loader from "@/app/components/loader/loader";
+import PullToRefresh from "@/app/components/pullToRefresh/pullToRefresh";
+import useRefreshToken from "@/utils/useRefreshToken";
 
 
 export default function FriendPage() {
@@ -48,11 +50,14 @@ export default function FriendPage() {
     const [rowCount, setRowCount] = useState(pageSize);
     const [expenses, setExpenses] = useState<Expense[]>([]);
     const [loadingExpenses, setLoadingExpenses] = useState(true);
+    const [token, refreshToken] = useRefreshToken();
 
     const [refContainer, height] = useContentHeight();
 
     useEffect(() => {
         const controller = new AbortController();
+
+        setLoadingExpenses(true);
 
         getExpenses({
             page: 1,
@@ -75,7 +80,7 @@ export default function FriendPage() {
         return () => {
             controller.abort();
         }
-    }, [friend, pageSize]);
+    }, [friend, pageSize, token]);
 
     const isRowLoaded = ({index}: { index: number }) => {
         return expenses && !!expenses[index];
@@ -250,6 +255,11 @@ export default function FriendPage() {
         );
     };
 
+    const onRefresh = () => {
+        refreshToken();
+        return Promise.resolve();
+    };
+
     return (
         <div className="h-full flex flex-col">
             <div
@@ -303,37 +313,40 @@ export default function FriendPage() {
             <Main
                 ref={refContainer}
                 className="padding-top-0 grow"
+                center={loadingExpenses}
                 style={{height: expenses?.length > 0 ? "auto" : "calc(100% - 16rem)"}}
             >
                 {loadingExpenses ?
                     <Loader/> :
                     expenses?.length > 0 ?
-                        // @ts-ignore
-                        <InfiniteLoader
-                            isRowLoaded={isRowLoaded}
-                            // @ts-ignore
-                            loadMoreRows={loadMoreRows}
-                            rowCount={rowCount}
-                        >
-                            {({onRowsRendered, registerChild}) => (
+                        <PullToRefresh onRefresh={onRefresh}>
+                            {/* @ts-ignore */}
+                            <InfiniteLoader
+                                isRowLoaded={isRowLoaded}
                                 // @ts-ignore
-                                <AutoSizer>
-                                    {({width}) => (
-                                        // @ts-ignore
-                                        <List
-                                            ref={registerChild}
-                                            width={width}
-                                            height={height}
-                                            rowHeight={68}
-                                            rowCount={rowCount}
-                                            rowRenderer={rowRenderer}
-                                            onRowsRendered={onRowsRendered}
-                                            // className={`pb-${friend?.total.length}`}
-                                        />
-                                    )}
-                                </AutoSizer>
-                            )}
-                        </InfiniteLoader>
+                                loadMoreRows={loadMoreRows}
+                                rowCount={rowCount}
+                            >
+                                {({onRowsRendered, registerChild}) => (
+                                    // @ts-ignore
+                                    <AutoSizer>
+                                        {({width}) => (
+                                            // @ts-ignore
+                                            <List
+                                                ref={registerChild}
+                                                width={width}
+                                                height={height}
+                                                rowHeight={68}
+                                                rowCount={rowCount}
+                                                rowRenderer={rowRenderer}
+                                                onRowsRendered={onRowsRendered}
+                                                // className={`pb-${friend?.total.length}`}
+                                            />
+                                        )}
+                                    </AutoSizer>
+                                )}
+                            </InfiniteLoader>
+                        </PullToRefresh>
                         :
                         <div className="flex flex-col items-center justify-end  relative h-full pb-4">
                             <Placeholder header={t("friend.AddFirstExpense")}/>

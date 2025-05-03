@@ -26,6 +26,7 @@ import SkeletonCell from "@/app/components/skeletons/skeletonCell";
 import {defaultPageSize} from "@/const/defaultPageSize";
 import useContentHeight from "@/hooks/useContentHeight";
 import Loader from "@/app/components/loader/loader";
+import PullToRefresh from "@/app/components/pullToRefresh/pullToRefresh";
 
 export default function ActivityPage() {
     const {t} = useTranslation();
@@ -45,6 +46,8 @@ export default function ActivityPage() {
     const [refContainer, height] = useContentHeight();
 
     const loadPage = (page: number) => {
+        setIsLoaded(false);
+
         const controller = new AbortController();
 
         getActivities({
@@ -129,7 +132,11 @@ export default function ActivityPage() {
         );
     };
 
-    // @ts-ignore
+    const onRefresh = () => {
+        loadPage(1);
+        return Promise.resolve();
+    };
+
     return (
         <>
             <Header
@@ -139,37 +146,39 @@ export default function ActivityPage() {
 
             <Main
                 ref={refContainer}
-                center={activities?.length === 0}
+                center={!isLoaded || isLoadingExpense || activities?.length === 0}
             >
                 {!isLoaded || isLoadingExpense ?
-                    <Loader/>:
+                    <Loader/> :
                     activities?.length > 0 ?
-                        // @ts-ignore
-                        <InfiniteLoader
-                            isRowLoaded={isRowLoaded}
-                            // @ts-ignore
-                            loadMoreRows={loadMoreRows}
-                            rowCount={rowCount}
-                        >
-                            { // @ts-ignore
-                                ({onRowsRendered, registerChild}) => (
-                                    // @ts-ignore
-                                    <AutoSizer>
-                                        {({width}) => (
-                                            // @ts-ignore
-                                            <List
-                                                ref={registerChild}
-                                                width={width}
-                                                height={height}
-                                                rowHeight={68}
-                                                rowCount={rowCount}
-                                                rowRenderer={rowRenderer}
-                                                onRowsRendered={onRowsRendered}
-                                            />
-                                        )}
-                                    </AutoSizer>
-                                )}
-                        </InfiniteLoader>
+                        <PullToRefresh onRefresh={onRefresh}>
+                            {/* @ts-ignore */}
+                            <InfiniteLoader
+                                isRowLoaded={isRowLoaded}
+                                // @ts-ignore
+                                loadMoreRows={loadMoreRows}
+                                rowCount={rowCount}
+                            >
+                                { // @ts-ignore
+                                    ({onRowsRendered, registerChild}) => (
+                                        // @ts-ignore
+                                        <AutoSizer>
+                                            {({width}) => (
+                                                // @ts-ignore
+                                                <List
+                                                    ref={registerChild}
+                                                    width={width}
+                                                    height={height}
+                                                    rowHeight={68}
+                                                    rowCount={rowCount}
+                                                    rowRenderer={rowRenderer}
+                                                    onRowsRendered={onRowsRendered}
+                                                />
+                                            )}
+                                        </AutoSizer>
+                                    )}
+                            </InfiniteLoader>
+                        </PullToRefresh>
                         :
                         <Placeholder header={t("activity.NoActivityYet")}/>
                 }

@@ -28,6 +28,7 @@ import {defaultPageSize} from "@/const/defaultPageSize";
 import useContentHeight from "@/hooks/useContentHeight";
 import {focusOnExpenseNameInput} from "@/app/expense/add/focusOnExpenseNameInput";
 import Loader from "@/app/components/loader/loader";
+import PullToRefresh from "@/app/components/pullToRefresh/pullToRefresh";
 
 export default function AddExpenseParticipants() {
     const {data: me} = useMe();
@@ -35,7 +36,7 @@ export default function AddExpenseParticipants() {
     const selectedFriends = useStore((state) => state.selectedFriends);
     const setSelectedFriends = useStore((state) => state.setSelectedFriends);
 
-    const {data, loadingFriends} = useFriends("")
+    const {data, loadingFriends, refetchFriends} = useFriends("")
     const friends = data?.data ?? [];
 
     const {t} = useTranslation();
@@ -120,6 +121,10 @@ export default function AddExpenseParticipants() {
         );
     };
 
+    const onRefresh = () => {
+        return refetchFriends();
+    };
+
     return (
         <>
             <HeaderWithSearch
@@ -154,32 +159,34 @@ export default function AddExpenseParticipants() {
                 {loadingFriends ?
                     <Loader/> :
                     filteredFriends?.length > 0 ?
-                        // @ts-ignore
-                        (<InfiniteLoader
-                            isRowLoaded={isRowLoaded}
-                            // @ts-ignore
-                            loadMoreRows={loadMoreRows}
-                            rowCount={rowCount}
-                        >
-                            { // @ts-ignore
-                                ({onRowsRendered, registerChild}) => (
-                                    // @ts-ignore
-                                    <AutoSizer>
-                                        {({width}) => (
-                                            // @ts-ignore
-                                            <List
-                                                ref={registerChild}
-                                                width={width}
-                                                height={height}
-                                                rowHeight={68}
-                                                rowCount={filteredFriends?.length}
-                                                rowRenderer={rowRenderer}
-                                                onRowsRendered={onRowsRendered}
-                                            />
-                                        )}
-                                    </AutoSizer>
-                                )}
-                        </InfiniteLoader>)
+                        <PullToRefresh onRefresh={onRefresh}>
+                            {/* @ts-ignore */}
+                            <InfiniteLoader
+                                isRowLoaded={isRowLoaded}
+                                // @ts-ignore
+                                loadMoreRows={loadMoreRows}
+                                rowCount={rowCount}
+                            >
+                                { // @ts-ignore
+                                    ({onRowsRendered, registerChild}) => (
+                                        // @ts-ignore
+                                        <AutoSizer>
+                                            {({width}) => (
+                                                // @ts-ignore
+                                                <List
+                                                    ref={registerChild}
+                                                    width={width}
+                                                    height={height}
+                                                    rowHeight={68}
+                                                    rowCount={filteredFriends?.length}
+                                                    rowRenderer={rowRenderer}
+                                                    onRowsRendered={onRowsRendered}
+                                                />
+                                            )}
+                                        </AutoSizer>
+                                    )}
+                            </InfiniteLoader>
+                        </PullToRefresh>
                         :
                         (<Placeholder header={t("friendsList.FriendNotFound")}/>)
                 }
