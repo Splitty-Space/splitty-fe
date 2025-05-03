@@ -273,7 +273,7 @@ export default function AddExpense() {
     const onPaidByAmountChange = (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
         setPaidBy(paidBy.map(x => x.id === id ? {
             ...x,
-            amount: e.target.value ? Number(e.target.value.replace(/,/g, ".")) : undefined,
+            amount: e.target.value ? Number(e.target.value.replace(/,/g, ".")) : 0,
             amountRaw: e.target.value,
             isDirty: true,
         } : x));
@@ -319,7 +319,7 @@ export default function AddExpense() {
     const onSplitBetweenAmountChange = (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
         setSplitBetween(splitBetween.map(x => x.id === id ? {
             ...x,
-            amount: e.target.value ? Number(e.target.value.replace(/,/g, ".")) : undefined,
+            amount: e.target.value ? Number(e.target.value.replace(/,/g, ".")) : 0,
             amountRaw: e.target.value,
             isDirty: true,
         } : x));
