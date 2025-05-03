@@ -83,7 +83,7 @@ export const useStore = create<State>()(
             setIsCantShowDeletedExpenseSnackbarShown: (newIsCantShowDeletedExpenseSnackbarShown) => set(() => ({isCantShowDeletedExpenseSnackbarShown: newIsCantShowDeletedExpenseSnackbarShown})),
 
             isFriendRequestSentSnackbarShown: false,
-            setIsFriendRequestSentSnackbarShown: (newIsFriendRequestSentSnackbarShown) => set(() => ({isGroupComingSoonSnackbarShown: newIsFriendRequestSentSnackbarShown})),
+            setIsFriendRequestSentSnackbarShown: (newIsFriendRequestSentSnackbarShown) => set(() => ({isFriendRequestSentSnackbarShown: newIsFriendRequestSentSnackbarShown})),
 
             isGroupComingSoonSnackbarShown: false,
             setIsGroupComingSoonSnackbarShown: (newIsGroupComingSoonSnackbarShown) => set(() => ({isGroupComingSoonSnackbarShown: newIsGroupComingSoonSnackbarShown})),
