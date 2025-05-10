@@ -11,6 +11,7 @@ export {Icon28Search} from "./28/search";
 export {Icon28PersonAdd} from "./28/person_add";
 export {Icon28Check} from "./28/check";
 export {Icon28Warning} from "./28/warning";
+export {Icon28Lightbulb} from "./28/lightbulb";
 // custom
 export {Arrow} from "./custom/arrow";
 export {PlusIcon} from "./custom/plusIcon";

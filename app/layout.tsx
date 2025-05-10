@@ -1,7 +1,7 @@
 "use client"
 
 import {usePathname, useRouter} from "next/navigation";
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useState} from "react";
 import i18next from "i18next";
 import "@/i18n";
 import Head from "next/head";
@@ -26,6 +26,13 @@ import {useTranslation} from "react-i18next";
 import {account, activity, expenseParticipants, friendsList, groups, urls} from "@/const/urls";
 import {DEFAULT_SNACKBAR_DURATION} from "@/const/defaultSnackbarDuration";
 import "./globals.css";
+
+import dynamic from "next/dynamic"
+
+const Tour = dynamic(
+    () => import("reactour"),
+    {ssr: false}
+);
 
 const darkTheme = createTheme({
     palette: {
@@ -208,6 +215,8 @@ export default function RootLayout({children}: Readonly<{
     const setSelectedUserId = useStore((state) => state.setSelectedUserId);
     const setSelectedFriends = useStore((state) => state.setSelectedFriends);
     const setSelectedExpense = useStore((state) => state.setSelectedExpense);
+    const isTourOpen = useStore((state) => state.isTourOpen);
+    const setIsTourOpen = useStore((state) => state.setIsTourOpen);
     const isDeleteFriendSnackbarShown = useStore((state) => state.isDeleteFriendSnackbarShown);
     const setIsDeleteFriendSnackbarShown = useStore((state) => state.setIsDeleteFriendSnackbarShown);
     const isDeleteExpenseSnackbarShown = useStore((state) => state.isDeleteExpenseSnackbarShown);
@@ -233,6 +242,33 @@ export default function RootLayout({children}: Readonly<{
     const onCloseCantShowDeletedExpense = useCallback(() => setIsCantShowDeletedExpenseSnackbarShown(false), [setIsCantShowDeletedExpenseSnackbarShown]);
     const onCloseFriendRequestSent = useCallback(() => setIsFriendRequestSentSnackbarShown(false), [setIsFriendRequestSentSnackbarShown]);
     const onCloseGroupComingSoon = useCallback(() => setIsGroupComingSoonSnackbarShown(false), [setIsGroupComingSoonSnackbarShown]);
+
+    const closeTour = useCallback(() => {
+        setIsTourOpen(false);
+    }, [setIsTourOpen]);
+
+
+    const tourConfig = useMemo(() => [
+        {
+            selector: "#share-button",
+            content: "Add friend button"
+        },
+        {
+            selector: "#plus-icon",
+            content: "Add new Expense button",
+            action: () => {
+                router.push(expenseParticipants);
+            }
+        },
+        {
+            selector: "#expense-participants-main",
+            content: "Pick friends that will be participate in the expense"
+        },
+        {
+            selector: "#expense-participants-next-button",
+            content: "Click next button"
+        }
+    ], [router]);
 
     return (
         <html lang="en">
@@ -267,6 +303,18 @@ export default function RootLayout({children}: Readonly<{
                                 setSelectedFriends={setSelectedFriends}
                                 setSearchValue={setSearchValue}
                                 setSelectedExpense={setSelectedExpense}
+                            />
+
+                            <Tour
+                                steps={tourConfig}
+                                isOpen={isTourOpen}
+                                onRequestClose={closeTour}
+                                // rounded={5}
+                                // maskClassName="mask"
+                                // className="helper"
+                                // accentColor={accentColor}
+                                // onAfterOpen={this.disableBody}
+                                // onBeforeClose={this.enableBody}
                             />
 
                             {isDeleteFriendSnackbarShown && (

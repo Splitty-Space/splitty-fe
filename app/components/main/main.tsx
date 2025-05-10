@@ -5,6 +5,7 @@ import classNames from "classnames";
 import {viewport} from "@telegram-apps/sdk";
 
 interface MainProps {
+    id?: string,
     style?: object,
     className?: string,
     center?: boolean,
@@ -12,6 +13,7 @@ interface MainProps {
 }
 
 const Main = forwardRef<HTMLDivElement, MainProps>(({
+                                                        id,
                                                         style,
                                                         className,
                                                         center,
@@ -19,6 +21,7 @@ const Main = forwardRef<HTMLDivElement, MainProps>(({
                                                     }, ref) => {
     return (
         <main
+            id={id}
             ref={ref}
             style={style ? style : {height: "100%"}}
             className={classNames("pt-20 pb-20 overflow-auto", {

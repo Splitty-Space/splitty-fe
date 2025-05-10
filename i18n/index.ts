@@ -131,6 +131,7 @@ i18n
                     account: {
                         DefaultCurrency: "Default Currency",
                         Language: "Language",
+                        Guide: "Guide",
                         ContactUs: "Contact Us",
                         ReportABug: "Report a Bug",
                         ProposeChanges: "Propose Changes",
@@ -251,6 +252,7 @@ i18n
                     account: {
                         DefaultCurrency: "Валюта по умолчанию",
                         Language: "Язык",
+                        Guide: "Руководство",
                         ContactUs: "Связаться с нами",
                         ReportABug: "Сообщить об ошибке",
                         ProposeChanges: "Предложить изменения",
@@ -371,6 +373,7 @@ i18n
                     account: {
                         DefaultCurrency: "Валюта",
                         Language: "Мова",
+                        Guide: "Керівництво",
                         ContactUs: "Зв'язатися з нами",
                         ReportABug: "Повідомити про помилку",
                         ProposeChanges: "Запропонувати зміни",

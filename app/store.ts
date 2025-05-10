@@ -22,6 +22,9 @@ interface State {
     pageData: PageData,
     setPageData: (newPageData: PageData) => void,
 
+    isTourOpen: boolean,
+    setIsTourOpen: (newIsTourOpen: boolean) => void,
+
     isDeleteFriendSnackbarShown: boolean,
     setIsDeleteFriendSnackbarShown: (newIsDeleteFriendSnackbarShown: boolean) => void,
 
@@ -66,6 +69,9 @@ export const useStore = create<State>()(
                 isFromActivity: false
             },
             setPageData: (newPageData) => set(() => ({pageData: newPageData})),
+
+            isTourOpen: true,
+            setIsTourOpen: (newIsTourOpen: boolean) => set(() => ({isTourOpen: newIsTourOpen})),
 
             isDeleteFriendSnackbarShown: false,
             setIsDeleteFriendSnackbarShown: (newIsDeleteFriendSnackbarShown) => set(() => ({isDeleteFriendSnackbarShown: newIsDeleteFriendSnackbarShown})),

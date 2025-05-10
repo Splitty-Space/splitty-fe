@@ -135,6 +135,7 @@ export default function AddExpenseParticipants() {
                 }
                 RightComponent={() => (
                     <Button
+                        id="expense-participants-next-button"
                         size="l"
                         mode="plain"
                         onClick={onNext}
@@ -149,6 +150,7 @@ export default function AddExpenseParticipants() {
             />
 
             <Main
+                id="expense-participants-main"
                 ref={refContainer}
                 center={loadingFriends}
                 style={isSearchOpen ? {height: "calc(100% - 4rem)"} : undefined}

@@ -62,6 +62,7 @@ export default function Footer({
             Icon: ({isSelected}) =>
                 <>
                     <PlusIcon
+                        id="plus-icon"
                         stroke={isSelected ? "var(--tgui--button_color)" : "var(--tgui--text_color)"}
                         style={{
                             position: "absolute",

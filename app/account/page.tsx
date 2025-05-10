@@ -1,12 +1,12 @@
 "use client"
 
-import React, {useState} from "react";
+import React, {useCallback, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {Cell, Divider, IconContainer, List, Select, Title} from "@telegram-apps/telegram-ui";
 import {Icon28Chat} from "@telegram-apps/telegram-ui/dist/icons/28/chat";
 import {Icon28Devices} from "@telegram-apps/telegram-ui/dist/icons/28/devices";
 import {Icon28Stats} from "@telegram-apps/telegram-ui/dist/icons/28/stats";
-import {Icon28Warning} from "@/Icons";
+import {Icon28Warning, Icon28Lightbulb} from "@/Icons";
 import {LANGUAGES} from "@/const/languages";
 import useMe from "@/services/useMe";
 import useUpdateUserSettings from "@/services/useUpdateUserSettings";
@@ -17,6 +17,9 @@ import Logo from "@/app/components/header/logo";
 import Main from "@/app/components/main/main";
 import Avatar from "@/app/components/avatar/Avatar";
 import Loader from "@/app/components/loader/loader";
+import {useStore} from "@/app/store";
+import {useRouter} from "next/navigation";
+import {friendsList} from "@/const/urls";
 
 export default function Account() {
     const {t} = useTranslation();
@@ -28,9 +31,18 @@ export default function Account() {
     const [isCurrencyLoading, setIsCurrencyLoading] = useState(false);
     const [isLanguageLoading, setIsLanguageLoading] = useState(false);
 
-    const onContactUs = () => {
+    const router = useRouter();
+
+    const setIsTourOpen = useStore((state) => state.setIsTourOpen);
+
+    const onGuideClick = useCallback(() => {
+        router.push(friendsList);
+        setIsTourOpen(true);
+    }, [router, setIsTourOpen]);
+
+    const onContactUs = useCallback(() => {
         window.location.replace("https://t.me/Eoller");
-    };
+    }, []);
 
     const onCurrencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setIsCurrencyLoading(true);
@@ -116,6 +128,15 @@ export default function Account() {
                                 }
                             >
                                 {t("account.Language")}
+                            </Cell>
+                            <Divider className="ml-10 margin-bottom-0-125 border-2"/>
+
+                            <Cell
+                                className="p-0 margin-0 max-h-12"
+                                before={<IconContainer><Icon28Lightbulb/></IconContainer>}
+                                onClick={onGuideClick}
+                            >
+                                {t("account.Guide")}
                             </Cell>
                             <Divider className="ml-10 margin-bottom-0-125 border-2"/>
 

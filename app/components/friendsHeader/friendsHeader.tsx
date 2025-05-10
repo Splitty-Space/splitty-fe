@@ -37,6 +37,7 @@ export default function FriendsHeader({searchValue, setSearchValue, onSearchChan
             size="l"
             mode="bezeled"
             onClick={shareSplitty}
+            id="share-button"
         >
             <Icon28PersonAdd/>
         </IconButton>), [shareSplitty]);
