@@ -307,6 +307,7 @@ export default function RootLayout({children}: Readonly<{
                             />
 
                             <Tour
+                                // @ts-ignore
                                 steps={tourConfig}
                                 isOpen={isTourOpen}
                                 onRequestClose={closeTour}
