@@ -30,6 +30,7 @@ import "./globals.css";
 import dynamic from "next/dynamic"
 
 const Tour = dynamic(
+    // @ts-ignore
     () => import("reactour"),
     {ssr: false}
 );
