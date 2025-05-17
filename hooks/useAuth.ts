@@ -7,17 +7,14 @@ const useAuth = () => {
     const [token, setToken] = useState(null);
 
     useEffect(() => {
-        // Получаем «сырые» данные и подпись от Telegram
         const initDataRaw = retrieveRawInitData();
-        // Отправляем их на бэкенд для верификации
         axios.post(
-            `${SERVER_URL}/login`,
-            {},
-            {headers: {Authorization: `Telegram ${initDataRaw}`}}
+            `${SERVER_URL}/auth`,
+            {auth: initDataRaw},
         )
             .then(res => {
                 console.log("res = ", res);
-                setToken(res.data.access_token);
+                // setToken(res.data.access_token);
             })
             .catch(err => console.error("Auth error:", err));
     }, []);
