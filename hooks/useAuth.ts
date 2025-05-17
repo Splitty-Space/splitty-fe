@@ -12,9 +12,13 @@ const useAuth = () => {
 
         console.log("parsedData", parsedData);
 
+        const _parsedData = {...parsedData, ...parsedData.user};
+
+        console.log("_parsedData", _parsedData);
+
         axios.post(
             `${SERVER_URL}/auth`,
-            {auth: parsedData},
+            {auth: _parsedData},
         )
             .then(res => {
                 console.log("res = ", res);
