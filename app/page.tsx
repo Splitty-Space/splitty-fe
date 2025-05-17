@@ -22,6 +22,7 @@ import {AutoSizer, InfiniteLoader, List} from "react-virtualized";
 import useContentHeight from "@/hooks/useContentHeight";
 import Loader from "@/app/components/loader/loader";
 import PullToRefresh from "@/app/components/pullToRefresh/pullToRefresh";
+import useAuth from "@/hooks/useAuth";
 import "dayjs/locale/ru";
 import "dayjs/locale/uk";
 
@@ -43,6 +44,8 @@ export default function FriendsList() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     useEffect(() => init(), []);
+
+    const token = useAuth();
 
     const [rowCount, setRowCount] = useState(defaultPageSize);
 
@@ -163,6 +166,8 @@ export default function FriendsList() {
                             </PullToRefresh>
                         )
                 }
+
+                <span>Token {token}</span>
             </Main>
         </>
     );
