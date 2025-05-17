@@ -45,7 +45,7 @@ export default function FriendsList() {
 
     useEffect(() => init(), []);
 
-    const token = useAuth();
+    useAuth();
 
     const [rowCount, setRowCount] = useState(defaultPageSize);
 
@@ -166,8 +166,6 @@ export default function FriendsList() {
                             </PullToRefresh>
                         )
                 }
-
-                <span>Token {token}</span>
             </Main>
         </>
     );
