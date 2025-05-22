@@ -158,7 +158,7 @@ export default function RootLayout({children}: Readonly<{
 
     useEffect(() => {
         postEvent("web_app_toggle_orientation_lock", {locked: true});
-    }, [postEvent]);
+    }, []);
 
     const router = useRouter();
     const pathname = usePathname();
