@@ -29,6 +29,12 @@ import "dayjs/locale/uk";
 
 // import "@/utils/mockTelegramEnv"; // TODO DO NOT UNCOMMENT
 
+
+telegramAnalytics.init({
+    token: "eyJhcHBfbmFtZSI6Im5mdTQzNXlodTlpMjAzeTQ4OWYydXlyIiwiYXBwX3VybCI6Imh0dHBzOi8vdC5tZS9zcGxpdHR5X2ZlX2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL2FwcC1zdGFnZS5zcGxpdHR5LmRpZ2l0YWwvIn0=!qpGcOmLOSPp34iL1orYJutbxSlCIvmFy12aulhG6lFM=",
+    appName: "@splitty_fe_bot",
+});
+
 export default function FriendsList() {
     const {t} = useTranslation();
     const router = useRouter();
