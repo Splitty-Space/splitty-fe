@@ -12,6 +12,13 @@ body {
     --tg-theme-secondary-bg-color: #808080 !important;
 }
 
+html {
+    height: 100%;
+    width:100%;
+    position: fixed;
+    overflow: hidden;
+}
+
 .body_dark {
     background: black;
 }
