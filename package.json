@@ -13,6 +13,7 @@
     "@emotion/styled": "^11.13.0",
     "@mui/material": "^6.1.0",
     "@mui/x-date-pickers": "^7.17.0",
+    "@telegram-apps/analytics": "^1.4.1",
     "@telegram-apps/bridge": "^2.3.2",
     "@telegram-apps/sdk": "^3.9.2",
     "@telegram-apps/sdk-react": "^3.2.4",

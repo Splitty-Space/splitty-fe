@@ -22,6 +22,7 @@ import {AutoSizer, InfiniteLoader, List} from "react-virtualized";
 import useContentHeight from "@/hooks/useContentHeight";
 import Loader from "@/app/components/loader/loader";
 import PullToRefresh from "@/app/components/pullToRefresh/pullToRefresh";
+import telegramAnalytics from "@telegram-apps/analytics";
 import useAuth from "@/hooks/useAuth";
 import "dayjs/locale/ru";
 import "dayjs/locale/uk";
