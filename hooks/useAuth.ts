@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {retrieveRawInitData, parseInitDataQuery} from "@telegram-apps/sdk";
+import {retrieveRawInitData} from "@telegram-apps/sdk";
 import axios from "axios";
 import {SERVER_URL} from "@/API/APIConstants";
 
@@ -8,21 +8,16 @@ const useAuth = () => {
 
     useEffect(() => {
         const initDataRaw = retrieveRawInitData();
-        const parsedData = parseInitDataQuery(initDataRaw as string);
-
-        console.log("parsedData", parsedData);
-
-        const _parsedData = {...parsedData, ...parsedData.user};
-
-        console.log("_parsedData", _parsedData);
 
         axios.post(
             `${SERVER_URL}/auth`,
-            {auth: _parsedData},
+            {init_data_raw: initDataRaw},
         )
             .then(res => {
                 console.log("res = ", res);
-                // setToken(res.data.access_token);
+                if (res.data.access_token) {
+                    setToken(res.data.access_token);
+                }
             })
             .catch(err => console.error("Auth error:", err));
     }, []);

@@ -70,7 +70,7 @@ export const useStore = create<State>()(
             },
             setPageData: (newPageData) => set(() => ({pageData: newPageData})),
 
-            isTourOpen: true,
+            isTourOpen: false,
             setIsTourOpen: (newIsTourOpen: boolean) => set(() => ({isTourOpen: newIsTourOpen})),
 
             isDeleteFriendSnackbarShown: false,
