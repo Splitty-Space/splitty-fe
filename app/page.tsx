@@ -31,7 +31,7 @@ import "dayjs/locale/uk";
 
 
 TelegramAnalytics.init({
-    token: "eyJhcHBfbmFtZSI6Im5mdTQzNXlodTlpMjAzeTQ4OWYydXlyIiwiYXBwX3VybCI6Imh0dHBzOi8vdC5tZS9zcGxpdHR5X2ZlX2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL2FwcC1zdGFnZS5zcGxpdHR5LmRpZ2l0YWwvIn0=!qpGcOmLOSPp34iL1orYJutbxSlCIvmFy12aulhG6lFM=",
+    token: "eyJhcHBfbmFtZSI6Im5mdTQzNXlodTlpMjAzeTQ4OWYydXlyIiwiYXBwX3VybCI6Imh0dHBzOi8vdC5tZS9zcGxpdHR5X2ZlX2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL2FwcC1zdGFnZS5zcGxpdHR5LmRpZ2l0YWwvIn0=!j9AMW8mBhKAp2X0BQdL9hx6ohCV/9+UAYSrzM+ABTF0=",
     appName: "nfu435yhu9i203y489f2uyr",
 });
 
