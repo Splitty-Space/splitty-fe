@@ -22,7 +22,7 @@ import {AutoSizer, InfiniteLoader, List} from "react-virtualized";
 import useContentHeight from "@/hooks/useContentHeight";
 import Loader from "@/app/components/loader/loader";
 import PullToRefresh from "@/app/components/pullToRefresh/pullToRefresh";
-import telegramAnalytics from "@telegram-apps/analytics";
+import TelegramAnalytics from "@telegram-apps/analytics";
 import useAuth from "@/hooks/useAuth";
 import "dayjs/locale/ru";
 import "dayjs/locale/uk";
@@ -30,9 +30,9 @@ import "dayjs/locale/uk";
 // import "@/utils/mockTelegramEnv"; // TODO DO NOT UNCOMMENT
 
 
-telegramAnalytics.init({
+TelegramAnalytics.init({
     token: "eyJhcHBfbmFtZSI6Im5mdTQzNXlodTlpMjAzeTQ4OWYydXlyIiwiYXBwX3VybCI6Imh0dHBzOi8vdC5tZS9zcGxpdHR5X2ZlX2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL2FwcC1zdGFnZS5zcGxpdHR5LmRpZ2l0YWwvIn0=!qpGcOmLOSPp34iL1orYJutbxSlCIvmFy12aulhG6lFM=",
-    appName: "@splitty_fe_bot",
+    appName: "nfu435yhu9i203y489f2uyr",
 });
 
 export default function FriendsList() {
