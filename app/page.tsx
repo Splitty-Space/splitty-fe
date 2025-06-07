@@ -49,14 +49,10 @@ export default function FriendsList() {
     useEffect(() => {
         init();
 
-        console.log("init");
-
         TelegramAnalytics.init({
             token: "eyJhcHBfbmFtZSI6Im5mdTQzNXlodTlpMjAzeTQ4OWYydXlyIiwiYXBwX3VybCI6Imh0dHBzOi8vdC5tZS9zcGxpdHR5X2ZlX2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL2FwcC1zdGFnZS5zcGxpdHR5LmRpZ2l0YWwvIn0=!qpGcOmLOSPp34iL1orYJutbxSlCIvmFy12aulhG6lFM=",
             appName: "nfu435yhu9i203y489f2uyr",
         });
-
-        console.log("init end");
     }, []);
 
     useAuth();
