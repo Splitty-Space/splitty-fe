@@ -46,6 +46,8 @@ export default function ActivityPage() {
     const [refContainer, height] = useContentHeight();
 
     const loadPage = (page: number) => {
+        console.log("loadPage = ", loadPage);
+        console.log("page = ", page);
         setIsLoaded(false);
 
         const controller = new AbortController();
@@ -68,6 +70,7 @@ export default function ActivityPage() {
     };
 
     useEffect(() => {
+        console.log("loadPage useEffect");
         loadPage(1);
     }, []);
 
@@ -76,6 +79,8 @@ export default function ActivityPage() {
     };
 
     const loadMoreRows = ({startIndex}: { startIndex: number }) => {
+        console.log("loadMoreRows = ", startIndex);
+
         if (!Number.isInteger(startIndex / pageSize)) {
             return;
         }
@@ -86,6 +91,7 @@ export default function ActivityPage() {
     const router = useRouter();
 
     const onCellClick = useCallback((expense: Expense) => () => {
+        console.log("onCellClick = ", onCellClick);
         if (!isLoadingExpense && !expense.isDeleted) {
             setIsLoadingExpense(true);
             getExpense({expense_id: expense.id}).then(({data}) => {
@@ -133,9 +139,14 @@ export default function ActivityPage() {
     };
 
     const onRefresh = () => {
+        console.log("onRefresh = ", onRefresh);
         loadPage(1);
         return Promise.resolve();
     };
+
+    console.log("isLoaded = ", isLoaded);
+    console.log("isLoadingExpense = ", isLoadingExpense);
+    console.log("activities = ", activities);
 
     return (
         <>
