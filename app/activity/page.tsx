@@ -41,6 +41,7 @@ export default function ActivityPage() {
     const [rowCount, setRowCount] = useState(pageSize);
     const [activities, setActivities] = useState<Activity[]>([]);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [isReloadInProgress, setIsReloadInProgress] = useState(false);
     const [isLoadingExpense, setIsLoadingExpense] = useState(false);
 
     const [refContainer, height] = useContentHeight();
@@ -48,7 +49,6 @@ export default function ActivityPage() {
     const loadPage = (page: number) => {
         console.log("loadPage = ", loadPage);
         console.log("page = ", page);
-        setIsLoaded(false);
 
         const controller = new AbortController();
 
@@ -60,6 +60,10 @@ export default function ActivityPage() {
             setIsLoaded(true);
             setRowCount(data.meta.total_records);
             setActivities(prevState => page === 1 ? data.data : [...prevState, ...data.data]);
+
+            if (page == 1) {
+                setIsReloadInProgress(false);
+            }
         }).catch((error) => {
             console.error({error})
         });
@@ -140,13 +144,16 @@ export default function ActivityPage() {
 
     const onRefresh = () => {
         console.log("onRefresh = ", onRefresh);
+        setIsReloadInProgress(true);
         loadPage(1);
         return Promise.resolve();
     };
 
     console.log("isLoaded = ", isLoaded);
     console.log("isLoadingExpense = ", isLoadingExpense);
+    console.log("isReloadInProgress = ", isReloadInProgress);
     console.log("activities = ", activities);
+    console.log("------------------------------------------------------------------------------------")
 
     return (
         <>
@@ -159,7 +166,7 @@ export default function ActivityPage() {
                 ref={refContainer}
                 center={!isLoaded || isLoadingExpense || activities?.length === 0}
             >
-                {!isLoaded || isLoadingExpense ?
+                {!isLoaded || isReloadInProgress || isLoadingExpense ?
                     <Loader/> :
                     activities?.length > 0 ?
                         <PullToRefresh onRefresh={onRefresh}>
