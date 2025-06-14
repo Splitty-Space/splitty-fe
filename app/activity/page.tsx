@@ -47,9 +47,6 @@ export default function ActivityPage() {
     const [refContainer, height] = useContentHeight();
 
     const loadPage = (page: number) => {
-        console.log("loadPage = ", loadPage);
-        console.log("page = ", page);
-
         const controller = new AbortController();
 
         getActivities({
@@ -74,7 +71,6 @@ export default function ActivityPage() {
     };
 
     useEffect(() => {
-        console.log("loadPage useEffect");
         loadPage(1);
     }, []);
 
@@ -83,8 +79,6 @@ export default function ActivityPage() {
     };
 
     const loadMoreRows = ({startIndex}: { startIndex: number }) => {
-        console.log("loadMoreRows = ", startIndex);
-
         if (!Number.isInteger(startIndex / pageSize)) {
             return;
         }
@@ -95,7 +89,6 @@ export default function ActivityPage() {
     const router = useRouter();
 
     const onCellClick = useCallback((expense: Expense) => () => {
-        console.log("onCellClick = ", onCellClick);
         if (!isLoadingExpense && !expense.isDeleted) {
             setIsLoadingExpense(true);
             getExpense({expense_id: expense.id}).then(({data}) => {
@@ -143,17 +136,10 @@ export default function ActivityPage() {
     };
 
     const onRefresh = () => {
-        console.log("onRefresh = ", onRefresh);
         setIsReloadInProgress(true);
         loadPage(1);
         return Promise.resolve();
     };
-
-    console.log("isLoaded = ", isLoaded);
-    console.log("isLoadingExpense = ", isLoadingExpense);
-    console.log("isReloadInProgress = ", isReloadInProgress);
-    console.log("activities = ", activities);
-    console.log("------------------------------------------------------------------------------------")
 
     return (
         <>
@@ -164,7 +150,7 @@ export default function ActivityPage() {
 
             <Main
                 ref={refContainer}
-                center={!isLoaded || isLoadingExpense || activities?.length === 0}
+                center={!isLoaded || isReloadInProgress || isLoadingExpense || activities?.length === 0}
             >
                 {!isLoaded || isReloadInProgress || isLoadingExpense ?
                     <Loader/> :
