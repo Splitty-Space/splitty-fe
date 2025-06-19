@@ -24,7 +24,7 @@ const Main = forwardRef<HTMLDivElement, MainProps>(({
             id={id}
             ref={ref}
             style={style ? style : {height: "100%"}}
-            className={classNames("pt-20 pb-20 overflow-auto", {
+            className={classNames("pt-20 pb-20 overflow-auto min-w-full", {
                 "flex items-center justify-center": center,
                 "pt-24": viewport.isFullscreen(),
             }, className)}
