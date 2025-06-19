@@ -1,6 +1,7 @@
 import type ExpenseUser from "./ExpenseUser";
 import type Group from "./Group";
 import type Transaction from "./Transaction";
+import {CURRENCIES} from "@/const/currencies";
 
 export default interface Expense {
     amount: string;
@@ -10,7 +11,7 @@ export default interface Expense {
     owe: number;
     created_at: string;
     owes: number;
-    currency: string;
+    currency: typeof CURRENCIES[number];
     payment: boolean;
     isDeleted: boolean;
     settled: boolean;

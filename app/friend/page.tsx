@@ -32,6 +32,7 @@ import useContentHeight from "@/hooks/useContentHeight";
 import Loader from "@/app/components/loader/loader";
 import PullToRefresh from "@/app/components/pullToRefresh/pullToRefresh";
 import useRefreshToken from "@/utils/useRefreshToken";
+import {currencyToCurrencySymbol} from "@/utils/currencyToCurrencySymbol";
 
 
 export default function FriendPage() {
@@ -204,7 +205,7 @@ export default function FriendPage() {
                                     weight="3"
                                     className={_owe !== 0 ? "green" : "red"}
                                 >
-                                    {`${_owe !== 0 ? "+" : "-"}${_amount} ${currency}`}
+                                    {`${_owe !== 0 ? "+" : "-"}${_amount} ${currencyToCurrencySymbol(currency)}`}
                                 </Text> :
                                 <>
                                     <div className="flex">
@@ -215,7 +216,7 @@ export default function FriendPage() {
                                             key="N people paid"
                                             weight="3"
                                         >
-                                            {` ${t("friendPage.Paid")} ${_amount} ${currency}`}
+                                            {` ${t("friendPage.Paid")} ${_amount} ${currencyToCurrencySymbol(currency)}`}
                                         </Caption>
                                     </div>
 
@@ -225,7 +226,7 @@ export default function FriendPage() {
                                             weight="3"
                                             className="red"
                                         >
-                                            {`${t("friendPage.YouBorrowed")} ${_owe} ${currency}`}
+                                            {`${t("friendPage.YouBorrowed")} ${_owe} ${currencyToCurrencySymbol(currency)}`}
                                         </Caption>
                                     }
                                     {_owes !== 0 &&
@@ -234,7 +235,7 @@ export default function FriendPage() {
                                             weight="3"
                                             className="blue"
                                         >
-                                            {`${t("friendPage.YouLent")} ${_owes} ${currency}`}
+                                            {`${t("friendPage.YouLent")} ${_owes} ${currencyToCurrencySymbol(currency)}`}
                                         </Caption>
                                     }
                                 </>
