@@ -12,7 +12,6 @@ import {focusOnExpenseNameInput} from "@/app/expense/add/focusOnExpenseNameInput
 import Avatar from "@/app/components/avatar/Avatar";
 import {useStore} from "@/app/store";
 import "./footer.css";
-import { useKeyboard } from "react-use-keyboard";
 
 interface Tab {
     id: number;
@@ -129,10 +128,8 @@ export default function Footer({
         }
     }, [pathname, setSearchValue, setSelectedExpense, friends, setSelectedFriends, selectedUserId, setSelectedUserId, router]);
 
-    const { isKeyboardOpen, keyboardHeight } = useKeyboard();
-
     return (
-        <footer className={`footer absolute h-20 w-full ${isKeyboardOpen ? "translate-y-[-" + keyboardHeight + "px]" : ""}`}>
+        <footer className="footer absolute h-20 w-full">
             <Tabbar className="footer_tabbar pb-6">
                 {tabs.map(({
                                id,
