@@ -2,8 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-    min-height: 100vh;
+html,
+body,
+* {
+    touch-action: pan-y pan-x;
 }
 
 body {
