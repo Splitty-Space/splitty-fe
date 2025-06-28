@@ -13,7 +13,6 @@ import Avatar from "@/app/components/avatar/Avatar";
 import {useStore} from "@/app/store";
 import "./footer.css";
 import classNames from "classnames";
-import {global as globalStyled} from "styled-jsx/css";
 
 interface Tab {
     id: number;
@@ -130,13 +129,13 @@ export default function Footer({
         }
     }, [pathname, setSearchValue, setSelectedExpense, friends, setSelectedFriends, selectedUserId, setSelectedUserId, router]);
 
-    const [windowHeight, setWindowHeight] = useState(global.window && window.innerHeight);
+    const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
 
     useEffect(() => {
         const handleFocus = () => {
             setTimeout(() => {
-                const currentHeight = global.window && window.innerHeight;
+                const currentHeight = window.innerHeight;
                 const heightDifference = windowHeight - currentHeight;
                 setIsKeyboardOpen(heightDifference > 150);
             }, 300); // Small delay to let keyboard animation complete
@@ -163,7 +162,7 @@ export default function Footer({
     }, [windowHeight]);
 
     useEffect(() => {
-        setWindowHeight(global.window && window.innerHeight);
+        setWindowHeight(window.innerHeight);
     }, []);
 
     return (
