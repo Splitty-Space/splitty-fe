@@ -1,4 +1,4 @@
-import {useCallback, FC} from "react";
+import {useCallback, FC, useState, useEffect} from "react";
 import {Tabbar} from "@telegram-apps/telegram-ui";
 import {Icon24Group, Icon24Person, Icon24Stats, PlusIcon} from "@/Icons";
 import {useTranslation} from "react-i18next";
@@ -12,6 +12,7 @@ import {focusOnExpenseNameInput} from "@/app/expense/add/focusOnExpenseNameInput
 import Avatar from "@/app/components/avatar/Avatar";
 import {useStore} from "@/app/store";
 import "./footer.css";
+import classNames from "classnames";
 
 interface Tab {
     id: number;
@@ -128,8 +129,44 @@ export default function Footer({
         }
     }, [pathname, setSearchValue, setSelectedExpense, friends, setSelectedFriends, selectedUserId, setSelectedUserId, router]);
 
+    const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+    const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+
+    useEffect(() => {
+        const handleFocus = () => {
+            setTimeout(() => {
+                const currentHeight = window.innerHeight;
+                const heightDifference = windowHeight - currentHeight;
+                setIsKeyboardOpen(heightDifference > 150);
+            }, 300); // Small delay to let keyboard animation complete
+        };
+
+        const handleBlur = () => {
+            setTimeout(() => {
+                setIsKeyboardOpen(false);
+            }, 300);
+        };
+
+        const inputs = document.querySelectorAll("input, textarea");
+        inputs.forEach(input => {
+            input.addEventListener("focus", handleFocus);
+            input.addEventListener("blur", handleBlur);
+        });
+
+        return () => {
+            inputs.forEach(input => {
+                input.removeEventListener("focus", handleFocus);
+                input.removeEventListener("blur", handleBlur);
+            });
+        };
+    }, [windowHeight]);
+
+    useEffect(() => {
+        setWindowHeight(window.innerHeight);
+    }, []);
+
     return (
-        <footer className="footer absolute h-20 w-full">
+        <footer className={classNames("footer absolute h-20 w-full", { "hidden": isKeyboardOpen })}>
             <Tabbar className="footer_tabbar pb-6">
                 {tabs.map(({
                                id,
