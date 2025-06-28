@@ -8,7 +8,7 @@ import {Icon28PersonAdd} from "@/Icons";
 import {IconButton} from "@telegram-apps/telegram-ui";
 import {shareURL} from "@telegram-apps/sdk";
 import {useStore} from "@/app/store";
-import {global} from "styled-jsx/css";
+import {global as styledGlobal} from "styled-jsx/css";
 
 export default function FriendsHeader({searchValue, setSearchValue, onSearchChange, isSearchDisabled}: {
     searchValue: string,
@@ -33,12 +33,12 @@ export default function FriendsHeader({searchValue, setSearchValue, onSearchChan
         }
     }, [me, setIsFriendRequestSentSnackbarShown, t]);
 
-    window.addEventListener("message", (...data) => {
+    global.window && window.addEventListener("message", (...data) => {
         console.log("message");
         console.log(data);
     });
 
-    window.addEventListener("shareMessageSent", (...data) => {
+    global.window && window.addEventListener("shareMessageSent", (...data) => {
         console.log("shareMessageSent");
         console.log(data);
     });
