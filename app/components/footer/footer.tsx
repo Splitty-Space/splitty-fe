@@ -130,7 +130,7 @@ export default function Footer({
         }
     }, [pathname, setSearchValue, setSelectedExpense, friends, setSelectedFriends, selectedUserId, setSelectedUserId, router]);
 
-    const isKeyboardOpen = useDetectKeyboardOpen();
+    const isKeyboardOpen = useDetectKeyboardOpen(100);
 
     return (
         <footer className={classNames("footer absolute h-20 w-full", { "hidden": isKeyboardOpen })}>
