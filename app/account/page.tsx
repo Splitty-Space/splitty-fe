@@ -106,7 +106,7 @@ export default function Account() {
                         </div>
 
                         <List
-                            className="w-11/12 rounded-xl py-0 pr-0 absolute top-1/2 -translate-y-1/2 mt-4"
+                            className="w-full rounded-xl py-0 pr-0 m-auto"
                             style={{
                                 background: "var(--tgui--bg_color)",
                             }}
