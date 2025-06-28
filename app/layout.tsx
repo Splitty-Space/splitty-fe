@@ -208,6 +208,16 @@ export default function RootLayout({children}: Readonly<{
         });
     }, [router]);
 
+    document.addEventListener("touchstart", function(e) {
+        if (e.touches.length > 1) {
+            e.preventDefault(); // Prevent zoom
+        }
+    }, { passive: false });
+
+    document.addEventListener("gesturestart", function(e) {
+        e.preventDefault(); // Prevent zoom gesture
+    }, { passive: false });
+
     const {t} = useTranslation();
 
     const searchValue = useStore((state) => state.searchValue);
