@@ -1,9 +1,5 @@
 .footer {
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    position: fixed;
+    bottom: -1px;
 }
 
 .footer_tabbar {
@@ -11,11 +7,4 @@
     background: #00000080;
 
     margin-bottom: -1px;
-}
-
-@supports (padding: max(0px)) {
-    .footer {
-        padding-bottom: env(safe-area-inset-bottom, 0);
-        bottom: 0;
-    }
 }
