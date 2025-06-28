@@ -6,7 +6,7 @@ import {Cell, Divider, IconContainer, List, Select, Title} from "@telegram-apps/
 import {Icon28Chat} from "@telegram-apps/telegram-ui/dist/icons/28/chat";
 import {Icon28Devices} from "@telegram-apps/telegram-ui/dist/icons/28/devices";
 import {Icon28Stats} from "@telegram-apps/telegram-ui/dist/icons/28/stats";
-import {Icon28Warning, Icon28Lightbulb} from "@/Icons";
+import {Icon28Warning, Icon28Lightbulb, Icon28Smile} from "@/Icons";
 import {LANGUAGES} from "@/const/languages";
 import useMe from "@/services/useMe";
 import useUpdateUserSettings from "@/services/useUpdateUserSettings";
@@ -20,6 +20,8 @@ import Loader from "@/app/components/loader/loader";
 import {useStore} from "@/app/store";
 import {useRouter} from "next/navigation";
 import {friendsList} from "@/const/urls";
+import {invoice} from "@telegram-apps/sdk";
+
 
 export default function Account() {
     const {t} = useTranslation();
@@ -42,6 +44,19 @@ export default function Account() {
 
     const onContactUs = useCallback(() => {
         window.location.replace("https://t.me/Eoller");
+    }, []);
+
+    const onSupportUs = useCallback(async () => {
+        console.log("onSupportUs");
+        console.log("invoice.isSupported() = ", invoice.isSupported());
+        console.log("invoice.open.isAvailable() = ", invoice.open.isAvailable());
+        if (invoice.isSupported() && invoice.open.isAvailable()) {
+            const promise = invoice.open("Support us 😊");
+            const status = await promise;
+            console.log("status = ", status);
+        } else {
+            console.log("Telegram WebApp API is not available.");
+        }
     }, []);
 
     const onCurrencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -146,6 +161,15 @@ export default function Account() {
                                 onClick={onContactUs}
                             >
                                 {t("account.ContactUs")}
+                            </Cell>
+                            <Divider className="ml-10 margin-bottom-0-125 border-2"/>
+
+                            <Cell
+                                className="p-0 margin-0 max-h-12"
+                                before={<IconContainer><Icon28Smile/></IconContainer>}
+                                onClick={onSupportUs}
+                            >
+                                {t("account.SupportUs")}
                             </Cell>
                             <Divider className="ml-10 margin-bottom-0-125 border-2"/>
 

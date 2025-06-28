@@ -133,6 +133,7 @@ i18n
                         Language: "Language",
                         Guide: "Guide",
                         ContactUs: "Contact Us",
+                        SupportUs: "Support Us",
                         ReportABug: "Report a Bug",
                         ProposeChanges: "Propose Changes",
                     }
@@ -254,6 +255,7 @@ i18n
                         Language: "Язык",
                         Guide: "Руководство",
                         ContactUs: "Связаться с нами",
+                        SupportUs: "Поддержите нас",
                         ReportABug: "Сообщить об ошибке",
                         ProposeChanges: "Предложить изменения",
                     }
@@ -375,6 +377,7 @@ i18n
                         Language: "Мова",
                         Guide: "Керівництво",
                         ContactUs: "Зв'язатися з нами",
+                        SupportUs: "Підтримайте нас",
                         ReportABug: "Повідомити про помилку",
                         ProposeChanges: "Запропонувати зміни",
                     }

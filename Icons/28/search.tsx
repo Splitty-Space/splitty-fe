@@ -7,5 +7,4 @@ export const Icon28Search = ({...restProps}) => (
             fill="currentColor"
         />
     </svg>
-
 );
