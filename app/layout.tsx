@@ -282,7 +282,7 @@ export default function RootLayout({children}: Readonly<{
             />
         </Head>
 
-        <body className={classNames("overflow-hidden h-screen", {
+        <body className={classNames("overscroll-none overflow-hidden h-screen", {
             "body_dark": appearance === DARK
         })}>
         {platform && appearance && (
