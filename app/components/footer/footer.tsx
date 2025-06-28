@@ -129,7 +129,7 @@ export default function Footer({
     }, [pathname, setSearchValue, setSelectedExpense, friends, setSelectedFriends, selectedUserId, setSelectedUserId, router]);
 
     return (
-        <footer className="footer sticky top-[100vh] h-20 w-full">
+        <footer className="footer absolute h-20 w-full">
             <Tabbar className="footer_tabbar pb-6">
                 {tabs.map(({
                                id,
