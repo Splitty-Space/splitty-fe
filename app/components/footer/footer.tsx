@@ -12,6 +12,8 @@ import {focusOnExpenseNameInput} from "@/app/expense/add/focusOnExpenseNameInput
 import Avatar from "@/app/components/avatar/Avatar";
 import {useStore} from "@/app/store";
 import "./footer.css";
+import useDetectKeyboardOpen from "use-detect-keyboard-open";
+import classNames from "classnames";
 
 interface Tab {
     id: number;
@@ -128,8 +130,10 @@ export default function Footer({
         }
     }, [pathname, setSearchValue, setSelectedExpense, friends, setSelectedFriends, selectedUserId, setSelectedUserId, router]);
 
+    const isKeyboardOpen = useDetectKeyboardOpen();
+
     return (
-        <footer className="footer absolute h-20 w-full">
+        <footer className={classNames("footer absolute h-20 w-full", { "hidden": isKeyboardOpen })}>
             <Tabbar className="footer_tabbar pb-6">
                 {tabs.map(({
                                id,
