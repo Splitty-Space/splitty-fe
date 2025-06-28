@@ -1,5 +1,10 @@
 .footer {
     bottom: -1px;
+    position: fixed;
+    left: 0;
+    right: 0;
+    transform: translateZ(0); /* Force hardware acceleration */
+    will-change: transform;
 }
 
 .footer_tabbar {
