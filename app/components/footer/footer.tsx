@@ -130,13 +130,13 @@ export default function Footer({
         }
     }, [pathname, setSearchValue, setSelectedExpense, friends, setSelectedFriends, selectedUserId, setSelectedUserId, router]);
 
-    const [windowHeight, setWindowHeight] = useState(global.window ? window.innerHeight : 0);
+    const [windowHeight, setWindowHeight] = useState(global.window && window.innerHeight);
     const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
 
     useEffect(() => {
         const handleFocus = () => {
             setTimeout(() => {
-                const currentHeight = window.innerHeight;
+                const currentHeight = global.window && window.innerHeight;
                 const heightDifference = windowHeight - currentHeight;
                 setIsKeyboardOpen(heightDifference > 150);
             }, 300); // Small delay to let keyboard animation complete
@@ -163,7 +163,7 @@ export default function Footer({
     }, [windowHeight]);
 
     useEffect(() => {
-        setWindowHeight(window.innerHeight);
+        setWindowHeight(global.window && window.innerHeight);
     }, []);
 
     return (
