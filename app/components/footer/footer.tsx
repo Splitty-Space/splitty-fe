@@ -133,8 +133,11 @@ export default function Footer({
     const isKeyboardOpen = useDetectKeyboardOpen();
 
     return (
-        <footer className={classNames("footer absolute h-20 w-full", { "hidden": isKeyboardOpen })}>
-            <Tabbar className="footer_tabbar pb-6">
+        <footer className={classNames(
+            "footer absolute h-20 w-full transition-transform duration-300 ease-in-out",
+            {"translate-y-full": isKeyboardOpen}
+        )}>
+        <Tabbar className="footer_tabbar pb-6">
                 {tabs.map(({
                                id,
                                path,
