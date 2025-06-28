@@ -33,16 +33,6 @@ export default function FriendsHeader({searchValue, setSearchValue, onSearchChan
         }
     }, [me, setIsFriendRequestSentSnackbarShown, t]);
 
-    global.window && window.addEventListener("message", (...data) => {
-        console.log("message");
-        console.log(data);
-    });
-
-    global.window && window.addEventListener("shareMessageSent", (...data) => {
-        console.log("shareMessageSent");
-        console.log(data);
-    });
-
     const RightComponent = useCallback(() => (
         <IconButton
             size="l"
