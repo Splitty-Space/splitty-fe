@@ -47,6 +47,10 @@ export default function RootLayout({children}: Readonly<{
     const [platform, setPlatform] = useState<PLATFORM_TYPE>(DEFAULT_PLATFORM);
     const [appearance, setAppearance] = useState<THEME_TYPE>(DEFAULT_THEME);
 
+    viewport.setViewportSettings({
+        zoom: false
+    });
+
     const {data: me} = useMe();
 
     useEffect(() => {
@@ -295,9 +299,7 @@ export default function RootLayout({children}: Readonly<{
                             appearance={appearance}
                             className="app-root"
                         >
-                            <div className="overflow-y-auto overscroll-none">
-                                {children}
-                            </div>
+                            {children}
 
                             <Footer
                                 friends={friends}
