@@ -13,7 +13,7 @@ import useMe from "@/services/useMe";
 import {DARK, DEFAULT_THEME, THEME_TYPE} from "@/const/theme";
 import {ANDROID, DEFAULT_PLATFORM, IOS, PLATFORM_TYPE} from "@/const/platform";
 import {AppRootContext} from "./AppRootContext";
-import {backButton, closingBehavior, miniApp, swipeBehavior, postEvent} from "@telegram-apps/sdk";
+import {backButton, closingBehavior, miniApp, swipeBehavior, viewport, postEvent} from "@telegram-apps/sdk";
 import {retrieveLaunchParams} from "@telegram-apps/bridge";
 import {LocalizationProvider} from "@mui/x-date-pickers";
 import {createTheme, ThemeProvider} from "@mui/material/styles";
