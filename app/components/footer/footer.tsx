@@ -134,13 +134,13 @@ export default function Footer({
 
     return (
         <footer className={classNames(
-            "footer absolute h-20 w-full transition-all duration-300 ease-in-out",
+            "footer absolute h-20 w-full transition-all duration-300 ease-in",
             {
                 "opacity-0 scale-95 transform": isKeyboardOpen,
                 "opacity-100 scale-100 transform": !isKeyboardOpen
             }
         )}>
-            <Tabbar className="footer_tabbar pb-6 transition-all duration-300 ease-in-out">
+            <Tabbar className="footer_tabbar pb-6">
             {tabs.map(({
                                id,
                                path,
