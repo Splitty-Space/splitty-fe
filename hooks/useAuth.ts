@@ -1,13 +1,14 @@
 import {useEffect, useState} from "react";
-import { useLaunchParams } from "@telegram-apps/sdk-react";
+import {retrieveRawInitData} from "@telegram-apps/sdk";
 import axios from "axios";
 import {SERVER_URL} from "@/API/APIConstants";
 
 const useAuth = () => {
     const [token, setToken] = useState(null);
-    const { initDataRaw } = (global.window && useLaunchParams()) || {};
 
     useEffect(() => {
+        const initDataRaw = retrieveRawInitData();
+
         axios.post(
             `${SERVER_URL}/auth`,
             {init_data_raw: initDataRaw},
