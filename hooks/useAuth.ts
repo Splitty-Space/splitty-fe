@@ -5,7 +5,7 @@ import {SERVER_URL} from "@/API/APIConstants";
 
 const useAuth = () => {
     const [token, setToken] = useState(null);
-    const { initDataRaw } = useLaunchParams() || {};
+    const { initDataRaw } = (global.window && useLaunchParams()) || {};
 
     useEffect(() => {
         axios.post(
