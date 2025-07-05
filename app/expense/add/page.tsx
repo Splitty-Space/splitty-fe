@@ -32,6 +32,7 @@ import {expenseDetails} from "@/const/urls";
 import Avatar from "@/app/components/avatar/Avatar";
 import {vibration} from "@/utils/vibration";
 import {Icon28Warning} from "@/Icons";
+import {TEST_EXPENSE_ID} from "@/const/testExpenseId";
 import "./addExpense.css";
 
 interface Payment {
@@ -152,7 +153,7 @@ export default function AddExpense() {
         const amount = Number(moneySpent);
         const description = expenseName;
 
-        if (!selectedExpense) {
+        if (!selectedExpense || selectedExpense?.id === TEST_EXPENSE_ID) {
             addExpense({
                 payers,
                 debtors,
@@ -357,7 +358,7 @@ export default function AddExpense() {
                 )}
             />
 
-            <Main className="px-4">
+            <Main id="expense-add-main" className="px-4">
                 <div className="mb-5 flex flex-col items-center justify-center">
                     <div className="flex max-w-full overflow-auto pl-4">
                         {participants?.map(({id}) =>
@@ -373,7 +374,7 @@ export default function AddExpense() {
                     </div>
                 </div>
 
-                <div>
+                <div id="expense-add-name-and-money">
                     <Input
                         id={ExpenseNameInputId}
                         value={expenseName}
@@ -387,6 +388,7 @@ export default function AddExpense() {
                     <div className="flex items-center justify-between">
                         <div className="grow mr-1">
                             <Input
+                                id="moneySpentInput"
                                 type="text"
                                 inputMode="decimal"
                                 value={rawMoneySpent}
@@ -404,6 +406,7 @@ export default function AddExpense() {
                 </div>
 
                 <List
+                    id="expense-add-date-and-switches"
                     className="mt-4 py-0 w-full rounded-3xl"
                     style={{
                         background: "var(--tgui--bg_color)",

@@ -7,6 +7,6 @@ export default function Logo({...restProps}) {
     const appRootContext = useContext(AppRootContext);
 
     return (
-        <Logo_ alt="Logo" fill={appRootContext.appearance === DARK ? "white" : "black"} {...restProps} />
+        <Logo_ id="logo" alt="Logo" fill={appRootContext.appearance === DARK ? "white" : "black"} {...restProps} />
     );
 }

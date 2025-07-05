@@ -3,4 +3,6 @@ export default interface UserInfo {
     name: string;
     username: string;
     photo: Blob;
+    referral_code?: string | null;
+    default_currency?: string | null;
 }

@@ -5,6 +5,7 @@ import React, {useCallback, useEffect, useMemo, useState} from "react";
 import i18next from "i18next";
 import "@/i18n";
 import Head from "next/head";
+import dynamic from "next/dynamic"
 import {AppRoot, Snackbar} from "@telegram-apps/telegram-ui";
 import "@telegram-apps/telegram-ui/dist/styles.css";
 import classNames from "classnames";
@@ -23,11 +24,13 @@ import {useStore} from "@/app/store";
 import useFriends from "@/services/useFriends";
 import {Icon28Bin, Icon28Check, Icon28Warning} from "@/Icons";
 import {useTranslation} from "react-i18next";
-import {account, activity, expenseParticipants, friendsList, groups, urls} from "@/const/urls";
+import {account, activity, addExpense, expenseParticipants, friend, friendsList, groups, urls} from "@/const/urls";
 import {DEFAULT_SNACKBAR_DURATION} from "@/const/defaultSnackbarDuration";
+import {addFriend} from "@/services/addFriend";
+import {TEST_USER_ID} from "@/const/testUserId";
+import {generateTestExpense} from "@/utils/generateTestExpense";
 import "./globals.css";
 
-import dynamic from "next/dynamic"
 
 const Tour = dynamic(
     // @ts-ignore
@@ -233,7 +236,7 @@ export default function RootLayout({children}: Readonly<{
     const isGroupComingSoonSnackbarShown = useStore((state) => state.isGroupComingSoonSnackbarShown);
     const setIsGroupComingSoonSnackbarShown = useStore((state) => state.setIsGroupComingSoonSnackbarShown);
 
-    const {data} = useFriends(searchValue);
+    const {data, refetchFriends} = useFriends(searchValue);
     const friends = data?.data;
 
     const onCloseFriendDeleted = useCallback(() => setIsDeleteFriendSnackbarShown(false), [setIsDeleteFriendSnackbarShown]);
@@ -248,28 +251,72 @@ export default function RootLayout({children}: Readonly<{
         setIsTourOpen(false);
     }, [setIsTourOpen]);
 
+    const testFriend = friends?.find((friend) => friend.id === TEST_USER_ID);
+    const isTestFriendAlreadyExist = testFriend;
 
     const tourConfig = useMemo(() => [
         {
-            selector: "#share-button",
-            content: "Add friend button"
-        },
-        {
-            selector: "#plus-icon",
-            content: "Add new Expense button",
+            selector: "#logo",
+            content: t("tour.Welcome"),
             action: () => {
-                router.push(expenseParticipants);
+                router.push(friendsList);
             }
         },
         {
-            selector: "#expense-participants-main",
-            content: "Pick friends that will be participate in the expense"
+            selector: "#share-button",
+            content: t("tour.Share"),
+            action: () => {
+                if (!isTestFriendAlreadyExist) {
+                    console.log("addFriend");
+                    // TODO добавить рассходы с тестовым другом?
+                    addFriend(TEST_USER_ID)
+                        .then(() => refetchFriends())
+                        .catch((err) => {
+                            console.error("addFriend error: ", err);
+                        });
+                }
+            }
         },
         {
-            selector: "#expense-participants-next-button",
-            content: "Click next button"
-        }
-    ], [router]);
+            selector: `#friend_${TEST_USER_ID}`,
+            content: t("tour.TestFriend"),
+            action: () => {
+                router.push(friendsList);
+            }
+        },
+        {
+            content: t("tour.FriendPage"),
+            action: () => {
+                setSelectedUserId(TEST_USER_ID);
+                router.push(friend);
+            }
+        },
+        {
+            selector: "#plus-icon",
+            content: t("tour.Plus"),
+            action: () => {
+                router.push(friend);
+            }
+        },
+        {
+            selector: "#expense-add-name-and-money",
+            content: t("tour.Expense"),
+            action: () => {
+                router.push(addExpense);
+
+                if (testFriend) {
+                    setSelectedExpense(generateTestExpense(me, testFriend, t));
+                }
+            }
+        },
+        {
+            selector: "#expense-add-date-and-switches",
+            content: t("tour.ExpenseSplit"),
+            action: () => {
+                router.push(addExpense);
+            }
+        },
+    ], [isTestFriendAlreadyExist, me, refetchFriends, router, setSelectedExpense, setSelectedUserId, t, testFriend]);
 
     return (
         <html lang="en">
@@ -308,6 +355,10 @@ export default function RootLayout({children}: Readonly<{
                                 steps={tourConfig}
                                 isOpen={isTourOpen}
                                 onRequestClose={closeTour}
+                                closeWithMask={false}
+                                showNavigation={false}
+                                disableInteraction
+
                                 // rounded={5}
                                 // maskClassName="mask"
                                 // className="helper"

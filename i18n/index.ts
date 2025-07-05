@@ -136,6 +136,16 @@ i18n
                         SupportUs: "Support Us",
                         ReportABug: "Report a Bug",
                         ProposeChanges: "Propose Changes",
+                    },
+                    tour: {
+                        Welcome: "Welcome to Splitty.\nNow I'll show you how to use me.",
+                        Share: "Here you can add friends.\nBut for now I'll add one to tell you everything.\nLet's move on.",
+                        TestFriend: "This is your test friend.\nOn the right is information about who owes what to whom.",
+                        FriendPage: "This menu shows all your expenses and statistics.\nSo here you can pay him.",
+                        Plus: "To add a new expense, you need to click on “+”",
+                        Expense: "Here you enter the name of the expense, how much was spent and in what currency.",
+                        TestExpense: "Test expense",
+                        ExpenseSplit: "Here you can indicate who paid how much and in what proportion to divide the expenses.",
                     }
                 }
             },
@@ -258,6 +268,16 @@ i18n
                         SupportUs: "Поддержите нас",
                         ReportABug: "Сообщить об ошибке",
                         ProposeChanges: "Предложить изменения",
+                    },
+                    tour: {
+                        Welcome: "Добро пожаловать в Splitty.\nСейчас я покажу как мной пользоваться.",
+                        Share: "Тут ты сможешь добавить друзей.\nНо пока я добавлю одного, чтобы всё рассказать.\nИдём дальше.",
+                        TestFriend: "Это твой тестовый друг.\nСправа информация кто кому сколько должен.",
+                        FriendPage: "В этом меню показаны все ваши расходы и статистика.\nТак тут ты можешь с ним рассчитаться.",
+                        Plus: "Чтобы добавить новый расход нужно нажать на “+”",
+                        Expense: "Сюда вписываешь название расхода, сколько было потрачено и в какой валюте.",
+                        TestExpense: "Тестовый расход",
+                        ExpenseSplit: "Тут можно указать кто и сколько заплатил и в какой пропорции разделить потраченное.",
                     }
                 }
             },
@@ -380,6 +400,16 @@ i18n
                         SupportUs: "Підтримайте нас",
                         ReportABug: "Повідомити про помилку",
                         ProposeChanges: "Запропонувати зміни",
+                    },
+                    tour: {
+                        Welcome: "Ласкаво просимо до Splitty.\nЗараз я покажу, як мною користуватися.",
+                        Share: "Тут ти зможеш додати друзів.\nАле поки що я додам одного, щоб все розповісти.\nІдемо далі.",
+                        TestFriend: "Це твій друг.\nСправа інформація хто кому скільки винен.",
+                        FriendPage: "У цьому меню показані всі ваші витрати та статистика.\nТож тут ти можеш з ним розрахуватися.",
+                        Plus: "Щоб додати нову витрату, потрібно натиснути на “+”",
+                        Expense: "Сюди вписуєш назву витрати, скільки було витрачено та в якій валюті.",
+                        TestExpense: "Тестова витрата",
+                        ExpenseSplit: "Тут можна вказати, хто і скільки заплатив і в якій пропорції розділити витрачене.",
                     }
                 }
             }

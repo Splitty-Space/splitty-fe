@@ -1,0 +1,1 @@
+export const TEST_EXPENSE_ID = -1;

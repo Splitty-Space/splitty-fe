@@ -8,14 +8,14 @@ export default interface Expense {
     description: string;
     expense_users: ExpenseUser[];
     id: number;
-    owe: number;
-    created_at: string;
-    owes: number;
+    owe?: number;
+    created_at?: string;
+    owes?: number;
     currency: typeof CURRENCIES[number];
     payment: boolean;
     isDeleted: boolean;
     settled: boolean;
-    group: Group;
-    date: string,
-    transactions: Transaction[];
+    group?: Group;
+    date?: string,
+    transactions?: Transaction[];
 }

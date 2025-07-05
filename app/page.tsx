@@ -84,7 +84,7 @@ export default function FriendsList() {
         const {id, name, username, total} = _friend;
 
         return (
-            <div key={id} style={style}>
+            <div id={"friend_" + id} key={id} style={style}>
                 <Cell
                     className="friends-list_shrink-0"
                     before={<Avatar
