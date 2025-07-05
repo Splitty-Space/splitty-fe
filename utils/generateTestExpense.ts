@@ -12,6 +12,8 @@ export const generateTestExpense = (me: UserInfo, testFriend: UserInfo, t: Funct
         "currency": "USD",
         "isDeleted": false,
         "settled": false,
+        "date": null,
+        "transactions": [],
         "expense_users": [
             {
                 "id": TEST_EXPENSE_ID,
