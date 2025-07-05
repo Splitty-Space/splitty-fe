@@ -128,7 +128,7 @@ export default function Footer({
         if (id !== TabIds.Groups) {
             vibration();
         }
-    }, [pathname, setSearchValue, setSelectedExpense, friends, setSelectedFriends, selectedUserId, setSelectedUserId, router]);
+    }, [pathname, friends, setSelectedFriends, selectedUserId, setSelectedUserId, setSearchValue, setSelectedExpense, router, setIsGroupComingSoonSnackbarShown]);
 
     const isKeyboardOpen = useDetectKeyboardOpen();
 
@@ -140,7 +140,7 @@ export default function Footer({
                 : "transform translate-y-0 transition-transform duration-250 ease-out"
         )}>
             <Tabbar className="footer_tabbar pb-6">
-            {tabs.map(({
+                {tabs.map(({
                                id,
                                path,
                                text,

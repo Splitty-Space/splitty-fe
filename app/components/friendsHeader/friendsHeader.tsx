@@ -26,7 +26,7 @@ export default function FriendsHeader({searchValue, setSearchValue, onSearchChan
                 `https://t.me/splitty_fe_bot?start=${me.referral_code}`,
                 t("friend.AddFriendMessage"));
         }
-    }, [me, setIsFriendRequestSentSnackbarShown, t]);
+    }, [me, t]);
 
     global.window && window.addEventListener("message", (...data) => {
         console.log("message");
