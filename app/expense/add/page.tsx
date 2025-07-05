@@ -325,6 +325,17 @@ export default function AddExpense() {
         } : x));
     };
 
+    const handleInputFocus = (event) => {
+        // Small delay to wait for keyboard animation
+        setTimeout(() => {
+            event.target.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+                inline: "nearest"
+            });
+        }, 300);
+    };
+
     return (
         <>
             <Header
@@ -592,6 +603,7 @@ export default function AddExpense() {
                                             className="w-36 ml-auto"
                                             status={currentSplitBetweenMoneyAmount !== moneySpent ? "error" : undefined}
                                             disabled={!isItemSelected}
+                                            onFocus={handleInputFocus}
                                             after={
                                                 <Caption
                                                     level="1"
