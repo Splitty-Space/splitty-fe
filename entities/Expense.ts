@@ -16,6 +16,6 @@ export default interface Expense {
     isDeleted: boolean;
     settled: boolean;
     group?: Group;
-    date: string | null,
+    date: any,
     transactions: Transaction[];
 }
