@@ -1,5 +1,7 @@
 import {useCallback, FC} from "react";
+import classNames from "classnames";
 import {Tabbar} from "@telegram-apps/telegram-ui";
+import useDetectKeyboardOpen from "use-detect-keyboard-open";
 import {Icon24Group, Icon24Person, Icon24Stats, PlusIcon} from "@/Icons";
 import {useTranslation} from "react-i18next";
 import {usePathname, useRouter} from "next/navigation";
@@ -12,8 +14,6 @@ import {focusOnExpenseNameInput} from "@/app/expense/add/focusOnExpenseNameInput
 import Avatar from "@/app/components/avatar/Avatar";
 import {useStore} from "@/app/store";
 import "./footer.css";
-import useDetectKeyboardOpen from "use-detect-keyboard-open";
-import classNames from "classnames";
 
 interface Tab {
     id: number;
