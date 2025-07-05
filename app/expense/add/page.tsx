@@ -333,7 +333,7 @@ export default function AddExpense() {
                 block: "center",
                 inline: "nearest"
             });
-        }, 1000);
+        }, 600);
     };
 
     return (
