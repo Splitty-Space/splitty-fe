@@ -26,6 +26,7 @@ import {ExpenseNameInputId} from "@/app/expense/add/focusOnExpenseNameInput";
 import {addExpense} from "@/services/addExpense";
 import {putExpense} from "@/services/putExpense";
 import useFriends from "@/services/useFriends";
+import handleInputFocus from "@/services/handleInputFocus";
 import {useStore} from "@/app/store";
 import {useRouter} from "next/navigation";
 import {expenseDetails} from "@/const/urls";
@@ -325,17 +326,6 @@ export default function AddExpense() {
         } : x));
     };
 
-    const handleInputFocus = (event: React.ChangeEvent<HTMLInputElement>) => {
-        // Small delay to wait for keyboard animation
-        setTimeout(() => {
-            event.target.scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-                inline: "nearest"
-            });
-        }, 600);
-    };
-
     return (
         <>
             <Header
@@ -525,6 +515,7 @@ export default function AddExpense() {
                                         className="w-36 ml-auto"
                                         status={currentPaidMoneyAmount !== moneySpent && isItemSelected ? "error" : undefined}
                                         disabled={!isItemSelected}
+                                        onFocus={handleInputFocus()}
                                         after={
                                             <Caption
                                                 level="1"
@@ -603,7 +594,7 @@ export default function AddExpense() {
                                             className="w-36 ml-auto"
                                             status={currentSplitBetweenMoneyAmount !== moneySpent ? "error" : undefined}
                                             disabled={!isItemSelected}
-                                            onFocus={handleInputFocus}
+                                            onFocus={handleInputFocus()}
                                             after={
                                                 <Caption
                                                     level="1"
