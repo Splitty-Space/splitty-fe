@@ -325,7 +325,7 @@ export default function AddExpense() {
         } : x));
     };
 
-    const handleInputFocus = (event) => {
+    const handleInputFocus = (event: React.ChangeEvent<HTMLInputElement>) => {
         // Small delay to wait for keyboard animation
         setTimeout(() => {
             event.target.scrollIntoView({
