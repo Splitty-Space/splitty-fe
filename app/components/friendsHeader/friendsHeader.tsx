@@ -8,7 +8,6 @@ import {Icon28PersonAdd} from "@/Icons";
 import {IconButton} from "@telegram-apps/telegram-ui";
 import {shareURL} from "@telegram-apps/sdk";
 import {useStore} from "@/app/store";
-import {global as styledGlobal} from "styled-jsx/css";
 
 export default function FriendsHeader({searchValue, setSearchValue, onSearchChange, isSearchDisabled}: {
     searchValue: string,
