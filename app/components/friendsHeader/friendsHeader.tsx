@@ -26,21 +26,19 @@ export default function FriendsHeader({searchValue, setSearchValue, onSearchChan
             shareURL(
                 `https://t.me/splitty_fe_bot?start=${me.referral_code}`,
                 t("friend.AddFriendMessage"));
-
-            setTimeout(() =>
-                    setIsFriendRequestSentSnackbarShown(true),
-                3000);
         }
     }, [me, setIsFriendRequestSentSnackbarShown, t]);
 
     global.window && window.addEventListener("message", (...data) => {
         console.log("message");
         console.log(data);
+        setIsFriendRequestSentSnackbarShown(true);
     });
 
     global.window && window.addEventListener("shareMessageSent", (...data) => {
         console.log("shareMessageSent");
         console.log(data);
+        setIsFriendRequestSentSnackbarShown(true);
     });
 
     const RightComponent = useCallback(() => (
