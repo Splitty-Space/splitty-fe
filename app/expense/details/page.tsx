@@ -158,7 +158,7 @@ export default function ExpenseDetails() {
                                 <div className="flex items-center w-full">
                                     {selectedExpense?.payment &&
                                         (<AvatarStack>
-                                            {selectedExpense.transactions
+                                            {selectedExpense?.transactions
                                                 .reduce((userIds, currentValue) => {
                                                     if (userIds.every((id) => id !== currentValue.borrower.id)) {
                                                         // @ts-ignore
