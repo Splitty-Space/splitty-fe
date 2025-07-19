@@ -24,11 +24,21 @@ import {useStore} from "@/app/store";
 import useFriends from "@/services/useFriends";
 import {Icon28Bin, Icon28Check, Icon28Warning} from "@/Icons";
 import {useTranslation} from "react-i18next";
-import {account, activity, addExpense, expenseParticipants, friend, friendsList, groups, urls} from "@/const/urls";
+import {
+    account,
+    activity,
+    addExpense,
+    expenseDetails,
+    expenseParticipants,
+    friend,
+    friendsList,
+    groups,
+    urls
+} from "@/const/urls";
 import {DEFAULT_SNACKBAR_DURATION} from "@/const/defaultSnackbarDuration";
 import {addFriend} from "@/services/addFriend";
 import {TEST_USER_ID} from "@/const/testUserId";
-import {generateTestExpense} from "@/utils/generateTestExpense";
+import {generateTestExpense, generateTestExpenseWithSplit} from "@/utils/generateTestExpense";
 import "./globals.css";
 
 
@@ -235,6 +245,7 @@ export default function RootLayout({children}: Readonly<{
     const setIsFriendRequestSentSnackbarShown = useStore((state) => state.setIsFriendRequestSentSnackbarShown);
     const isGroupComingSoonSnackbarShown = useStore((state) => state.isGroupComingSoonSnackbarShown);
     const setIsGroupComingSoonSnackbarShown = useStore((state) => state.setIsGroupComingSoonSnackbarShown);
+    const setIsForceExpenseSaveEnabled = useStore((state) => state.setIsForceExpenseSaveEnabled);
 
     const {data, refetchFriends} = useFriends(searchValue);
     const friends = data?.data;
@@ -314,9 +325,63 @@ export default function RootLayout({children}: Readonly<{
             content: t("tour.ExpenseSplit"),
             action: () => {
                 router.push(addExpense);
+                setSelectedExpense(generateTestExpenseWithSplit(me, testFriend, t));
             }
         },
-    ], [isTestFriendAlreadyExist, me, refetchFriends, router, setSelectedExpense, setSelectedUserId, t, testFriend]);
+        {
+            selector: "#expense-add-paid-by",
+            content: t("tour.ExpensePaidBy"),
+        },
+        {
+            selector: "#expense-add-split-equally",
+            content: t("tour.ExpenseSplitEqually"),
+        },
+        {
+            selector: "#expense-add-save-button",
+            content: t("tour.Save"),
+            action: () => {
+                setSelectedExpense(generateTestExpenseWithSplit(me, testFriend, t));
+                router.push(addExpense);
+            }
+        },
+        {
+            selector: "#expense-details",
+            content: t("tour.NewExpenseAdded"),
+            action: () => {
+                setIsForceExpenseSaveEnabled(true);
+                router.push(expenseDetails);
+            }
+        },
+        {
+            selector: "#plus-icon",
+            content: t("tour.SeveralFriends"),
+            action: () => {
+                router.push(friendsList);
+                setIsForceExpenseSaveEnabled(false);
+            }
+        },
+        {
+            selector: "#expense-participants-main",
+            content: t("tour.SelectFriends"),
+            action: () => {
+                router.push(expenseParticipants);
+            }
+        },
+        {
+            selector: "#activity-icon",
+            content: t("tour.Activity"),
+            action: () => {
+                router.push(activity);
+            }
+        },
+        {
+            selector: "#account-icon",
+            content: t("tour.Account"),
+            action: () => {
+                router.push(account);
+            }
+        },
+    ], [isTestFriendAlreadyExist, me, refetchFriends, router, setIsForceExpenseSaveEnabled, setSelectedExpense, setSelectedUserId, t, testFriend]);
 
     return (
         <html lang="en">

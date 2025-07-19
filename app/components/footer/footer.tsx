@@ -17,6 +17,7 @@ import "./footer.css";
 
 interface Tab {
     id: number;
+    htmlId?: string;
     path: string;
     text?: string;
     Icon: FC<{ isSelected: boolean }>;
@@ -75,12 +76,14 @@ export default function Footer({
         },
         {
             id: TabIds.Activity,
+            htmlId: "activity-icon",
             path: activity,
             text: t("footer.Activity"),
             Icon: ({isSelected}) => <Icon24Stats fill={getFillColor(isSelected)}/>
         },
         {
             id: TabIds.Account,
+            htmlId: "account-icon",
             path: account,
             text: t("footer.Account"),
             Icon: ({isSelected}) =>
@@ -142,11 +145,13 @@ export default function Footer({
             <Tabbar className="footer_tabbar pb-6">
                 {tabs.map(({
                                id,
+                               htmlId,
                                path,
                                text,
                                Icon
                            }) =>
                     <Tabbar.Item
+                        id={htmlId}
                         key={id}
                         text={text}
                         selected={path === pathname}

@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import classNames from "classnames";
 import Header from "@/app/components/header/header";
@@ -58,6 +58,7 @@ export default function AddExpense() {
     const setIsCreateExpenseSnackbarShown = useStore((state) => state.setIsCreateExpenseSnackbarShown);
     const setIsUpdateExpenseSnackbarShown = useStore((state) => state.setIsUpdateExpenseSnackbarShown);
     const setSelectedExpense = useStore((state) => state.setSelectedExpense);
+    const isForceExpenseSaveEnabled = useStore((state) => state.isForceExpenseSaveEnabled);
 
     const {refetchFriends} = useFriends(searchValue);
 
@@ -119,6 +120,10 @@ export default function AddExpense() {
             setIsFullyPaidByYou(selectedExpense ?
                 selectedExpense.expense_users
                     .some(e => Number(e.lent_amount) === Number(selectedExpense?.amount) && e.user.id === me.id) : true);
+
+            setIsSplitEquallyBetweenAll(selectedExpense ?
+                selectedExpense.expense_users.every(e => e.debt_amount === selectedExpense.expense_users[0].debt_amount) :
+                true);
         }
     }, [me, selectedExpense]);
 
@@ -137,7 +142,7 @@ export default function AddExpense() {
 
     const router = useRouter();
 
-    const onSave = () => {
+    const onSave = useCallback(() => {
         if (isSaveInProgress) {
             return;
         }
@@ -182,7 +187,13 @@ export default function AddExpense() {
                 .then(() => setIsUpdateExpenseSnackbarShown(true))
                 .then(() => router.push(expenseDetails));
         }
-    };
+    }, [currency, date, expenseName, isSaveInProgress, moneySpent, paidBy, refetchFriends, router, selectedExpense, setIsCreateExpenseSnackbarShown, setIsUpdateExpenseSnackbarShown, setSelectedExpense, splitBetween]);
+
+    useEffect(() => {
+        if (isForceExpenseSaveEnabled) {
+            onSave();
+        }
+    }, [isForceExpenseSaveEnabled, onSave]);
 
     const onExpenseNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.value.length <= maxExpenseNameLength) {
@@ -353,6 +364,7 @@ export default function AddExpense() {
                         onClick={onSave}
                         disabled={isSaveDisabled}
                         loading={isSaveInProgress}
+                        id="expense-add-save-button"
                     >
                         {t("expenses.Save")}
                     </Button>
@@ -432,7 +444,7 @@ export default function AddExpense() {
                                 className="p-0 addExpense__cell"
                                 after={
                                     <Switch
-                                        defaultChecked={isFullyPaidByYou}
+                                        checked={isFullyPaidByYou}
                                         onChange={onFullyPaidByYouChange}
                                         style={{"backgroundColor": "red"}}
                                     />
@@ -448,7 +460,7 @@ export default function AddExpense() {
                         className="p-0 addExpense__cell"
                         after={
                             <Switch
-                                defaultChecked={isSplitEquallyBetweenAll}
+                                checked={isSplitEquallyBetweenAll}
                                 onChange={onSplitEquallyBetweenAllChange}
                             />
                         }
@@ -458,7 +470,7 @@ export default function AddExpense() {
                 </List>
 
                 {!isFullyPaidByYou &&
-                    <div className="mb-4">
+                    <div className="mb-4" id="expense-add-paid-by">
                         <div className="mt-4 flex items-center justify-between">
                             <Headline weight="3">{t("expenses.PaidBy")}:</Headline>
                         </div>
@@ -536,7 +548,7 @@ export default function AddExpense() {
 
                 {
                     !isSplitEquallyBetweenAll &&
-                    <div className="mb-4">
+                    <div className="mb-4" id="expense-add-split-equally">
                         <div className="mt-4 flex items-center justify-between">
                             <Headline weight="3">{t("expenses.Split")}:</Headline>
 

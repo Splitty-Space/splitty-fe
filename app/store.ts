@@ -48,6 +48,9 @@ interface State {
 
     settleUpPaymentInfo: { friend: Friend, currency: string } | null,
     setSettleUpPaymentInfo: (newSettleUpPaymentInfo: { friend: Friend, currency: string } | null) => void,
+
+    isForceExpenseSaveEnabled: boolean,
+    setIsForceExpenseSaveEnabled: (newIsForceExpenseSaveEnabled: boolean) => void,
 }
 
 export const useStore = create<State>()(
@@ -96,6 +99,9 @@ export const useStore = create<State>()(
 
             settleUpPaymentInfo: null,
             setSettleUpPaymentInfo: (newSettleUpPaymentInfo) => set(() => ({settleUpPaymentInfo: newSettleUpPaymentInfo})),
+
+            isForceExpenseSaveEnabled: false,
+            setIsForceExpenseSaveEnabled: (newIsForceExpenseSaveEnabled) => set(() => ({isForceExpenseSaveEnabled: newIsForceExpenseSaveEnabled})),
         }),
     ),
 )

@@ -146,6 +146,14 @@ i18n
                         Expense: "Here you enter the name of the expense, how much was spent and in what currency.",
                         TestExpense: "Test expense",
                         ExpenseSplit: "Here you can indicate who paid how much and in what proportion to divide the expenses.",
+                        ExpensePaidBy: "If you both paid, you can specify the exact amounts.\nFor example, you paid $20 and your friend $50, but you want to split the amount equally at $35 each.",
+                        ExpenseSplitEqually: "If you don't need to split it equally, you can specify the values here,\nWho should spend how much on this expense.",
+                        Save: "Next, click save.",
+                        NewExpenseAdded: "New expense added.\nYour friend will receive a notification from me.",
+                        SeveralFriends: "Several friends can participate in the expense.\nTo do this, click on “+” from the menu with the list of friends.",
+                        SelectFriends: "Here you can choose friends who will participate in the expenses.",
+                        Activity: "In this menu you will see the entire history of expenses with friends.",
+                        Account: "Here you will set up your account, and you can also go through this guide again.\nWelcome to Splitty!",
                     }
                 }
             },
@@ -278,6 +286,14 @@ i18n
                         Expense: "Сюда вписываешь название расхода, сколько было потрачено и в какой валюте.",
                         TestExpense: "Тестовый расход",
                         ExpenseSplit: "Тут можно указать кто и сколько заплатил и в какой пропорции разделить потраченное.",
+                        ExpensePaidBy: "Если заплатили вы оба, то можете указать точные суммы.\nНапример вы 20$, а друг 50$, но при этом хотите разделить поровну по 35$.",
+                        ExpenseSplitEqually: "Если разделить нужно не поровну, то тут можно указать значения,\nКто и сколько должен потратить в этом расходе.",
+                        Save: "Далее жмём сохранить.",
+                        NewExpenseAdded: "Новый расход добавлен.\nВаш друг получит от меня уведомление.",
+                        SeveralFriends: "В расходе может участвовать несколько друзей.\nДля этого нужно нажать на “+” из меню со списком друзей.",
+                        SelectFriends: "Тут вы можете выбрать друзей которые участвую в расходе.",
+                        Activity: "В этом меню ты будешь видеть всю историю расходов с друзьями.",
+                        Account: "Тут ты настроишь свой аккаунт, а так же можешь пройти это руководство ещё раз.\nДобро пожаловать в Splitty!",
                     }
                 }
             },
@@ -410,6 +426,14 @@ i18n
                         Expense: "Сюди вписуєш назву витрати, скільки було витрачено та в якій валюті.",
                         TestExpense: "Тестова витрата",
                         ExpenseSplit: "Тут можна вказати, хто і скільки заплатив і в якій пропорції розділити витрачене.",
+                        ExpensePaidBy: "Якщо ви заплатили обидва, то можете вказати точні суми.\nНаприклад, ви 20$, а друг 50$, але при цьому хочете розділити порівну по 35$.",
+                        ExpenseSplitEqually: "Якщо поділити потрібно не порівну, то тут можна вказати значення,\nXто і скільки має витратити у цій витраті.",
+                        Save: "Далі тиснемо зберегти.",
+                        NewExpenseAdded: "Нова витрата додана.\nВаш друг отримає від мене повідомлення.",
+                        SeveralFriends: "У витраті може брати участь кілька друзів.\nДля цього потрібно натиснути “+” з меню зі списком друзів.",
+                        SelectFriends: "Тут ви можете вибрати друзів, які беруть участь у витраті.",
+                        Activity: "У цьому меню ти будеш бачити всю історію витрат із друзями.",
+                        Account: "Тут ти налаштуєш свій акаунт, а так само можеш пройти це керівництво ще раз.\nЛаскаво просимо до Splitty!",
                     }
                 }
             }

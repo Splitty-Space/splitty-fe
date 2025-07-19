@@ -152,7 +152,7 @@ export default function ExpenseDetails() {
                 />
 
                 {selectedExpense &&
-                    (<Main className="px-4 pt-24">
+                    (<Main className="px-4 pt-24" id="expense-details">
                         <PullToRefresh onRefresh={onRefresh}>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center w-full">
