@@ -325,7 +325,10 @@ export default function RootLayout({children}: Readonly<{
             content: t("tour.ExpenseSplit"),
             action: () => {
                 router.push(addExpense);
-                setSelectedExpense(generateTestExpenseWithSplit(me, testFriend, t));
+
+                if (testFriend) {
+                    setSelectedExpense(generateTestExpenseWithSplit(me, testFriend, t));
+                }
             }
         },
         {
@@ -340,7 +343,9 @@ export default function RootLayout({children}: Readonly<{
             selector: "#expense-add-save-button",
             content: t("tour.Save"),
             action: () => {
-                setSelectedExpense(generateTestExpenseWithSplit(me, testFriend, t));
+                if (testFriend) {
+                    setSelectedExpense(generateTestExpenseWithSplit(me, testFriend, t));
+                }
                 router.push(addExpense);
             }
         },
