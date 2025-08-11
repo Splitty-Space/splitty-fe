@@ -35,6 +35,8 @@ export default function FriendsList() {
     const {t} = useTranslation();
     const router = useRouter();
 
+    useAuth();
+
     const {data: me} = useMe();
 
     const searchValue = useStore((state) => state.searchValue);
@@ -54,8 +56,6 @@ export default function FriendsList() {
             appName: "nfu435yhu9i203y489f2uyr",
         });
     }, []);
-
-    useAuth();
 
     const [rowCount, setRowCount] = useState(defaultPageSize);
 

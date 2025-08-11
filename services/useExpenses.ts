@@ -2,6 +2,7 @@ import {AxiosError} from "axios";
 import useAxios, {RefetchFunction} from "axios-hooks";
 import getCurrentUserId from "@/utils/getCurrentUserId";
 import Expense from "@/entities/Expense";
+import {useStore} from "@/app/store";
 
 export interface UseExpenses {
     data: {
@@ -24,6 +25,8 @@ const useExpenses = ({
     friend_id?: number,
     group_id?: number,
 }): UseExpenses => {
+    const token = useStore.getState().token;
+
     const [{data, loading, error}, refetch] = useAxios({
         url: "/expenses",
         params: {
@@ -32,6 +35,9 @@ const useExpenses = ({
             limit,
             friend_id,
             group_id
+        },
+        headers: {
+            Authorization: `Bearer ${token}`,
         },
     }, {useCache: false});
 

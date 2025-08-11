@@ -1,6 +1,7 @@
 import axios from "axios"
 import {SERVER_URL} from "@/API/APIConstants";
 import getCurrentUserId from "@/utils/getCurrentUserId";
+import {useStore} from "@/app/store";
 
 const getExpenses = async ({
                                page,
@@ -15,6 +16,8 @@ const getExpenses = async ({
     group_id?: number,
     signal?: AbortSignal
 }) => {
+    const token = useStore.getState().token;
+
     return await axios.get(`${SERVER_URL}/expenses`, {
         params: {
             user_id: getCurrentUserId(),
@@ -22,6 +25,9 @@ const getExpenses = async ({
             limit,
             friend_id,
             group_id
+        },
+        headers: {
+            Authorization: `Bearer ${token}`,
         },
         signal
     });

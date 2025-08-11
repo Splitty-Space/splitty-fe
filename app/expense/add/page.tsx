@@ -26,7 +26,7 @@ import {ExpenseNameInputId} from "@/app/expense/add/focusOnExpenseNameInput";
 import {addExpense} from "@/services/addExpense";
 import {putExpense} from "@/services/putExpense";
 import useFriends from "@/services/useFriends";
-import handleInputFocus from "@/services/handleInputFocus";
+import handleInputFocus from "@/utils/handleInputFocus";
 import {useStore} from "@/app/store";
 import {useRouter} from "next/navigation";
 import {expenseDetails} from "@/const/urls";

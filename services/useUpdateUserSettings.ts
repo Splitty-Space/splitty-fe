@@ -1,10 +1,16 @@
 import useAxios from "axios-hooks";
 import getCurrentUserId from "@/utils/getCurrentUserId";
+import {useStore} from "@/app/store";
 
 const useUpdateUserSettings = () => {
+    const token = useStore.getState().token;
+
     const [{data, loading, error}, refetch] = useAxios({
         url: "/settings",
         method: "PUT",
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
     }, {manual: true});
 
     const updateUserSettings = ({defaultCurrency, language}: { defaultCurrency?: string, language?: string }) =>

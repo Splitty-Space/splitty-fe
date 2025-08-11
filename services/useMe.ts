@@ -1,6 +1,7 @@
 import useAxios, {RefetchFunction} from "axios-hooks";
 import getCurrentUserId from "@/utils/getCurrentUserId";
 import {AxiosError} from "axios";
+import {useStore} from "@/app/store";
 
 export interface Me {
     id: number;
@@ -20,10 +21,15 @@ export interface useMe {
 }
 
 const useMe = (): useMe => {
+    const token = useStore.getState().token;
+
     const [{data, loading, error}, refetch] = useAxios({
         url: "/me",
         params: {
             user_id: getCurrentUserId(),
+        },
+        headers: {
+            Authorization: `Bearer ${token}`,
         },
     });
 

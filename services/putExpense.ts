@@ -1,6 +1,7 @@
 import axios from "axios"
 import {SERVER_URL} from "@/API/APIConstants";
 import getCurrentUserId from "@/utils/getCurrentUserId";
+import {useStore} from "@/app/store";
 
 interface CreateExpenseUser {
     user_id?: number,
@@ -22,6 +23,8 @@ export const putExpense = async ({
     amount: number,
     description?: string,
 }) => {
+    const token = useStore.getState().token;
+
     await axios.put(`${SERVER_URL}/expenses/${expense_id}`, {
         user_id: getCurrentUserId(),
         payers: payers,
@@ -29,6 +32,10 @@ export const putExpense = async ({
         users: users,
         amount: amount,
         description: description,
+    }, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
     }).catch((error) => {
         console.error({error})
     })
