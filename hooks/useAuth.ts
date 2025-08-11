@@ -1,10 +1,12 @@
-import {useEffect, useState} from "react";
-import {retrieveRawInitData} from "@telegram-apps/sdk";
+import {useEffect} from "react";
 import axios from "axios";
+import {retrieveRawInitData} from "@telegram-apps/sdk";
 import {SERVER_URL} from "@/API/APIConstants";
+import {useStore} from "@/app/store";
 
 const useAuth = () => {
-    const [token, setToken] = useState(null);
+    let token = useStore((state) => state.token);
+    const setToken = useStore((state) => state.setToken);
 
     useEffect(() => {
         const initDataRaw = retrieveRawInitData();
@@ -14,9 +16,10 @@ const useAuth = () => {
             {init_data_raw: initDataRaw},
         )
             .then(res => {
-                console.log("res = ", res);
+                console.log("auth = ", res);
                 if (res.data.access_token) {
-                    setToken(res.data.access_token);
+                    token = res.data.access_token;
+                    setToken(token);
                 }
             })
             .catch(err => console.error("Auth error:", err));

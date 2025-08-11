@@ -2,6 +2,7 @@ import {AxiosError} from "axios";
 import useAxios, {RefetchFunction} from "axios-hooks";
 import getCurrentUserId from "@/utils/getCurrentUserId";
 import {Friend} from "@/entities";
+import {useStore} from "@/app/store";
 
 export interface UseFriends {
     data: {
@@ -14,10 +15,15 @@ export interface UseFriends {
 }
 
 const useFriends = (searchValue: string): UseFriends => {
+    const token = useStore.getState().token;
+
     const [{data, loading, error}, refetchFriends] = useAxios({
         url: "/friends",
         params: {
             user_id: getCurrentUserId(),
+        },
+        headers: {
+            Authorization: `Bearer ${token}`,
         },
     });
 

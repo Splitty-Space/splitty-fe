@@ -7,6 +7,9 @@ export type PageData = {
 };
 
 interface State {
+    token: string,
+    setToken: (newToken: string) => void,
+
     searchValue: string,
     setSearchValue: (newSearchValue: string) => void,
 
@@ -56,6 +59,9 @@ interface State {
 export const useStore = create<State>()(
     devtools(
         (set) => ({
+            token: "",
+            setToken: (newToken) => set(() => ({token: newToken})),
+
             searchValue: "",
             setSearchValue: (newSearchValue) => set(() => ({searchValue: newSearchValue})),
 
