@@ -20,9 +20,9 @@ export default function FriendsHeader({searchValue, setSearchValue, onSearchChan
 
     const setIsFriendRequestSentSnackbarShown = useStore((state) => state.setIsFriendRequestSentSnackbarShown);
 
-    const shareSplitty = useCallback(() => {
+    const shareSplitty = useCallback(async () => {
         if (shareMessage.isAvailable()) {
-            shareMessage(`https://t.me/splitty_fe_bot?start=${me.referral_code}\n${t("friend.AddFriendMessage")}`);
+            await shareMessage(`https://t.me/splitty_fe_bot?start=${me.referral_code}\n${t("friend.AddFriendMessage")}`);
         }
     }, [me, t]);
 
