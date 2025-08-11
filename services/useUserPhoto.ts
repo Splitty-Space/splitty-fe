@@ -1,6 +1,7 @@
 import {useMemo} from "react";
 import {AxiosError} from "axios";
 import useAxios, {RefetchFunction} from "axios-hooks";
+import {useStore} from "@/app/store";
 
 export interface useUserPhoto {
     photoUrl: string,
@@ -14,11 +15,16 @@ const photoCache: Record<number, string> = {};
 export function useUserPhoto(user_id?: number) {
     const cachedUrl = user_id ? photoCache[user_id] : "";
 
+    const token = useStore.getState().token;
+
     const [{data, loading, error}, refetch] = useAxios({
             url: `/user/${user_id}/photo`,
             responseType: "blob",
             params: {
                 user_id: user_id,
+            },
+            headers: {
+                Authorization: `Bearer ${token}`,
             },
         }
     );

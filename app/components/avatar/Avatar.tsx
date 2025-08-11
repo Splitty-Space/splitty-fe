@@ -1,6 +1,6 @@
 import React, {memo} from "react";
 import classNames from "classnames";
-import {useUserPhoto} from "@/utils/useUserPhoto";
+import {useUserPhoto} from "@/services/useUserPhoto";
 import {Avatar as Avatar_} from "@telegram-apps/telegram-ui";
 import "./avatar.css";
 
