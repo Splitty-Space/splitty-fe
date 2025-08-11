@@ -6,7 +6,7 @@ import {useTranslation} from "react-i18next";
 import HeaderWithSearch from "@/app/components/header/headerWithSearch";
 import {Icon28PersonAdd} from "@/Icons";
 import {IconButton} from "@telegram-apps/telegram-ui";
-import {shareURL} from "@telegram-apps/sdk";
+import {shareMessage} from "@telegram-apps/sdk";
 import {useStore} from "@/app/store";
 
 export default function FriendsHeader({searchValue, setSearchValue, onSearchChange, isSearchDisabled}: {
@@ -21,17 +21,14 @@ export default function FriendsHeader({searchValue, setSearchValue, onSearchChan
     const setIsFriendRequestSentSnackbarShown = useStore((state) => state.setIsFriendRequestSentSnackbarShown);
 
     const shareSplitty = useCallback(() => {
-        if (shareURL.isAvailable()) {
-            shareURL(
-                `https://t.me/splitty_fe_bot?start=${me.referral_code}`,
-                t("friend.AddFriendMessage"));
+        if (shareMessage.isAvailable()) {
+            shareMessage(`https://t.me/splitty_fe_bot?start=${me.referral_code}\n${t("friend.AddFriendMessage")}`);
         }
     }, [me, t]);
 
     global.window && window.addEventListener("message", (...data) => {
         console.log("message");
         console.log(data);
-        setIsFriendRequestSentSnackbarShown(true);
     });
 
     global.window && window.addEventListener("shareMessageSent", (...data) => {
