@@ -12,7 +12,7 @@ import classNames from "classnames";
 import "@/API/axiosConfig";
 import useMe from "@/services/useMe";
 import {DARK, DEFAULT_THEME, THEME_TYPE} from "@/const/theme";
-import {ANDROID, DEFAULT_PLATFORM, IOS, PLATFORM_TYPE} from "@/const/platform";
+import {DEFAULT_PLATFORM, IOS, PLATFORM_TYPE} from "@/const/platform";
 import {AppRootContext} from "./AppRootContext";
 import {backButton, closingBehavior, miniApp, swipeBehavior, viewport, postEvent} from "@telegram-apps/sdk";
 import {retrieveLaunchParams} from "@telegram-apps/bridge";
@@ -37,7 +37,7 @@ import {
 } from "@/const/urls";
 import {DEFAULT_SNACKBAR_DURATION} from "@/const/defaultSnackbarDuration";
 import {addFriend} from "@/services/addFriend";
-import {TEST_USER_ID} from "@/const/testUserId";
+import {TUTORIAL_USER_ID} from "@/const/tutorialUserId";
 import {generateTestExpense, generateTestExpenseWithSplit} from "@/utils/generateTestExpense";
 import "./globals.css";
 
@@ -108,12 +108,6 @@ export default function RootLayout({children}: Readonly<{
             }
         };
 
-        const enableFullscreen = async () => {
-            if (viewport.requestFullscreen.isAvailable()) {
-                await viewport.requestFullscreen();
-            }
-        };
-
         const expandScreen = () => {
             if (viewport.expand.isAvailable()) {
                 viewport.expand();
@@ -125,12 +119,6 @@ export default function RootLayout({children}: Readonly<{
                 setTimeout(() => {
                     const launchParams = retrieveLaunchParams();
                     if (launchParams) {
-                        const platform = launchParams.tgWebAppPlatform;
-
-                        if (platform === IOS || platform === ANDROID) {
-                            // enableFullscreen(); // TODO
-                        }
-
                         expandScreen();
                     } else {
                         checkIfTelegramScriptReady();
@@ -262,7 +250,7 @@ export default function RootLayout({children}: Readonly<{
         setIsTourOpen(false);
     }, [setIsTourOpen]);
 
-    const testFriend = friends?.find((friend) => friend.id === TEST_USER_ID);
+    const testFriend = friends?.find((friend) => friend.id === TUTORIAL_USER_ID);
     const isTestFriendAlreadyExist = testFriend;
 
     const tourConfig = useMemo(() => [
@@ -279,8 +267,7 @@ export default function RootLayout({children}: Readonly<{
             action: () => {
                 if (!isTestFriendAlreadyExist) {
                     console.log("addFriend");
-                    // TODO добавить рассходы с тестовым другом?
-                    addFriend(TEST_USER_ID)
+                    addFriend(TUTORIAL_USER_ID)
                         .then(() => refetchFriends())
                         .catch((err) => {
                             console.error("addFriend error: ", err);
@@ -289,7 +276,7 @@ export default function RootLayout({children}: Readonly<{
             }
         },
         {
-            selector: `#friend_${TEST_USER_ID}`,
+            selector: `#friend_${TUTORIAL_USER_ID}`,
             content: t("tour.TestFriend"),
             action: () => {
                 router.push(friendsList);
@@ -298,7 +285,7 @@ export default function RootLayout({children}: Readonly<{
         {
             content: t("tour.FriendPage"),
             action: () => {
-                setSelectedUserId(TEST_USER_ID);
+                setSelectedUserId(TUTORIAL_USER_ID);
                 router.push(friend);
             }
         },
