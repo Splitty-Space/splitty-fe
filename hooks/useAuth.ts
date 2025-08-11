@@ -17,8 +17,8 @@ const useAuth = () => {
         )
             .then(res => {
                 console.log("auth = ", res);
-                if (res.data.access_token) {
-                    token = res.data.access_token;
+                if (res.data.token) {
+                    token = res.data.token;
                     setToken(token);
                 }
             })
