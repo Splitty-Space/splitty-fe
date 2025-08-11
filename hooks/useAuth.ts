@@ -16,7 +16,6 @@ const useAuth = () => {
             {init_data_raw: initDataRaw},
         )
             .then(res => {
-                console.log("auth = ", res);
                 if (res.data.token) {
                     token = res.data.token;
                     setToken(token);
