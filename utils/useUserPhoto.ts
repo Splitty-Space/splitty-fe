@@ -1,3 +1,4 @@
+import {useMemo} from "react";
 import {AxiosError} from "axios";
 import useAxios, {RefetchFunction} from "axios-hooks";
 
@@ -8,7 +9,11 @@ export interface useUserPhoto {
     refetch: RefetchFunction<any, any>;
 }
 
-export function useUserPhoto(user_id?: number): useUserPhoto {
+const photoCache: Record<number, string> = {};
+
+export function useUserPhoto(user_id?: number) {
+    const cachedUrl = user_id ? photoCache[user_id] : "";
+
     const [{data, loading, error}, refetch] = useAxios({
             url: `/user/${user_id}/photo`,
             responseType: "blob",
@@ -18,16 +23,17 @@ export function useUserPhoto(user_id?: number): useUserPhoto {
         }
     );
 
-    let photoUrl = "";
+    const photoUrl = useMemo(() => {
+        if (cachedUrl) return cachedUrl;
+        if (data) {
+            const url = URL.createObjectURL(data);
+            if (user_id) {
+                photoCache[user_id] = url;
+            }
+            return url;
+        }
+        return "";
+    }, [cachedUrl, data, user_id]);
 
-    if (data) {
-        photoUrl = URL.createObjectURL(data);
-    }
-
-    return {
-        photoUrl,
-        loading,
-        error,
-        refetch
-    };
+    return {photoUrl, loading, error, refetch};
 }
