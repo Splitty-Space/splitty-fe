@@ -13,12 +13,17 @@ const useUpdateUserSettings = () => {
         },
     }, {manual: true});
 
-    const updateUserSettings = ({defaultCurrency, language}: { defaultCurrency?: string, language?: string }) =>
+    const updateUserSettings = ({defaultCurrency, language, isGuideShown}: {
+        defaultCurrency?: string,
+        language?: string,
+        isGuideShown?: boolean
+    }) =>
         refetch({
             data: {
                 user_id: getCurrentUserId(),
                 default_currency: defaultCurrency,
                 language: language?.toLowerCase(),
+                isGuideShown: isGuideShown,
             }
         });
 

@@ -39,6 +39,7 @@ import {DEFAULT_SNACKBAR_DURATION} from "@/const/defaultSnackbarDuration";
 import {addFriend} from "@/services/addFriend";
 import {TUTORIAL_USER_ID} from "@/const/tutorialUserId";
 import {generateTestExpense, generateTestExpenseWithSplit} from "@/utils/generateTestExpense";
+import useUpdateUserSettings from "@/services/useUpdateUserSettings";
 import "./globals.css";
 
 
@@ -60,13 +61,39 @@ export default function RootLayout({children}: Readonly<{
     const [platform, setPlatform] = useState<PLATFORM_TYPE>(DEFAULT_PLATFORM);
     const [appearance, setAppearance] = useState<THEME_TYPE>(DEFAULT_THEME);
 
-    const {data: me} = useMe();
+    const searchValue = useStore((state) => state.searchValue);
+    const setSearchValue = useStore((state) => state.setSearchValue);
+    const selectedUserId = useStore((state) => state.selectedUserId);
+    const setSelectedUserId = useStore((state) => state.setSelectedUserId);
+    const setSelectedFriends = useStore((state) => state.setSelectedFriends);
+    const setSelectedExpense = useStore((state) => state.setSelectedExpense);
+    const isTourOpen = useStore((state) => state.isTourOpen);
+    const setIsTourOpen = useStore((state) => state.setIsTourOpen);
+    const isDeleteFriendSnackbarShown = useStore((state) => state.isDeleteFriendSnackbarShown);
+    const setIsDeleteFriendSnackbarShown = useStore((state) => state.setIsDeleteFriendSnackbarShown);
+    const isDeleteExpenseSnackbarShown = useStore((state) => state.isDeleteExpenseSnackbarShown);
+    const setIsDeleteExpenseSnackbarShown = useStore((state) => state.setIsDeleteExpenseSnackbarShown);
+    const isCreateExpenseSnackbarShown = useStore((state) => state.isCreateExpenseSnackbarShown);
+    const setIsCreateExpenseSnackbarShown = useStore((state) => state.setIsCreateExpenseSnackbarShown);
+    const isUpdateExpenseSnackbarShown = useStore((state) => state.isUpdateExpenseSnackbarShown);
+    const setIsUpdateExpenseSnackbarShown = useStore((state) => state.setIsUpdateExpenseSnackbarShown);
+    const isCantShowDeletedExpenseSnackbarShown = useStore((state) => state.isCantShowDeletedExpenseSnackbarShown);
+    const setIsCantShowDeletedExpenseSnackbarShown = useStore((state) => state.setIsCantShowDeletedExpenseSnackbarShown);
+    const isFriendRequestSentSnackbarShown = useStore((state) => state.isFriendRequestSentSnackbarShown);
+    const setIsFriendRequestSentSnackbarShown = useStore((state) => state.setIsFriendRequestSentSnackbarShown);
+    const isGroupComingSoonSnackbarShown = useStore((state) => state.isGroupComingSoonSnackbarShown);
+    const setIsGroupComingSoonSnackbarShown = useStore((state) => state.setIsGroupComingSoonSnackbarShown);
+    const setIsForceExpenseSaveEnabled = useStore((state) => state.setIsForceExpenseSaveEnabled);
+
+    const {data: me, refetch: refetchMe} = useMe();
 
     useEffect(() => {
         if (me) {
             i18next.changeLanguage(me.language);
+
+            setIsTourOpen(!me.isGuideShown);
         }
-    }, [me]);
+    }, [me, setIsTourOpen]);
 
     useEffect(() => {
         setAppearance(DARK);
@@ -211,30 +238,6 @@ export default function RootLayout({children}: Readonly<{
 
     const {t} = useTranslation();
 
-    const searchValue = useStore((state) => state.searchValue);
-    const setSearchValue = useStore((state) => state.setSearchValue);
-    const selectedUserId = useStore((state) => state.selectedUserId);
-    const setSelectedUserId = useStore((state) => state.setSelectedUserId);
-    const setSelectedFriends = useStore((state) => state.setSelectedFriends);
-    const setSelectedExpense = useStore((state) => state.setSelectedExpense);
-    const isTourOpen = useStore((state) => state.isTourOpen);
-    const setIsTourOpen = useStore((state) => state.setIsTourOpen);
-    const isDeleteFriendSnackbarShown = useStore((state) => state.isDeleteFriendSnackbarShown);
-    const setIsDeleteFriendSnackbarShown = useStore((state) => state.setIsDeleteFriendSnackbarShown);
-    const isDeleteExpenseSnackbarShown = useStore((state) => state.isDeleteExpenseSnackbarShown);
-    const setIsDeleteExpenseSnackbarShown = useStore((state) => state.setIsDeleteExpenseSnackbarShown);
-    const isCreateExpenseSnackbarShown = useStore((state) => state.isCreateExpenseSnackbarShown);
-    const setIsCreateExpenseSnackbarShown = useStore((state) => state.setIsCreateExpenseSnackbarShown);
-    const isUpdateExpenseSnackbarShown = useStore((state) => state.isUpdateExpenseSnackbarShown);
-    const setIsUpdateExpenseSnackbarShown = useStore((state) => state.setIsUpdateExpenseSnackbarShown);
-    const isCantShowDeletedExpenseSnackbarShown = useStore((state) => state.isCantShowDeletedExpenseSnackbarShown);
-    const setIsCantShowDeletedExpenseSnackbarShown = useStore((state) => state.setIsCantShowDeletedExpenseSnackbarShown);
-    const isFriendRequestSentSnackbarShown = useStore((state) => state.isFriendRequestSentSnackbarShown);
-    const setIsFriendRequestSentSnackbarShown = useStore((state) => state.setIsFriendRequestSentSnackbarShown);
-    const isGroupComingSoonSnackbarShown = useStore((state) => state.isGroupComingSoonSnackbarShown);
-    const setIsGroupComingSoonSnackbarShown = useStore((state) => state.setIsGroupComingSoonSnackbarShown);
-    const setIsForceExpenseSaveEnabled = useStore((state) => state.setIsForceExpenseSaveEnabled);
-
     const {data, refetchFriends} = useFriends(searchValue);
     const friends = data?.data;
 
@@ -246,9 +249,15 @@ export default function RootLayout({children}: Readonly<{
     const onCloseFriendRequestSent = useCallback(() => setIsFriendRequestSentSnackbarShown(false), [setIsFriendRequestSentSnackbarShown]);
     const onCloseGroupComingSoon = useCallback(() => setIsGroupComingSoonSnackbarShown(false), [setIsGroupComingSoonSnackbarShown]);
 
+    const {updateUserSettings} = useUpdateUserSettings();
+
     const closeTour = useCallback(() => {
         setIsTourOpen(false);
-    }, [setIsTourOpen]);
+
+        updateUserSettings({
+            isGuideShown: true
+        }).then(() => refetchMe());
+    }, [refetchMe, setIsTourOpen, updateUserSettings]);
 
     const testFriend = friends?.find((friend) => friend.id === TUTORIAL_USER_ID);
     const isTestFriendAlreadyExist = testFriend;

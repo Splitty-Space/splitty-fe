@@ -11,6 +11,7 @@ export interface Me {
     photo: Blob;
     username: string;
     referral_code: string;
+    isGuideShown: boolean;
 }
 
 export interface useMe {
