@@ -14,6 +14,7 @@ import {
     IconContainer,
     Input,
     List,
+    SegmentedControl,
     Switch,
     Text,
 } from "@telegram-apps/telegram-ui";
@@ -36,12 +37,19 @@ import {Icon28Warning} from "@/Icons";
 import {TEST_EXPENSE_ID} from "@/const/testExpenseId";
 import "./addExpense.css";
 
+
 interface Payment {
     id: number;
     isSelected: boolean;
     amount?: number;
     amountRaw?: string;
+    percentRaw?: string;
     isDirty: boolean;
+}
+
+enum NUMBER_MODES {
+    AMOUNT = "AMOUNT",
+    PERCENT = "PERCENT"
 }
 
 export default function AddExpense() {
@@ -51,6 +59,9 @@ export default function AddExpense() {
 
     const maxExpenseNameLength = 256;
     const maxMoneySpentLength = 15;
+
+    const [paidByMode, setPaidByMode] = useState<NUMBER_MODES>(NUMBER_MODES.AMOUNT);
+    const [splitEquallyMode, setSplitEquallyMode] = useState<NUMBER_MODES>(NUMBER_MODES.AMOUNT);
 
     const searchValue = useStore((state) => state.searchValue);
     const selectedFriends = useStore((state) => state.selectedFriends);
@@ -292,6 +303,18 @@ export default function AddExpense() {
         } : x));
     };
 
+    const onPaidByPercentChange = (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newPercent = e.target.value ? Number(e.target.value.replace(/,/g, ".")) : 0;
+        const newAmount = newPercent === 0 ? 0 : (moneySpent ? moneySpent * newPercent / 100 : 0);
+        setPaidBy(paidBy.map(x => x.id === id ? {
+            ...x,
+            amount: newAmount,
+            amountRaw: newAmount.toString(),
+            percentRaw: e.target.value,
+            isDirty: true,
+        } : x));
+    };
+
     const onSplitEquallyBetweenAllChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setIsSplitEquallyBetweenAll(e.target.checked);
 
@@ -334,6 +357,18 @@ export default function AddExpense() {
             ...x,
             amount: e.target.value ? Number(e.target.value.replace(/,/g, ".")) : 0,
             amountRaw: e.target.value,
+            isDirty: true,
+        } : x));
+    };
+
+    const onSplitBetweenPercentChange = (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newPercent = e.target.value ? Number(e.target.value.replace(/,/g, ".")) : 0;
+        const newAmount = newPercent === 0 ? 0 : (moneySpent ? moneySpent * newPercent / 100 : 0);
+        setSplitBetween(splitBetween.map(x => x.id === id ? {
+            ...x,
+            amount: newAmount,
+            amountRaw: newAmount.toString(),
+            percentRaw: e.target.value,
             isDirty: true,
         } : x));
     };
@@ -444,6 +479,7 @@ export default function AddExpense() {
                                 className="p-0 addExpense__cell"
                                 after={
                                     <Switch
+                                        disabled={!(moneySpent && moneySpent > 0)}
                                         checked={isFullyPaidByYou}
                                         onChange={onFullyPaidByYouChange}
                                         style={{"backgroundColor": "red"}}
@@ -460,6 +496,7 @@ export default function AddExpense() {
                         className="p-0 addExpense__cell"
                         after={
                             <Switch
+                                disabled={!(moneySpent && moneySpent > 0)}
                                 checked={isSplitEquallyBetweenAll}
                                 onChange={onSplitEquallyBetweenAllChange}
                             />
@@ -471,9 +508,29 @@ export default function AddExpense() {
 
                 {!isFullyPaidByYou &&
                     <div className="mb-4" id="expense-add-paid-by">
-                        <div className="mt-4 flex items-center justify-between">
+                        <div className="mt-4 flex items-center">
                             <Headline weight="3">{t("expenses.PaidBy")}:</Headline>
+
+                            <SegmentedControl className="w-40 mx-auto">
+                                <SegmentedControl.Item
+                                    onClick={() => {
+                                        setPaidByMode(NUMBER_MODES.AMOUNT);
+                                    }}
+                                    selected={paidByMode === NUMBER_MODES.AMOUNT}
+                                >
+                                    1.23
+                                </SegmentedControl.Item>
+                                <SegmentedControl.Item
+                                    onClick={() => {
+                                        setPaidByMode(NUMBER_MODES.PERCENT);
+                                    }}
+                                    selected={paidByMode === NUMBER_MODES.PERCENT}
+                                >
+                                    %
+                                </SegmentedControl.Item>
+                            </SegmentedControl>
                         </div>
+
                         <Divider className="mt-2 border-2"/>
 
                         {Number(moneySpent) > 0 && (Number(moneySpent) - currentPaidMoneyAmount) !== 0 &&
@@ -520,25 +577,45 @@ export default function AddExpense() {
                                         </Text>
                                     </div>
 
-                                    <Input
-                                        type="text"
-                                        inputMode="decimal"
-                                        // @ts-ignore
-                                        maxlength="15"
-                                        value={paidBy.find(x => x.id === id)?.amountRaw}
-                                        onChange={onPaidByAmountChange(id)}
-                                        className="w-36 ml-auto"
-                                        status={currentPaidMoneyAmount !== moneySpent && isItemSelected ? "error" : undefined}
-                                        disabled={!isItemSelected}
-                                        onFocus={handleInputFocus()}
-                                        after={
-                                            <Caption
-                                                level="1"
-                                                weight="3"
-                                            >
-                                                {currency}
-                                            </Caption>}
-                                    />
+                                    {paidByMode === NUMBER_MODES.AMOUNT ?
+                                        <Input
+                                            type="text"
+                                            inputMode="decimal"
+                                            // @ts-ignore
+                                            maxlength="15"
+                                            value={paidBy.find(x => x.id === id)?.amountRaw}
+                                            onChange={onPaidByAmountChange(id)}
+                                            className="w-36 ml-auto"
+                                            status={currentPaidMoneyAmount !== moneySpent && isItemSelected ? "error" : undefined}
+                                            disabled={!isItemSelected}
+                                            onFocus={handleInputFocus()}
+                                            after={
+                                                <Caption
+                                                    level="1"
+                                                    weight="3"
+                                                >
+                                                    {currency}
+                                                </Caption>}
+                                        /> : <Input
+                                            type="text"
+                                            inputMode="decimal"
+                                            // @ts-ignore
+                                            maxlength="15"
+                                            // @ts-ignore
+                                            value={paidBy.find(x => x.id === id)?.percentRaw ?? paidBy.find(x => x.id === id)?.amountRaw * 100 / moneySpent}
+                                            onChange={onPaidByPercentChange(id)}
+                                            className="w-36 ml-auto"
+                                            status={currentPaidMoneyAmount !== moneySpent && isItemSelected ? "error" : undefined}
+                                            disabled={!isItemSelected}
+                                            onFocus={handleInputFocus()}
+                                            after={
+                                                <Caption
+                                                    level="1"
+                                                    weight="3"
+                                                >
+                                                    %
+                                                </Caption>}
+                                        />}
 
                                 </div>)
                             })}
@@ -552,7 +629,24 @@ export default function AddExpense() {
                         <div className="mt-4 flex items-center justify-between">
                             <Headline weight="3">{t("expenses.Split")}:</Headline>
 
-                            <Headline weight="3" className="invisible">{t("expenses.Split")}:</Headline>
+                            <SegmentedControl className="w-40 mx-auto">
+                                <SegmentedControl.Item
+                                    onClick={() => {
+                                        setSplitEquallyMode(NUMBER_MODES.AMOUNT);
+                                    }}
+                                    selected={splitEquallyMode === NUMBER_MODES.AMOUNT}
+                                >
+                                    1.23
+                                </SegmentedControl.Item>
+                                <SegmentedControl.Item
+                                    onClick={() => {
+                                        setSplitEquallyMode(NUMBER_MODES.PERCENT);
+                                    }}
+                                    selected={splitEquallyMode === NUMBER_MODES.PERCENT}
+                                >
+                                    %
+                                </SegmentedControl.Item>
+                            </SegmentedControl>
                         </div>
                         <Divider className="mt-2 border-2"/>
 
@@ -599,25 +693,45 @@ export default function AddExpense() {
                                             </Text>
                                         </div>
 
-                                        <Input
-                                            type="text"
-                                            inputMode="decimal"
-                                            // @ts-ignore
-                                            maxlength="15"
-                                            value={splitBetween.find(x => x.id === id)?.amountRaw}
-                                            onChange={onSplitBetweenAmountChange(id)}
-                                            className="w-36 ml-auto"
-                                            status={currentSplitBetweenMoneyAmount !== moneySpent ? "error" : undefined}
-                                            disabled={!isItemSelected}
-                                            onFocus={handleInputFocus()}
-                                            after={
-                                                <Caption
-                                                    level="1"
-                                                    weight="3"
-                                                >
-                                                    {currency}
-                                                </Caption>}
-                                        />
+                                        {splitEquallyMode === NUMBER_MODES.AMOUNT ?
+                                            <Input
+                                                type="text"
+                                                inputMode="decimal"
+                                                // @ts-ignore
+                                                maxlength="15"
+                                                value={splitBetween.find(x => x.id === id)?.amountRaw}
+                                                onChange={onSplitBetweenAmountChange(id)}
+                                                className="w-36 ml-auto"
+                                                status={currentSplitBetweenMoneyAmount !== moneySpent ? "error" : undefined}
+                                                disabled={!isItemSelected}
+                                                onFocus={handleInputFocus()}
+                                                after={
+                                                    <Caption
+                                                        level="1"
+                                                        weight="3"
+                                                    >
+                                                        {currency}
+                                                    </Caption>}
+                                            /> : <Input
+                                                type="text"
+                                                inputMode="decimal"
+                                                // @ts-ignore
+                                                maxlength="15"
+                                                // @ts-ignore
+                                                value={splitBetween.find(x => x.id === id)?.percentRaw ?? splitBetween.find(x => x.id === id)?.amountRaw * 100 / moneySpent}
+                                                onChange={onSplitBetweenPercentChange(id)}
+                                                className="w-36 ml-auto"
+                                                status={currentSplitBetweenMoneyAmount !== moneySpent ? "error" : undefined}
+                                                disabled={!isItemSelected}
+                                                onFocus={handleInputFocus()}
+                                                after={
+                                                    <Caption
+                                                        level="1"
+                                                        weight="3"
+                                                    >
+                                                        {currency}
+                                                    </Caption>}
+                                            />}
                                     </div>)
                                 }
                             )}
