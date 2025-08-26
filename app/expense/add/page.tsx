@@ -729,7 +729,7 @@ export default function AddExpense() {
                                                         level="1"
                                                         weight="3"
                                                     >
-                                                        {currency}
+                                                        %
                                                     </Caption>}
                                             />}
                                     </div>)
