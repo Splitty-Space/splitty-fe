@@ -508,11 +508,12 @@ export default function AddExpense() {
 
                 {!isFullyPaidByYou &&
                     <div className="mb-4" id="expense-add-paid-by">
-                        <div className="mt-4 flex items-center">
-                            <Headline weight="3">{t("expenses.PaidBy")}:</Headline>
+                        <div className="mt-4 flex items-center justify-between">
+                            <Headline weight="3">{t("expenses.PaidBy")}</Headline>
 
-                            <SegmentedControl className="w-40 mx-auto">
+                            <SegmentedControl className="w-36">
                                 <SegmentedControl.Item
+                                    className="overflow-visible"
                                     onClick={() => {
                                         setPaidByMode(NUMBER_MODES.AMOUNT);
                                     }}
@@ -627,10 +628,11 @@ export default function AddExpense() {
                     !isSplitEquallyBetweenAll &&
                     <div className="mb-4" id="expense-add-split-equally">
                         <div className="mt-4 flex items-center justify-between">
-                            <Headline weight="3">{t("expenses.Split")}:</Headline>
+                            <Headline weight="3">{t("expenses.Split")}</Headline>
 
-                            <SegmentedControl className="w-40 mx-auto">
+                            <SegmentedControl className="w-36">
                                 <SegmentedControl.Item
+                                    className="overflow-visible"
                                     onClick={() => {
                                         setSplitEquallyMode(NUMBER_MODES.AMOUNT);
                                     }}
