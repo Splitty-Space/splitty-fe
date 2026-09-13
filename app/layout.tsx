@@ -44,8 +44,7 @@ import "./globals.css";
 
 
 const Tour = dynamic(
-    // @ts-ignore
-    () => import("reactour"),
+    () => import("@/app/components/tour/tour"),
     {ssr: false}
 );
 
@@ -92,6 +91,9 @@ export default function RootLayout({children}: Readonly<{
             i18next.changeLanguage(me.language);
 
             setIsTourOpen(!me.isGuideShown);
+        } else {
+            // Omitting the language invokes the browser language detector.
+            i18next.changeLanguage();
         }
     }, [me, setIsTourOpen]);
 
@@ -417,20 +419,9 @@ export default function RootLayout({children}: Readonly<{
                             />
 
                             <Tour
-                                // @ts-ignore
                                 steps={tourConfig}
                                 isOpen={isTourOpen}
                                 onRequestClose={closeTour}
-                                closeWithMask={false}
-                                showNavigation={false}
-                                disableInteraction
-
-                                // rounded={5}
-                                // maskClassName="mask"
-                                // className="helper"
-                                // accentColor={accentColor}
-                                // onAfterOpen={this.disableBody}
-                                // onBeforeClose={this.enableBody}
                             />
 
                             {isDeleteFriendSnackbarShown && (

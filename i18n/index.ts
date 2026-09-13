@@ -12,7 +12,14 @@ i18n
     // for all options read: https://www.i18next.com/overview/configuration-options
     .init({
         debug: true,
+        // Keep server HTML and the first client render in the same language.
+        // Browser language detection runs after hydration in RootLayout.
+        lng: "en",
         fallbackLng: "en",
+        detection: {
+            // The initial English render must not overwrite a saved preference.
+            caches: [],
+        },
         interpolation: {
             escapeValue: false, // not needed for react as it escapes by default
         },

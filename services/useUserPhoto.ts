@@ -13,6 +13,7 @@ export interface useUserPhoto {
 const photoCache: Record<number, string> = {};
 
 export function useUserPhoto(user_id?: number) {
+    const hasUserId = typeof user_id === "number" && Number.isSafeInteger(user_id) && user_id > 0;
     const cachedUrl = user_id ? photoCache[user_id] : "";
 
     const token = useStore.getState().token;
@@ -26,10 +27,12 @@ export function useUserPhoto(user_id?: number) {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
-        }
+        },
+        {manual: !hasUserId}
     );
 
     const photoUrl = useMemo(() => {
+        if (!hasUserId) return "";
         if (cachedUrl) return cachedUrl;
         if (data) {
             const url = URL.createObjectURL(data);
@@ -39,7 +42,7 @@ export function useUserPhoto(user_id?: number) {
             return url;
         }
         return "";
-    }, [cachedUrl, data, user_id]);
+    }, [cachedUrl, data, hasUserId, user_id]);
 
     return {photoUrl, loading, error, refetch};
 }

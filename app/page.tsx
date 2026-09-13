@@ -49,12 +49,21 @@ export default function FriendsList() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     useEffect(() => {
-        init();
+        const cleanup = init();
+
+        // Analytics uses SDK v1 and cannot read the SDK v3 development mock.
+        if (process.env.NODE_ENV !== "production") {
+            return cleanup;
+        }
 
         TelegramAnalytics.init({
             token: "eyJhcHBfbmFtZSI6Im5mdTQzNXlodTlpMjAzeTQ4OWYydXlyIiwiYXBwX3VybCI6Imh0dHBzOi8vdC5tZS9zcGxpdHR5X2ZlX2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL2FwcC1zdGFnZS5zcGxpdHR5LmRpZ2l0YWwvIn0=!qpGcOmLOSPp34iL1orYJutbxSlCIvmFy12aulhG6lFM=",
             appName: "nfu435yhu9i203y489f2uyr",
+        }).catch((error: unknown) => {
+            console.warn("Telegram analytics initialization failed:", error);
         });
+
+        return cleanup;
     }, []);
 
     const [rowCount, setRowCount] = useState(defaultPageSize);
