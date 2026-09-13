@@ -6,8 +6,8 @@ import {useStore} from "@/app/store";
 const getExpense = async ({
                               expense_id,
                               signal
-                          }: {
-    expense_id?: number,
+}: {
+    expense_id: number,
     signal?: AbortSignal
 }) => {
     const token = useStore.getState().token;

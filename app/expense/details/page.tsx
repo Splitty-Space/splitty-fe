@@ -16,7 +16,7 @@ import {useStore} from "@/app/store";
 import ExpenseHistoryList from "@/app/expense/details/ExpenseHistoryList";
 import useFriends from "@/services/useFriends";
 import {useRouter} from "next/navigation";
-import {addExpense, settleUpPayment} from "@/const/urls";
+import {addExpense, friendsList, settleUpPayment} from "@/const/urls";
 import {popup} from "@telegram-apps/sdk";
 import Avatar from "@/app/components/avatar/Avatar";
 import {formatDateTime} from "@/utils/formatDateTime";
@@ -44,17 +44,24 @@ export default function ExpenseDetails() {
 
     const [token, refreshToken] = useRefreshToken();
     const [isExpenseLoading, setIsExpenseLoading] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
+        const expenseId = selectedExpense?.id;
+
+        if (expenseId === undefined) {
+            router.replace(friendsList);
+            return;
+        }
+
         setIsExpenseLoading(true);
-        getExpense({expense_id: selectedExpense?.id})
+        getExpense({expense_id: expenseId})
             .then(({data}) => {
                 setSelectedExpense(data);
-                setIsExpenseLoading(false);
-            });
-    }, [selectedExpense?.id, setSelectedExpense, token]);
-
-    const router = useRouter();
+            })
+            .catch((error) => console.error({error}))
+            .finally(() => setIsExpenseLoading(false));
+    }, [router, selectedExpense?.id, setSelectedExpense, token]);
 
     const expenseDelete = () => {
         if (selectedExpense?.id) {
