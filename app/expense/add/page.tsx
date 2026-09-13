@@ -582,8 +582,7 @@ export default function AddExpense() {
                                         <Input
                                             type="text"
                                             inputMode="decimal"
-                                            // @ts-ignore
-                                            maxlength="15"
+                                            maxLength={15}
                                             value={paidBy.find(x => x.id === id)?.amountRaw}
                                             onChange={onPaidByAmountChange(id)}
                                             className="w-36 ml-auto"
@@ -600,8 +599,7 @@ export default function AddExpense() {
                                         /> : <Input
                                             type="text"
                                             inputMode="decimal"
-                                            // @ts-ignore
-                                            maxlength="15"
+                                            maxLength={15}
                                             // @ts-ignore
                                             value={paidBy.find(x => x.id === id)?.percentRaw ?? paidBy.find(x => x.id === id)?.amountRaw * 100 / moneySpent}
                                             onChange={onPaidByPercentChange(id)}
@@ -699,8 +697,7 @@ export default function AddExpense() {
                                             <Input
                                                 type="text"
                                                 inputMode="decimal"
-                                                // @ts-ignore
-                                                maxlength="15"
+                                                maxLength={15}
                                                 value={splitBetween.find(x => x.id === id)?.amountRaw}
                                                 onChange={onSplitBetweenAmountChange(id)}
                                                 className="w-36 ml-auto"
@@ -717,8 +714,7 @@ export default function AddExpense() {
                                             /> : <Input
                                                 type="text"
                                                 inputMode="decimal"
-                                                // @ts-ignore
-                                                maxlength="15"
+                                                maxLength={15}
                                                 // @ts-ignore
                                                 value={splitBetween.find(x => x.id === id)?.percentRaw ?? splitBetween.find(x => x.id === id)?.amountRaw * 100 / moneySpent}
                                                 onChange={onSplitBetweenPercentChange(id)}
