@@ -15,7 +15,6 @@ import {DARK, DEFAULT_THEME, THEME_TYPE} from "@/const/theme";
 import {DEFAULT_PLATFORM, IOS, PLATFORM_TYPE} from "@/const/platform";
 import {AppRootContext} from "./AppRootContext";
 import {backButton, closingBehavior, miniApp, swipeBehavior, viewport, postEvent} from "@telegram-apps/sdk";
-import {retrieveLaunchParams} from "@telegram-apps/bridge";
 import {LocalizationProvider} from "@mui/x-date-pickers";
 import {createTheme, ThemeProvider} from "@mui/material/styles";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
@@ -53,6 +52,10 @@ const darkTheme = createTheme({
         mode: DARK,
     },
 });
+
+// Wait for the full mount promise to settle before starting another mount.
+// The SDK clears its concurrency guard asynchronously after cancellation.
+let viewportMountTask: Promise<void> = Promise.resolve();
 
 export default function RootLayout({children}: Readonly<{
     children: React.ReactNode;
@@ -126,56 +129,39 @@ export default function RootLayout({children}: Readonly<{
     }, []);
 
     useEffect(() => {
-        const mountViewport = async () => {
-            if (viewport.mount.isAvailable()) {
+        let disposed = false;
+
+        viewportMountTask = viewportMountTask.then(async () => {
+            if (!disposed && viewport.mount.isAvailable()) {
                 try {
-                    const promise = viewport.mount();
-                    await promise;
+                    await viewport.mount();
+
+                    if (!disposed && viewport.expand.isAvailable()) {
+                        viewport.expand();
+                    }
                 } catch (err) {
-                    console.log("viewport.mountError() = ", viewport.mountError());
+                    // Cleanup cancels a pending mount, including during Strict Mode replay.
+                    if (!disposed) {
+                        console.error("Viewport initialization failed:", err);
+                    }
                 }
             }
-        };
-
-        const expandScreen = () => {
-            if (viewport.expand.isAvailable()) {
-                viewport.expand();
-            }
-        };
-
-        mountViewport().then(() => {
-            function checkIfTelegramScriptReady() {
-                setTimeout(() => {
-                    const launchParams = retrieveLaunchParams();
-                    if (launchParams) {
-                        expandScreen();
-                    } else {
-                        checkIfTelegramScriptReady();
-                    }
-                }, 100);
-            }
-
-            checkIfTelegramScriptReady();
         });
 
         return () => {
+            disposed = true;
             viewport.unmount();
         };
     }, []);
 
     useEffect(() => {
-        const mountMiniApp = async () => {
-            if (miniApp.mount.isAvailable()) {
-                try {
-                    const promise = miniApp.mount();
-                    await promise;
-                } catch (err) {
-                    console.log("miniApp.mountError() = ", miniApp.mountError());
-                }
-            }
+        if (!miniApp.mountSync.isAvailable()) {
+            return;
         }
 
-        mountMiniApp().then(() => {
+        try {
+            miniApp.mountSync();
+
             if (miniApp.setBackgroundColor.isAvailable()) {
                 miniApp.setBackgroundColor("#000000");
             }
@@ -183,7 +169,13 @@ export default function RootLayout({children}: Readonly<{
             if (miniApp.setHeaderColor.isAvailable()) {
                 miniApp.setHeaderColor("#000000");
             }
-        });
+        } catch (err) {
+            console.error("Mini app initialization failed:", err);
+        }
+
+        return () => {
+            miniApp.unmount();
+        };
     }, []);
 
     useEffect(() => {
