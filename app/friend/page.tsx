@@ -22,7 +22,7 @@ import useMe from "@/services/useMe";
 import {formatDate} from "@/utils/formatDate";
 import Main from "@/app/components/main/main";
 import {useRouter} from "next/navigation";
-import {expenseDetails, friendSettings, settleUp, settleUpPayment} from "@/const/urls";
+import {expenseDetails, friendSettings, friendsList, settleUp, settleUpPayment} from "@/const/urls";
 import useFriends from "@/services/useFriends";
 import {useStore} from "@/app/store";
 import Avatar from "@/app/components/avatar/Avatar";
@@ -42,10 +42,11 @@ export default function FriendPage() {
 
     const searchValue = useStore((state) => state.searchValue);
     const selectedUserId = useStore((state) => state.selectedUserId);
-    const {data} = useFriends(searchValue);
+    const {data, loadingFriends} = useFriends(searchValue);
     const friend = data?.data?.find(friend => friend.id === selectedUserId);
     const setSelectedExpense = useStore((state) => state.setSelectedExpense);
     const setSettleUpPaymentInfo = useStore((state) => state.setSettleUpPaymentInfo);
+    const router = useRouter();
 
     const pageSize = defaultPageSize;
     const [rowCount, setRowCount] = useState(pageSize);
@@ -57,15 +58,37 @@ export default function FriendPage() {
 
     useEffect(() => {
         const controller = new AbortController();
+        let isActive = true;
+
+        if (loadingFriends) {
+            return () => {
+                isActive = false;
+                controller.abort();
+            };
+        }
+
+        if (!friend) {
+            setLoadingExpenses(false);
+            router.replace(friendsList);
+
+            return () => {
+                isActive = false;
+                controller.abort();
+            };
+        }
 
         setLoadingExpenses(true);
 
         getExpenses({
             page: 1,
             limit: pageSize,
-            friend_id: friend?.id,
+            friend_id: friend.id,
             signal: controller.signal
         }).then(({data}) => {
+            if (!isActive) {
+                return;
+            }
+
             setLoadingExpenses(false);
             setExpenses(data.data);
 
@@ -75,27 +98,31 @@ export default function FriendPage() {
                 setRowCount(data.data.length);
             }
         }).catch((error) => {
-            console.log({error});
+            if (isActive) {
+                setLoadingExpenses(false);
+                console.log({error});
+            }
         });
 
         return () => {
+            isActive = false;
             controller.abort();
         }
-    }, [friend, pageSize, token]);
+    }, [friend, loadingFriends, pageSize, router, token]);
 
     const isRowLoaded = ({index}: { index: number }) => {
         return expenses && !!expenses[index];
     };
 
     const loadMoreRows = ({startIndex}: { startIndex: number }) => {
-        if (!Number.isInteger(startIndex / pageSize)) {
+        if (!friend || !Number.isInteger(startIndex / pageSize)) {
             return;
         }
 
         getExpenses({
             page: startIndex / pageSize + 1,
             limit: pageSize,
-            friend_id: friend?.id,
+            friend_id: friend.id,
         }).then(({data}) => {
             if (data.meta.has_more) {
                 setRowCount(prevState => prevState + pageSize);
@@ -108,8 +135,6 @@ export default function FriendPage() {
             console.log({error});
         });
     };
-
-    const router = useRouter();
 
     const onSettleUp = useCallback(() => {
         if (friend) {

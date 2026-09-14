@@ -3,19 +3,23 @@ import {SERVER_URL} from "@/API/APIConstants";
 import getCurrentUserId from "@/utils/getCurrentUserId";
 import {useStore} from "@/app/store";
 
+type ExpenseScope =
+    | {friend_id: number, group_id?: never}
+    | {friend_id?: never, group_id: number};
+
+type GetExpensesParams = ExpenseScope & {
+    page: number,
+    limit: number,
+    signal?: AbortSignal
+};
+
 const getExpenses = async ({
                                page,
                                limit,
                                friend_id,
                                group_id,
                                signal
-                           }: {
-    page: number,
-    limit: number,
-    friend_id?: number,
-    group_id?: number,
-    signal?: AbortSignal
-}) => {
+                           }: GetExpensesParams) => {
     const token = useStore.getState().token;
 
     return await axios.get(`${SERVER_URL}/expenses`, {
