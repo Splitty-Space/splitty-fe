@@ -25,6 +25,7 @@ import {invoice} from "@telegram-apps/sdk";
 
 export default function Account() {
     const {t} = useTranslation();
+    const showError = useStore((state) => state.setIsRequestErrorSnackbarShown);
 
     const {data: me, refetch} = useMe();
 
@@ -63,21 +64,20 @@ export default function Account() {
         setIsCurrencyLoading(true);
         updateUserSettings({
             defaultCurrency: e.target.value,
-        }).then(() =>
-            refetch().then(() => setIsCurrencyLoading(false))
-        );
+        }).then(() => refetch())
+            .catch(() => showError(true))
+            .finally(() => setIsCurrencyLoading(false));
     };
 
     const onLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const language = e.target.value;
         setIsLanguageLoading(true);
         updateUserSettings({
-            language: e.target.value,
-        }).then(() =>
-            refetch().then(() => {
-                setIsLanguageLoading(false);
-                i18next.changeLanguage(e.target.value.toLowerCase());
-            })
-        );
+            language,
+        }).then(() => refetch())
+            .then(() => i18next.changeLanguage(language.toLowerCase()))
+            .catch(() => showError(true))
+            .finally(() => setIsLanguageLoading(false));
     };
 
     return (

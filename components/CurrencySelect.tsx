@@ -1,4 +1,4 @@
-import React, {ChangeEventHandler} from "react";
+import {ChangeEventHandler} from "react";
 import {CURRENCIES} from "@/const/currencies";
 import {Select} from "@telegram-apps/telegram-ui";
 import Loader from "@/app/components/loader/loader";
@@ -16,18 +16,18 @@ export function CurrencySelect({defaultCurrency, isLoading, className, spinnerCl
     return (
         defaultCurrency && !isLoading ?
             <Select
-                defaultValue={defaultCurrency}
+                value={defaultCurrency}
                 className={className}
                 onChange={onChange}
                 disabled={disabled}
             >
                 {
                     CURRENCIES.map((currency) => (
-                        <option key={currency}> {currency} </option>
+                        <option key={currency} value={currency}>{currency}</option>
                     ))
                 }
             </Select>
             :
-            <Loader className="mr-4 mt-4"/>
+            <Loader className={`mr-4 mt-4 ${spinnerClassName ?? ""}`}/>
     );
 }

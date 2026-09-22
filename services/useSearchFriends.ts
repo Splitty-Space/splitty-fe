@@ -6,7 +6,7 @@ export const useSearchFriends = (searchValue: string) => {
 
     let doRequest = query === "" || query.length < 3;
 
-    const token = useStore.getState().token;
+    const token = useStore((state) => state.token);
 
     const [{data, loading, error}, refetch] = useAxios({
         url: "/searchUser",
@@ -18,7 +18,7 @@ export const useSearchFriends = (searchValue: string) => {
         headers: {
             Authorization: `Bearer ${token}`,
         },
-    }, {manual: doRequest});
+    }, {manual: !token || doRequest});
 
     return {data, loading, error, refetch};
 }

@@ -22,7 +22,7 @@ export interface useMe {
 }
 
 const useMe = (): useMe => {
-    const token = useStore.getState().token;
+    const token = useStore((state) => state.token);
 
     const [{data, loading, error}, refetch] = useAxios({
         url: "/me",
@@ -32,9 +32,9 @@ const useMe = (): useMe => {
         headers: {
             Authorization: `Bearer ${token}`,
         },
-    });
+    }, {manual: !token});
 
-    return {data, loading, error, refetch};
+    return {data, loading: !token || loading, error, refetch};
 };
 
 export default useMe;

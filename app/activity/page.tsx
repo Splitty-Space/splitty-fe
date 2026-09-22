@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useCallback, useEffect, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import {
     Cell,
     Divider,
@@ -35,7 +35,12 @@ export default function ActivityPage() {
     const setSelectedExpense = useStore((state) => state.setSelectedExpense);
     const setIsCantShowDeletedExpenseSnackbarShown = useStore((state) => state.setIsCantShowDeletedExpenseSnackbarShown);
 
-    const {data: me} = useMe();
+    const {data: me, loading: loadingMe} = useMe();
+    const authToken = useStore((state) => state.token);
+    const showError = useStore((state) => state.setIsRequestErrorSnackbarShown);
+    const listController = useRef<AbortController | null>(null);
+    const pendingPages = useRef(new Map<number, Promise<void>>());
+    const expenseController = useRef<AbortController | null>(null);
 
     const pageSize = defaultPageSize;
     const [rowCount, setRowCount] = useState(pageSize);
@@ -46,61 +51,77 @@ export default function ActivityPage() {
 
     const [refContainer, height] = useContentHeight();
 
-    const loadPage = (page: number) => {
-        const controller = new AbortController();
-
-        getActivities({
-            page,
-            pageSize,
-            signal: controller.signal
-        }).then(({data}) => {
-            setIsLoaded(true);
-            setRowCount(data.meta.total_records);
-            setActivities(prevState => page === 1 ? data.data : [...prevState, ...data.data]);
-
-            if (page == 1) {
-                setIsReloadInProgress(false);
-            }
-        }).catch((error) => {
-            console.error({error})
-        });
-
-        return () => {
-            controller.abort();
-        }
-    };
+    const loadPage = useCallback((page: number) => {
+        const controller = listController.current;
+        if (!authToken || !controller || controller.signal.aborted) return Promise.resolve();
+        const pending = pendingPages.current.get(page);
+        if (pending) return pending;
+        const request = getActivities({page, pageSize, signal: controller.signal})
+            .then(({data}) => {
+                if (controller.signal.aborted) return;
+                setIsLoaded(true);
+                setRowCount(data.meta.total_records);
+                setActivities(previous => {
+                    const next = page === 1 ? [] : [...previous];
+                    data.data.forEach((item: Activity, index: number) => {
+                        next[(page - 1) * pageSize + index] = item;
+                    });
+                    return next;
+                });
+            }).catch(() => {
+                if (!controller.signal.aborted) showError(true);
+            }).finally(() => {
+                if (!controller.signal.aborted) {
+                    pendingPages.current.delete(page);
+                    setIsLoaded(true);
+                    if (page === 1) setIsReloadInProgress(false);
+                }
+            });
+        pendingPages.current.set(page, request);
+        return request;
+    }, [authToken, pageSize, showError]);
 
     useEffect(() => {
-        loadPage(1);
-    }, []);
+        const controller = new AbortController();
+        listController.current = controller;
+        pendingPages.current.clear();
+        setActivities([]);
+        setIsLoaded(false);
+        void loadPage(1);
+        return () => listController.current?.abort();
+    }, [loadPage]);
 
-    const isRowLoaded = ({index}: { index: number }) => {
-        return activities && !!activities[index];
-    };
+    useEffect(() => () => expenseController.current?.abort(), []);
 
-    const loadMoreRows = ({startIndex}: { startIndex: number }) => {
-        if (!Number.isInteger(startIndex / pageSize)) {
-            return;
-        }
-
-        loadPage(startIndex / pageSize + 1);
-    };
+    const isRowLoaded = ({index}: { index: number }) => !!activities[index];
+    const loadMoreRows = ({startIndex}: { startIndex: number }) => loadPage(Math.floor(startIndex / pageSize) + 1);
 
     const router = useRouter();
 
     const onCellClick = useCallback((expense: Expense) => () => {
-        if (!isLoadingExpense && !expense.isDeleted) {
-            setIsLoadingExpense(true);
-            getExpense({expense_id: expense.id}).then(({data}) => {
-                setSelectedExpense({...data});
-                setPageData({isFromActivity: true});
-                router.push(expenseDetails);
-            });
-        } else {
+        if (expenseController.current) return;
+        if (expense.isDeleted) {
             setIsCantShowDeletedExpenseSnackbarShown(true);
             vibration("rigid");
+            return;
         }
-    }, [isLoadingExpense, setSelectedExpense, setPageData, router, setIsCantShowDeletedExpenseSnackbarShown]);
+        const controller = new AbortController();
+        expenseController.current = controller;
+        setIsLoadingExpense(true);
+        getExpense({expense_id: expense.id, signal: controller.signal}).then(({data}) => {
+            if (controller.signal.aborted) return;
+            setSelectedExpense(data);
+            setPageData({isFromActivity: true});
+            router.push(expenseDetails);
+        }).catch(() => {
+            if (!controller.signal.aborted) showError(true);
+        }).finally(() => {
+            if (!controller.signal.aborted) {
+                expenseController.current = null;
+                setIsLoadingExpense(false);
+            }
+        });
+    }, [setSelectedExpense, setPageData, router, setIsCantShowDeletedExpenseSnackbarShown, showError]);
 
     const rowRenderer = ({index, key, style}: { index: number, key: string, style: object }) => {
         const activity = activities[index];
@@ -119,13 +140,13 @@ export default function ActivityPage() {
             <div key={key} style={style}>
                 <Cell
                     className="friends-list_shrink-0"
-                    subtitle={formatDateTime(created_at, me.language)}
+                    subtitle={formatDateTime(created_at, me?.language ?? "en")}
                     before={<Avatar size={48} user_id={user?.id}/>}
                     onClick={onCellClick(expense)}
                 >
                     {activity_type !== ACTIVITY_TYPE.PAYMENT_CREATED ?
                         `${user.name} ` + t(`activity.${ACTIVITY_TYPE_TO_TEXT[activity_type]}`) + ` "${expense.description}"` :
-                        expense.expense_users.find(expense_user => expense_user.lent_amount === 0)?.user.id === me.id ?
+                        expense.expense_users.find(expense_user => expense_user.lent_amount === 0)?.user.id === me?.id ?
                             `${expense.expense_users.find(expense_user => expense_user.debt_amount === 0)?.user.name} ${t("settleUp.PaidYou")}` :
                             `${t("settleUp.YouPaid")} ${expense.expense_users.find(expense_user => expense_user.lent_amount === 0)?.user.name}`
                     }
@@ -137,8 +158,10 @@ export default function ActivityPage() {
 
     const onRefresh = () => {
         setIsReloadInProgress(true);
-        loadPage(1);
-        return Promise.resolve();
+        listController.current?.abort();
+        listController.current = new AbortController();
+        pendingPages.current.clear();
+        return loadPage(1);
     };
 
     return (
@@ -150,9 +173,9 @@ export default function ActivityPage() {
 
             <Main
                 ref={refContainer}
-                center={!isLoaded || isReloadInProgress || isLoadingExpense || activities?.length === 0}
+                center={loadingMe || !isLoaded || isReloadInProgress || isLoadingExpense || activities?.length === 0}
             >
-                {!isLoaded || isReloadInProgress || isLoadingExpense ?
+                {loadingMe || !isLoaded || isReloadInProgress || isLoadingExpense ?
                     <Loader/> :
                     activities?.length > 0 ?
                         <PullToRefresh onRefresh={onRefresh}>

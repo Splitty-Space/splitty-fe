@@ -1,20 +1,28 @@
-import {useRef, useState, useEffect, useLayoutEffect} from "react";
+import {useRef, useState, useLayoutEffect} from "react";
 
 const useContentHeight = (): [React.RefObject<HTMLDivElement>, number] => {
     const refContainer = useRef<HTMLDivElement>(null);
     const [height, setHeight] = useState(0);
 
     useLayoutEffect(() => {
-        if (refContainer.current) {
-            const computedStyle = window.getComputedStyle(refContainer.current);
+        const container = refContainer.current;
+        if (!container) return;
+
+        const updateHeight = () => {
+            const computedStyle = window.getComputedStyle(container);
 
             const paddingTop = parseFloat(computedStyle.paddingTop);
             const paddingBottom = parseFloat(computedStyle.paddingBottom);
 
-            const calculatedHeight = refContainer.current.clientHeight - paddingTop - paddingBottom;
-            setHeight(calculatedHeight);
-        }
-    });
+            const calculatedHeight = container.clientHeight - paddingTop - paddingBottom;
+            setHeight(Math.max(0, calculatedHeight));
+        };
+
+        updateHeight();
+        const observer = new ResizeObserver(updateHeight);
+        observer.observe(container);
+        return () => observer.disconnect();
+    }, []);
 
     return [refContainer, height];
 };

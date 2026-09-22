@@ -1,6 +1,6 @@
 "use client"
 
-import {useCallback} from "react";
+import {useCallback, useEffect} from "react";
 import useMe from "@/services/useMe";
 import {useTranslation} from "react-i18next";
 import HeaderWithSearch from "@/app/components/header/headerWithSearch";
@@ -21,18 +21,18 @@ export default function FriendsHeader({searchValue, setSearchValue, onSearchChan
     const setIsFriendRequestSentSnackbarShown = useStore((state) => state.setIsFriendRequestSentSnackbarShown);
 
     const shareSplitty = useCallback(() => {
-        if (shareURL.isAvailable()) {
+        if (me?.referral_code && shareURL.isAvailable()) {
             shareURL(
                 `https://t.me/splitty_fe_bot?start=${me.referral_code}`,
                 t("friend.AddFriendMessage"));
         }
     }, [me, t]);
 
-    global.window && window.addEventListener("shareMessageSent", (...data) => {
-        console.log("shareMessageSent");
-        console.log(data);
-        setIsFriendRequestSentSnackbarShown(true);
-    });
+    useEffect(() => {
+        const onShareMessageSent = () => setIsFriendRequestSentSnackbarShown(true);
+        window.addEventListener("shareMessageSent", onShareMessageSent);
+        return () => window.removeEventListener("shareMessageSent", onShareMessageSent);
+    }, [setIsFriendRequestSentSnackbarShown]);
 
     const RightComponent = useCallback(() => (
         <IconButton

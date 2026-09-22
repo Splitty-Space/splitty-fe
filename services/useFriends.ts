@@ -15,7 +15,7 @@ export interface UseFriends {
 }
 
 const useFriends = (searchValue: string): UseFriends => {
-    const token = useStore.getState().token;
+    const token = useStore((state) => state.token);
 
     const [{data, loading, error}, refetchFriends] = useAxios({
         url: "/friends",
@@ -25,18 +25,18 @@ const useFriends = (searchValue: string): UseFriends => {
         headers: {
             Authorization: `Bearer ${token}`,
         },
-    });
+    }, {manual: !token});
 
     let filteredData = {...data};
     if (data && searchValue !== "") {
         filteredData.data = data.data.filter((user: Friend) =>
             user.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-            user.username.toLowerCase().includes(searchValue.toLowerCase()));
+            (user.username ?? "").toLowerCase().includes(searchValue.toLowerCase()));
     }
 
     return {
         data: filteredData,
-        loadingFriends: loading,
+        loadingFriends: !token || loading,
         error,
         refetchFriends
     };

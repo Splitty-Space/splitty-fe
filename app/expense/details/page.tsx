@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
 import classNames from "classnames";
 import Header from "@/app/components/header/header";
@@ -25,9 +25,13 @@ import Loader from "@/app/components/loader/loader";
 import useRefreshToken from "@/utils/useRefreshToken";
 import PullToRefresh from "@/app/components/pullToRefresh/pullToRefresh";
 import "./expenseDetails.css";
+import {TEST_EXPENSE_ID} from "@/const/testExpenseId";
 
 export default function ExpenseDetails() {
     const {t} = useTranslation();
+    const authToken = useStore((state) => state.token);
+    const showError = useStore((state) => state.setIsRequestErrorSnackbarShown);
+    const deleteInFlight = useRef(false);
 
     const selectedExpense = useStore((state) => state.selectedExpense);
     const setSelectedExpense = useStore((state) => state.setSelectedExpense);
@@ -54,24 +58,32 @@ export default function ExpenseDetails() {
             return;
         }
 
+        if (!authToken || expenseId === TEST_EXPENSE_ID) return;
+        const controller = new AbortController();
         setIsExpenseLoading(true);
-        getExpense({expense_id: expenseId})
+        getExpense({expense_id: expenseId, signal: controller.signal})
             .then(({data}) => {
-                setSelectedExpense(data);
+                if (!controller.signal.aborted) setSelectedExpense(data);
             })
-            .catch((error) => console.error({error}))
-            .finally(() => setIsExpenseLoading(false));
-    }, [router, selectedExpense?.id, setSelectedExpense, token]);
+            .catch(() => { if (!controller.signal.aborted) showError(true); })
+            .finally(() => { if (!controller.signal.aborted) setIsExpenseLoading(false); });
+        return () => controller.abort();
+    }, [authToken, router, selectedExpense?.id, setSelectedExpense, showError, token]);
 
     const expenseDelete = () => {
-        if (selectedExpense?.id) {
+        if (selectedExpense?.id && selectedExpense.id !== TEST_EXPENSE_ID && !deleteInFlight.current) {
+            deleteInFlight.current = true;
             setDeleteExpenseLoading(true);
             deleteExpense(selectedExpense.id)
-                .then(() => refetchFriends())
-                .then(() => {
+                .then(async () => {
+                    await refetchFriends().catch(() => showError(true));
                     setIsDeleteExpenseSnackbarShown(true);
                     setSelectedExpense(null);
                     router.back();
+                }).catch(() => {
+                    deleteInFlight.current = false;
+                    setDeleteExpenseLoading(false);
+                    showError(true);
                 });
         }
     };
@@ -97,7 +109,7 @@ export default function ExpenseDetails() {
 
     const onEdit = () => {
         if (selectedExpense?.payment) {
-            const friend = friends.find(({id}) => id === selectedExpense.expense_users.find(({user}) => user.id !== me.id)?.user.id);
+            const friend = friends?.find(({id}) => id === selectedExpense.expense_users.find(({user}) => user.id !== me?.id)?.user.id);
             if (friend) {
                 setSettleUpPaymentInfo(
                     {

@@ -1,4 +1,4 @@
-import axios from "axios"
+import {apiClient as axios} from "@/API/client"
 import {SERVER_URL} from "@/API/APIConstants";
 import getCurrentUserId from "@/utils/getCurrentUserId";
 import {useStore} from "@/app/store";

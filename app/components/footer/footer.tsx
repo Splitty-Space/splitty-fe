@@ -31,12 +31,12 @@ export default function Footer({
                                    setSearchValue,
                                    setSelectedExpense,
                                }: {
-    friends: Friend[],
-    selectedUserId: any,
-    setSelectedUserId: Function,
-    setSelectedFriends: Function,
-    setSearchValue: Function,
-    setSelectedExpense: Function,
+    friends: Friend[] | undefined,
+    selectedUserId: number | null,
+    setSelectedUserId: ReturnType<typeof useStore.getState>["setSelectedUserId"],
+    setSelectedFriends: ReturnType<typeof useStore.getState>["setSelectedFriends"],
+    setSearchValue: ReturnType<typeof useStore.getState>["setSearchValue"],
+    setSelectedExpense: ReturnType<typeof useStore.getState>["setSelectedExpense"],
 }) {
     const {t} = useTranslation();
 
@@ -100,7 +100,8 @@ export default function Footer({
 
     const onBarItemClick = useCallback((id: number) => () => {
         if (id === TabIds.AddExpenseParticipants && pathname === friend) {
-            const selectedFriend = friends.find(x => x.id === selectedUserId);
+            const selectedFriend = friends?.find(x => x.id === selectedUserId);
+            if (!selectedFriend) return;
             setSelectedFriends([selectedFriend]);
         } else if (id !== TabIds.Groups) {
             setSelectedFriends([]);

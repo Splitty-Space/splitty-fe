@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useState} from "react";
+import React, {useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
 import classNames from "classnames";
 import dayjs, {Dayjs} from "dayjs";
@@ -23,7 +23,10 @@ import Loader from "@/app/components/loader/loader";
 export default function SettleUpPayment() {
     const {t} = useTranslation();
 
+    const setSelectedUserId = useStore((state) => state.setSelectedUserId);
     const selectedExpense = useStore((state) => state.selectedExpense);
+    const showError = useStore((state) => state.setIsRequestErrorSnackbarShown);
+    const saveInFlight = useRef(false);
     const searchValue = useStore((state) => state.searchValue);
     const setIsCreateExpenseSnackbarShown = useStore((state) => state.setIsCreateExpenseSnackbarShown);
     const setIsUpdateExpenseSnackbarShown = useStore((state) => state.setIsUpdateExpenseSnackbarShown);
@@ -36,21 +39,22 @@ export default function SettleUpPayment() {
 
     const {refetchFriends} = useFriends(searchValue);
 
-    const [isSaveDisabled, setIsSaveDisabled] = useState(false);
     const [isSaveInProgress, setIsSaveInProgress] = useState(false);
 
     const defaultAmount = Number(selectedExpense ? selectedExpense.amount : friend?.total.find(x => x.currency === defaultCurrency)?.amount);
-    const isYouAreDebtor = defaultAmount < 0;
+    const isYouAreDebtor = selectedExpense
+        ? selectedExpense.expense_users.some(({user, lent_amount}) => user.id === me?.id && Number(lent_amount) > 0)
+        : defaultAmount < 0;
 
     const [amountPaid, setAmountPaid] = useState(Math.abs(defaultAmount));
     const [currency, setCurrency] = useState(selectedExpense ? selectedExpense.currency : defaultCurrency);
     const [date, setDate] = useState(selectedExpense ? selectedExpense.date : new Date());
+    const isSaveDisabled = !me || !friend || !currency || !Number.isFinite(amountPaid) || amountPaid <= 0 || !dayjs(date).isValid();
 
     const onAmountPaidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const amount = Number(e.target.value.replace(",", "."));
         setAmountPaid(amount);
 
-        setIsSaveDisabled(amount === 0);
     };
 
     const onCurrencyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,7 +73,9 @@ export default function SettleUpPayment() {
 
     const router = useRouter();
 
-    const onSave = () => {
+    const onSave = async () => {
+        if (saveInFlight.current || isSaveDisabled || !friend) return;
+        saveInFlight.current = true;
         setIsSaveInProgress(true);
 
         const payers = []
@@ -85,32 +91,37 @@ export default function SettleUpPayment() {
         const amount = amountPaid;
         const users = [me.id, friend?.id];
 
-        if (selectedExpense) {
-            putExpense({
-                expense_id: selectedExpense.id,
-                payers,
-                debtors,
-                users,
-                amount,
-                description
-            })
-                .then(() => refetchFriends())
-                .then(() => setIsUpdateExpenseSnackbarShown(true))
-                .then(() => router.push(friendURL));
-        } else {
-            addExpense({
-                payers,
-                debtors,
-                users,
-                amount,
-                payment: true,
-                currency,
-                date,
-                description,
-            })
-                .then(() => refetchFriends())
-                .then(() => setIsCreateExpenseSnackbarShown(true))
-                .then(() => router.push(friendURL));
+        try {
+            if (selectedExpense) {
+                await putExpense({
+                    expense_id: selectedExpense.id,
+                    payers,
+                    debtors,
+                    users,
+                    amount,
+                    description
+                });
+                setIsUpdateExpenseSnackbarShown(true);
+            } else {
+                await addExpense({
+                    payers,
+                    debtors,
+                    users,
+                    amount,
+                    payment: true,
+                    currency,
+                    date,
+                    description,
+                });
+                setIsCreateExpenseSnackbarShown(true);
+            }
+            await refetchFriends().catch(() => showError(true));
+            setSelectedUserId(friend.id);
+            router.push(friendURL);
+        } catch {
+            saveInFlight.current = false;
+            setIsSaveInProgress(false);
+            showError(true);
         }
     };
 
@@ -138,7 +149,7 @@ export default function SettleUpPayment() {
                             size="l"
                             mode="plain"
                             onClick={onSave}
-                            disabled={isSaveDisabled}
+                            disabled={isSaveDisabled || isSaveInProgress}
                             loading={isSaveInProgress}
                         >
                             {t("settleUp.Save")}

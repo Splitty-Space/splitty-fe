@@ -3,7 +3,7 @@ import getCurrentUserId from "@/utils/getCurrentUserId";
 import {useStore} from "@/app/store";
 
 const useGroups = () => {
-    const token = useStore.getState().token;
+    const token = useStore((state) => state.token);
 
     const [{data, loading, error}, refetch] = useAxios({
         url: "/groups",
@@ -13,7 +13,7 @@ const useGroups = () => {
         headers: {
             Authorization: `Bearer ${token}`,
         },
-    });
+    }, {manual: !token});
 
     return {data, loading, error, refetch};
 };

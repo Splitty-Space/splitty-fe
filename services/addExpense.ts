@@ -1,8 +1,10 @@
-import axios from "axios"
+import {apiClient as axios} from "@/API/client"
 import {SERVER_URL} from "@/API/APIConstants";
 import getCurrentUserId from "@/utils/getCurrentUserId";
 import {CURRENCIES} from "@/const/currencies";
 import {useStore} from "@/app/store";
+
+import type {Expense} from "@/entities";
 
 interface CreateExpenseUser {
     user_id?: number,
@@ -27,10 +29,10 @@ export const addExpense = async ({
     currency: typeof CURRENCIES[number] | undefined,
     date: Date | string,
     description?: string,
-}): Promise<any> => {
+}) => {
     const token = useStore.getState().token;
 
-    return await axios.post(`${SERVER_URL}/expenses`, {
+    return await axios.post<Expense>(`${SERVER_URL}/expenses`, {
             user_id: getCurrentUserId(),
             payers: payers,
             debtors: debtors,
@@ -45,7 +47,5 @@ export const addExpense = async ({
             headers: {
                 Authorization: `Bearer ${token}`,
             },
-        }).catch((error) => {
-        console.error({error})
-    })
+        })
 }

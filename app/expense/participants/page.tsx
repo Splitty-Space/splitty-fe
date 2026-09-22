@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {useTranslation} from "react-i18next";
 import classNames from "classnames";
 import {Friend} from "@/entities";
@@ -37,7 +37,7 @@ export default function AddExpenseParticipants() {
     const setSelectedFriends = useStore((state) => state.setSelectedFriends);
 
     const {data, loadingFriends, refetchFriends} = useFriends("")
-    const friends = data?.data ?? [];
+    const friends = useMemo(() => data?.data ?? [], [data?.data]);
 
     const {t} = useTranslation();
 
@@ -93,7 +93,7 @@ export default function AddExpenseParticipants() {
 
     const filteredFriends = friends.filter((friend: Friend) =>
         friend.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-        friend.username.toLowerCase().includes(searchValue.toLowerCase()));
+        (friend.username ?? "").toLowerCase().includes(searchValue.toLowerCase()));
 
     const rowRenderer = ({index, key, style}: { index: number, key: string, style: object }) => {
         const _friend = filteredFriends[index];
@@ -110,7 +110,7 @@ export default function AddExpenseParticipants() {
                     before={<Avatar size={48} user_id={id}/>}
                     subtitle={<Username username={username}/>}
                     after={<Switch
-                        defaultChecked={selectedUserIds.includes(id)}
+                        checked={selectedUserIds.includes(id)}
                         onChange={onUserChange(id)}
                     />}
                 >

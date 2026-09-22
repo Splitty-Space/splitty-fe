@@ -25,7 +25,7 @@ const useExpenses = ({
     friend_id?: number,
     group_id?: number,
 }): UseExpenses => {
-    const token = useStore.getState().token;
+    const token = useStore((state) => state.token);
 
     const [{data, loading, error}, refetch] = useAxios({
         url: "/expenses",
@@ -39,7 +39,7 @@ const useExpenses = ({
         headers: {
             Authorization: `Bearer ${token}`,
         },
-    }, {useCache: false});
+    }, {useCache: false, manual: !token});
 
     return {data, loading, error, refetch};
 };

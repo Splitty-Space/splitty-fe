@@ -1,48 +1,27 @@
-import {useMemo} from "react";
-import {AxiosError} from "axios";
-import useAxios, {RefetchFunction} from "axios-hooks";
+import {useEffect, useState} from "react";
+import useAxios from "axios-hooks";
 import {useStore} from "@/app/store";
-
-export interface useUserPhoto {
-    photoUrl: string,
-    loading: boolean,
-    error: AxiosError<any, any> | null;
-    refetch: RefetchFunction<any, any>;
-}
-
-const photoCache: Record<number, string> = {};
 
 export function useUserPhoto(user_id?: number) {
     const hasUserId = typeof user_id === "number" && Number.isSafeInteger(user_id) && user_id > 0;
-    const cachedUrl = user_id ? photoCache[user_id] : "";
-
-    const token = useStore.getState().token;
-
-    const [{data, loading, error}, refetch] = useAxios({
-            url: `/user/${user_id}/photo`,
-            responseType: "blob",
-            params: {
-                user_id: user_id,
-            },
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        },
-        {manual: !hasUserId}
-    );
-
-    const photoUrl = useMemo(() => {
-        if (!hasUserId) return "";
-        if (cachedUrl) return cachedUrl;
-        if (data) {
-            const url = URL.createObjectURL(data);
-            if (user_id) {
-                photoCache[user_id] = url;
-            }
-            return url;
+    const token = useStore((state) => state.token);
+    const [{data, loading, error}, refetch] = useAxios<Blob>({
+        url: `/user/${user_id}/photo`,
+        responseType: "blob",
+        params: {user_id},
+        headers: {Authorization: `Bearer ${token}`},
+    }, {manual: !token || !hasUserId});
+    const [photo, setPhoto] = useState<{url: string, userId?: number, token: string, data: Blob}>();
+    useEffect(() => {
+        if (!hasUserId || !token || !data || loading || error) {
+            setPhoto(undefined);
+            return;
         }
-        return "";
-    }, [cachedUrl, data, hasUserId, user_id]);
-
+        const url = URL.createObjectURL(data);
+        setPhoto({url, userId: user_id, token, data});
+        return () => URL.revokeObjectURL(url);
+    }, [data, error, hasUserId, loading, token, user_id]);
+    const photoUrl = photo?.userId === user_id && photo?.token === token && photo?.data === data && !loading && !error
+        ? photo?.url ?? "" : "";
     return {photoUrl, loading, error, refetch};
 }

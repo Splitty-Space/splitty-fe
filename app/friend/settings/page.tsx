@@ -14,9 +14,12 @@ import {popup} from "@telegram-apps/sdk";
 import Avatar from "@/app/components/avatar/Avatar";
 import Main from "@/app/components/main/main";
 import "./friendSettings.css";
+import {useRef} from "react";
 
 export default function FriendSettings() {
     const {t} = useTranslation();
+    const showError = useStore((state) => state.setIsRequestErrorSnackbarShown);
+    const mutationInFlight = useRef(false);
 
     const searchValue = useStore((state) => state.searchValue);
     const setIsDeleteFriendSnackbarShown = useStore((state) => state.setIsDeleteFriendSnackbarShown);
@@ -42,19 +45,32 @@ export default function FriendSettings() {
             });
 
             const buttonId = await promise;
-            if (buttonId === "confirm") {
-                deleteFriend(friend?.id)
+            if (buttonId === "confirm" && friend && !mutationInFlight.current) {
+                mutationInFlight.current = true;
+                deleteFriend(friend.id)
                     .then(() => setIsDeleteFriendSnackbarShown(true))
-                    .then(() => refetchFriends())
-                    .then(() => router.push(friendsList));
+                    .then(async () => {
+                        await refetchFriends().catch(() => showError(true));
+                        router.push(friendsList);
+                    }).catch(() => {
+                        mutationInFlight.current = false;
+                        showError(true);
+                    });
             }
         }
     };
 
     const onAddFriend = () => {
-        addFriend(friend?.id)
-            .then(() => refetchFriends())
-            .then(() => router.push(friendsList));
+        if (!friend || mutationInFlight.current) return;
+        mutationInFlight.current = true;
+        addFriend(friend.id)
+            .then(async () => {
+                await refetchFriends().catch(() => showError(true));
+                router.push(friendsList);
+            }).catch(() => {
+                mutationInFlight.current = false;
+                showError(true);
+            });
     };
 
     return (

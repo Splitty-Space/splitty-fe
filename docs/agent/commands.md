@@ -1,5 +1,7 @@
 # Commands and environment
 
+> Historical snapshot: implementation and verification changed during the 2026-09-20 audit. See [the current audit](../technical-audit.md) for fixes, dependency versions, checks, and remaining risks.
+
 ## Declared commands
 
 Run these from the repository root. They come from [package.json](../../package.json); their presence does not establish that they currently pass.

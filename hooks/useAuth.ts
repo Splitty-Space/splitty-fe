@@ -1,29 +1,36 @@
 import {useEffect} from "react";
-import axios from "axios";
-import {retrieveRawInitData} from "@telegram-apps/sdk";
-import {SERVER_URL} from "@/API/APIConstants";
+import {init, retrieveRawInitData} from "@telegram-apps/sdk";
+import {apiClient} from "@/API/client";
 import {useStore} from "@/app/store";
 
 const useAuth = () => {
-    let token = useStore((state) => state.token);
+    const token = useStore((state) => state.token);
     const setToken = useStore((state) => state.setToken);
+    const showError = useStore((state) => state.setIsRequestErrorSnackbarShown);
 
     useEffect(() => {
-        const initDataRaw = retrieveRawInitData();
-
-        axios.post(
-            `${SERVER_URL}/auth`,
-            {init_data_raw: initDataRaw},
-        )
-            .then(res => {
-                if (res.data.token) {
-                    token = res.data.token;
-                    setToken(token);
-                }
-            })
-            .catch(err => console.error("Auth error:", err));
-    }, []);
-
+        const controller = new AbortController();
+        let cleanup: VoidFunction | undefined;
+        const authenticate = async () => {
+            try {
+                cleanup = init();
+                const initDataRaw = retrieveRawInitData();
+                if (!initDataRaw) throw new Error("Missing Telegram initialization data");
+                const {data} = await apiClient.post<{token: string}>("/auth", {
+                    init_data_raw: initDataRaw,
+                }, {signal: controller.signal});
+                if (!data.token) throw new Error("Missing authentication token");
+                if (!controller.signal.aborted) setToken(data.token);
+            } catch {
+                if (!controller.signal.aborted) showError(true);
+            }
+        };
+        void authenticate();
+        return () => {
+            controller.abort();
+            cleanup?.();
+        };
+    }, [setToken, showError]);
     return token;
 };
 

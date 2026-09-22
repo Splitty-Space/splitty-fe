@@ -1,5 +1,7 @@
 # Repository architecture
 
+> Historical snapshot: implementation and verification changed during the 2026-09-20 audit. See [the current audit](../technical-audit.md) for fixes, dependency versions, checks, and remaining risks.
+
 This describes inspected repository code, not a verified running deployment. Runtime risks and unresolved requirements are separated in [legacy.md](legacy.md); setup and build details are in [commands.md](commands.md).
 
 ## Application and module map

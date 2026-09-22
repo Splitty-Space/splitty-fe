@@ -12,7 +12,7 @@ export interface UseExpense {
 }
 
 const useExpense = (expense_id: number): UseExpense => {
-    const token = useStore.getState().token;
+    const token = useStore((state) => state.token);
 
     const [{data, loading, error}, refetch] = useAxios({
         url: `/expenses/${expense_id}`,
@@ -22,7 +22,7 @@ const useExpense = (expense_id: number): UseExpense => {
         headers: {
             Authorization: `Bearer ${token}`,
         },
-    }, {useCache: false});
+    }, {useCache: false, manual: !token});
 
     return {data, loading, error, refetch};
 };

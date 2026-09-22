@@ -17,7 +17,7 @@ export interface useActivity {
 }
 
 const useActivity = (expanseId: number): useActivity => {
-    const token = useStore.getState().token;
+    const token = useStore((state) => state.token);
 
     const [{data, loading, error}, refetch] = useAxios({
         url: "/activity",
@@ -29,7 +29,7 @@ const useActivity = (expanseId: number): useActivity => {
         headers: {
             Authorization: `Bearer ${token}`,
         },
-    }, {useCache: false});
+    }, {useCache: false, manual: !token});
 
     return {data, loading, error, refetch};
 };

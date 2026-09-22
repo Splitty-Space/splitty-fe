@@ -7,6 +7,9 @@ export type PageData = {
 };
 
 interface State {
+    isRequestErrorSnackbarShown: boolean,
+    setIsRequestErrorSnackbarShown: (shown: boolean) => void,
+
     token: string,
     setToken: (newToken: string) => void,
 
@@ -59,6 +62,9 @@ interface State {
 export const useStore = create<State>()(
     devtools(
         (set) => ({
+            isRequestErrorSnackbarShown: false,
+            setIsRequestErrorSnackbarShown: (shown) => set({isRequestErrorSnackbarShown: shown}),
+
             token: "",
             setToken: (newToken) => set(() => ({token: newToken})),
 

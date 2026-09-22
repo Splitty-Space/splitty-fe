@@ -11,7 +11,7 @@ i18n
     // init i18next
     // for all options read: https://www.i18next.com/overview/configuration-options
     .init({
-        debug: true,
+        debug: process.env.NODE_ENV === "development",
         // Keep server HTML and the first client render in the same language.
         // Browser language detection runs after hydration in RootLayout.
         lng: "en",
@@ -26,6 +26,7 @@ i18n
         resources: {
             en: {
                 translation: {
+                    common: {RequestFailed: "Request could not be confirmed. Check your data before trying again."},
                     header: {
                         Search: "Search",
                     },
@@ -166,6 +167,7 @@ i18n
             },
             ru: {
                 translation: {
+                    common: {RequestFailed: "Не удалось подтвердить запрос. Проверьте данные перед повторной попыткой."},
                     header: {
                         Search: "Поиск",
                     },
@@ -306,6 +308,7 @@ i18n
             },
             ua: {
                 translation: {
+                    common: {RequestFailed: "Не вдалося підтвердити запит. Перевірте дані перед повторною спробою."},
                     header: {
                         Search: "Пошук",
                     },

@@ -1,0 +1,531 @@
+﻿{
+    "date":  "2026-09-20",
+    "npm":  {
+                "scope":  "package-lock.json (out of sync with package.json and installed pnpm tree)",
+                "metadata":  {
+                                 "vulnerabilities":  {
+                                                         "info":  0,
+                                                         "low":  1,
+                                                         "moderate":  5,
+                                                         "high":  18,
+                                                         "critical":  1,
+                                                         "total":  25
+                                                     },
+                                 "dependencies":  {
+                                                      "prod":  235,
+                                                      "dev":  300,
+                                                      "optional":  37,
+                                                      "peer":  15,
+                                                      "peerOptional":  0,
+                                                      "total":  580
+                                                  }
+                             },
+                "findings":  [
+                                 {
+                                     "name":  "@babel/runtime",
+                                     "severity":  "moderate",
+                                     "direct":  false,
+                                     "range":  "\u003c7.26.10",
+                                     "fixAvailable":  true
+                                 },
+                                 {
+                                     "name":  "@next/eslint-plugin-next",
+                                     "severity":  "high",
+                                     "direct":  false,
+                                     "range":  "14.0.5-canary.0 - 15.0.0-rc.1",
+                                     "fixAvailable":  {
+                                                          "name":  "eslint-config-next",
+                                                          "version":  "16.3.5",
+                                                          "isSemVerMajor":  true
+                                                      }
+                                 },
+                                 {
+                                     "name":  "@telegram-apps/bridge",
+                                     "severity":  "high",
+                                     "direct":  true,
+                                     "range":  "\u003e=2.0.0",
+                                     "fixAvailable":  {
+                                                          "name":  "@telegram-apps/bridge",
+                                                          "version":  "1.9.2",
+                                                          "isSemVerMajor":  true
+                                                      }
+                                 },
+                                 {
+                                     "name":  "@telegram-apps/sdk",
+                                     "severity":  "high",
+                                     "direct":  true,
+                                     "range":  "\u003e=3.0.0-beta.1",
+                                     "fixAvailable":  {
+                                                          "name":  "@telegram-apps/sdk",
+                                                          "version":  "2.11.3",
+                                                          "isSemVerMajor":  true
+                                                      }
+                                 },
+                                 {
+                                     "name":  "@telegram-apps/sdk-react",
+                                     "severity":  "high",
+                                     "direct":  true,
+                                     "range":  "\u003e=3.0.0",
+                                     "fixAvailable":  {
+                                                          "name":  "@telegram-apps/sdk-react",
+                                                          "version":  "2.0.25",
+                                                          "isSemVerMajor":  true
+                                                      }
+                                 },
+                                 {
+                                     "name":  "@telegram-apps/transformers",
+                                     "severity":  "high",
+                                     "direct":  false,
+                                     "range":  "\u003e=2.0.0",
+                                     "fixAvailable":  {
+                                                          "name":  "@telegram-apps/bridge",
+                                                          "version":  "1.9.2",
+                                                          "isSemVerMajor":  true
+                                                      }
+                                 },
+                                 {
+                                     "name":  "@typescript-eslint/parser",
+                                     "severity":  "high",
+                                     "direct":  false,
+                                     "range":  "6.16.0 - 7.5.0",
+                                     "fixAvailable":  true
+                                 },
+                                 {
+                                     "name":  "@typescript-eslint/typescript-estree",
+                                     "severity":  "high",
+                                     "direct":  false,
+                                     "range":  "6.16.0 - 7.5.0",
+                                     "fixAvailable":  true
+                                 },
+                                 {
+                                     "name":  "ajv",
+                                     "severity":  "moderate",
+                                     "direct":  false,
+                                     "range":  "\u003c6.14.0",
+                                     "fixAvailable":  true
+                                 },
+                                 {
+                                     "name":  "axios-hooks",
+                                     "severity":  "moderate",
+                                     "direct":  true,
+                                     "range":  "1.7.2-0 - 5.1.0",
+                                     "fixAvailable":  true
+                                 },
+                                 {
+                                     "name":  "brace-expansion",
+                                     "severity":  "high",
+                                     "direct":  false,
+                                     "range":  "\u003c=1.1.17 || 2.0.0 - 2.1.3",
+                                     "fixAvailable":  true
+                                 },
+                                 {
+                                     "name":  "eslint-config-next",
+                                     "severity":  "high",
+                                     "direct":  true,
+                                     "range":  "14.0.5-canary.0 - 15.0.0-rc.1",
+                                     "fixAvailable":  {
+                                                          "name":  "eslint-config-next",
+                                                          "version":  "16.3.5",
+                                                          "isSemVerMajor":  true
+                                                      }
+                                 },
+                                 {
+                                     "name":  "flatted",
+                                     "severity":  "high",
+                                     "direct":  false,
+                                     "range":  "\u003c=3.4.1",
+                                     "fixAvailable":  true
+                                 },
+                                 {
+                                     "name":  "glob",
+                                     "severity":  "high",
+                                     "direct":  false,
+                                     "range":  "10.2.0 - 10.4.5",
+                                     "fixAvailable":  {
+                                                          "name":  "eslint-config-next",
+                                                          "version":  "16.3.5",
+                                                          "isSemVerMajor":  true
+                                                      }
+                                 },
+                                 {
+                                     "name":  "js-yaml",
+                                     "severity":  "high",
+                                     "direct":  false,
+                                     "range":  "4.0.0 - 4.3.1",
+                                     "fixAvailable":  true
+                                 },
+                                 {
+                                     "name":  "minimatch",
+                                     "severity":  "high",
+                                     "direct":  false,
+                                     "range":  "\u003c=3.1.3 || 9.0.0 - 9.0.6",
+                                     "fixAvailable":  true
+                                 },
+                                 {
+                                     "name":  "nanoid",
+                                     "severity":  "high",
+                                     "direct":  false,
+                                     "range":  "\u003c=3.3.17",
+                                     "fixAvailable":  true
+                                 },
+                                 {
+                                     "name":  "next",
+                                     "severity":  "critical",
+                                     "direct":  true,
+                                     "range":  "9.3.4-canary.0 - 16.3.0-preview.10",
+                                     "fixAvailable":  true
+                                 },
+                                 {
+                                     "name":  "picomatch",
+                                     "severity":  "high",
+                                     "direct":  false,
+                                     "range":  "\u003c=2.3.1",
+                                     "fixAvailable":  true
+                                 },
+                                 {
+                                     "name":  "postcss",
+                                     "severity":  "high",
+                                     "direct":  true,
+                                     "range":  "\u003c=8.5.22",
+                                     "fixAvailable":  true
+                                 },
+                                 {
+                                     "name":  "postcss-selector-parser",
+                                     "severity":  "low",
+                                     "direct":  false,
+                                     "range":  "6.1.0 - 6.1.2",
+                                     "fixAvailable":  true
+                                 },
+                                 {
+                                     "name":  "qs",
+                                     "severity":  "moderate",
+                                     "direct":  false,
+                                     "range":  "\u003c=6.15.3",
+                                     "fixAvailable":  true
+                                 },
+                                 {
+                                     "name":  "sharp",
+                                     "severity":  "high",
+                                     "direct":  false,
+                                     "range":  "\u003c=0.35.4-rc.0",
+                                     "fixAvailable":  true
+                                 },
+                                 {
+                                     "name":  "valibot",
+                                     "severity":  "high",
+                                     "direct":  false,
+                                     "range":  "\u003c=1.4.1",
+                                     "fixAvailable":  {
+                                                          "name":  "@telegram-apps/bridge",
+                                                          "version":  "1.9.2",
+                                                          "isSemVerMajor":  true
+                                                      }
+                                 },
+                                 {
+                                     "name":  "yaml",
+                                     "severity":  "moderate",
+                                     "direct":  false,
+                                     "range":  "1.0.0 - 1.10.2 || 2.0.0 - 2.8.2",
+                                     "fixAvailable":  true
+                                 }
+                             ]
+            },
+    "pnpm":  {
+                 "scope":  "pnpm-lock.yaml; advisory counts can include multiple dependency paths",
+                 "metadata":  {
+                                  "vulnerabilities":  {
+                                                          "info":  0,
+                                                          "low":  4,
+                                                          "moderate":  17,
+                                                          "high":  25,
+                                                          "critical":  0
+                                                      },
+                                  "dependencies":  587,
+                                  "devDependencies":  0,
+                                  "optionalDependencies":  0,
+                                  "totalDependencies":  587
+                              },
+                 "advisories":  [
+                                    {
+                                        "name":  "micromatch",
+                                        "severity":  "moderate",
+                                        "vulnerableVersions":  "\u003c4.0.8",
+                                        "patchedVersions":  "\u003e=4.0.8",
+                                        "url":  "https://github.com/advisories/GHSA-952p-6rrq-rcjv"
+                                    },
+                                    {
+                                        "name":  "@babel/runtime",
+                                        "severity":  "moderate",
+                                        "vulnerableVersions":  "\u003c7.26.10",
+                                        "patchedVersions":  "\u003e=7.26.10",
+                                        "url":  "https://github.com/advisories/GHSA-968p-4wvh-cqc8"
+                                    },
+                                    {
+                                        "name":  "cross-spawn",
+                                        "severity":  "high",
+                                        "vulnerableVersions":  "\u003e=7.0.0 \u003c7.0.5",
+                                        "patchedVersions":  "\u003e=7.0.5",
+                                        "url":  "https://github.com/advisories/GHSA-3xgq-45jj-v275"
+                                    },
+                                    {
+                                        "name":  "brace-expansion",
+                                        "severity":  "low",
+                                        "vulnerableVersions":  "\u003e=1.0.0 \u003c=1.1.11",
+                                        "patchedVersions":  "\u003e=1.1.12",
+                                        "url":  "https://github.com/advisories/GHSA-v6h2-p8h4-qcjw"
+                                    },
+                                    {
+                                        "name":  "brace-expansion",
+                                        "severity":  "low",
+                                        "vulnerableVersions":  "\u003e=2.0.0 \u003c=2.0.1",
+                                        "patchedVersions":  "\u003e=2.0.2",
+                                        "url":  "https://github.com/advisories/GHSA-v6h2-p8h4-qcjw"
+                                    },
+                                    {
+                                        "name":  "glob",
+                                        "severity":  "high",
+                                        "vulnerableVersions":  "\u003e=10.2.0 \u003c10.5.0",
+                                        "patchedVersions":  "\u003e=10.5.0",
+                                        "url":  "https://github.com/advisories/GHSA-5j98-mcp5-4vw2"
+                                    },
+                                    {
+                                        "name":  "valibot",
+                                        "severity":  "high",
+                                        "vulnerableVersions":  "\u003e=0.31.0 \u003c1.2.0",
+                                        "patchedVersions":  "\u003e=1.2.0",
+                                        "url":  "https://github.com/advisories/GHSA-vqpr-j7v3-hqw9"
+                                    },
+                                    {
+                                        "name":  "js-yaml",
+                                        "severity":  "moderate",
+                                        "vulnerableVersions":  "\u003e=4.0.0 \u003c4.1.1",
+                                        "patchedVersions":  "\u003e=4.1.1",
+                                        "url":  "https://github.com/advisories/GHSA-mh29-5h37-fv8m"
+                                    },
+                                    {
+                                        "name":  "qs",
+                                        "severity":  "low",
+                                        "vulnerableVersions":  "\u003e=6.7.0 \u003c=6.14.1",
+                                        "patchedVersions":  "\u003e=6.14.2",
+                                        "url":  "https://github.com/advisories/GHSA-w7fw-mjwx-w883"
+                                    },
+                                    {
+                                        "name":  "minimatch",
+                                        "severity":  "high",
+                                        "vulnerableVersions":  "\u003c3.1.3",
+                                        "patchedVersions":  "\u003e=3.1.3",
+                                        "url":  "https://github.com/advisories/GHSA-3ppc-4f35-3m26"
+                                    },
+                                    {
+                                        "name":  "minimatch",
+                                        "severity":  "high",
+                                        "vulnerableVersions":  "\u003e=9.0.0 \u003c9.0.6",
+                                        "patchedVersions":  "\u003e=9.0.6",
+                                        "url":  "https://github.com/advisories/GHSA-3ppc-4f35-3m26"
+                                    },
+                                    {
+                                        "name":  "minimatch",
+                                        "severity":  "high",
+                                        "vulnerableVersions":  "\u003c3.1.3",
+                                        "patchedVersions":  "\u003e=3.1.3",
+                                        "url":  "https://github.com/advisories/GHSA-7r86-cg39-jmmj"
+                                    },
+                                    {
+                                        "name":  "minimatch",
+                                        "severity":  "high",
+                                        "vulnerableVersions":  "\u003e=9.0.0 \u003c9.0.7",
+                                        "patchedVersions":  "\u003e=9.0.7",
+                                        "url":  "https://github.com/advisories/GHSA-7r86-cg39-jmmj"
+                                    },
+                                    {
+                                        "name":  "minimatch",
+                                        "severity":  "high",
+                                        "vulnerableVersions":  "\u003c3.1.4",
+                                        "patchedVersions":  "\u003e=3.1.4",
+                                        "url":  "https://github.com/advisories/GHSA-23c5-xmqv-rm74"
+                                    },
+                                    {
+                                        "name":  "minimatch",
+                                        "severity":  "high",
+                                        "vulnerableVersions":  "\u003e=9.0.0 \u003c9.0.7",
+                                        "patchedVersions":  "\u003e=9.0.7",
+                                        "url":  "https://github.com/advisories/GHSA-23c5-xmqv-rm74"
+                                    },
+                                    {
+                                        "name":  "ajv",
+                                        "severity":  "moderate",
+                                        "vulnerableVersions":  "\u003c6.14.0",
+                                        "patchedVersions":  "\u003e=6.14.0",
+                                        "url":  "https://github.com/advisories/GHSA-2g4f-4pwh-qvx6"
+                                    },
+                                    {
+                                        "name":  "qs",
+                                        "severity":  "moderate",
+                                        "vulnerableVersions":  "\u003c6.14.1",
+                                        "patchedVersions":  "\u003e=6.14.1",
+                                        "url":  "https://github.com/advisories/GHSA-6rw7-vpxm-498p"
+                                    },
+                                    {
+                                        "name":  "flatted",
+                                        "severity":  "high",
+                                        "vulnerableVersions":  "\u003c3.4.0",
+                                        "patchedVersions":  "\u003e=3.4.0",
+                                        "url":  "https://github.com/advisories/GHSA-25h7-pfq9-p65f"
+                                    },
+                                    {
+                                        "name":  "flatted",
+                                        "severity":  "high",
+                                        "vulnerableVersions":  "\u003c=3.4.1",
+                                        "patchedVersions":  "\u003e=3.4.2",
+                                        "url":  "https://github.com/advisories/GHSA-rf6f-7fwh-wjgh"
+                                    },
+                                    {
+                                        "name":  "brace-expansion",
+                                        "severity":  "moderate",
+                                        "vulnerableVersions":  "\u003c1.1.13",
+                                        "patchedVersions":  "\u003e=1.1.13",
+                                        "url":  "https://github.com/advisories/GHSA-f886-m6hf-6m8v"
+                                    },
+                                    {
+                                        "name":  "brace-expansion",
+                                        "severity":  "moderate",
+                                        "vulnerableVersions":  "\u003e=2.0.0 \u003c2.0.3",
+                                        "patchedVersions":  "\u003e=2.0.3",
+                                        "url":  "https://github.com/advisories/GHSA-f886-m6hf-6m8v"
+                                    },
+                                    {
+                                        "name":  "picomatch",
+                                        "severity":  "moderate",
+                                        "vulnerableVersions":  "\u003c2.3.2",
+                                        "patchedVersions":  "\u003e=2.3.2",
+                                        "url":  "https://github.com/advisories/GHSA-3v7f-55p6-f55p"
+                                    },
+                                    {
+                                        "name":  "picomatch",
+                                        "severity":  "high",
+                                        "vulnerableVersions":  "\u003c2.3.2",
+                                        "patchedVersions":  "\u003e=2.3.2",
+                                        "url":  "https://github.com/advisories/GHSA-c2c7-rcm5-vvqj"
+                                    },
+                                    {
+                                        "name":  "yaml",
+                                        "severity":  "moderate",
+                                        "vulnerableVersions":  "\u003e=1.0.0 \u003c1.10.3",
+                                        "patchedVersions":  "\u003e=1.10.3",
+                                        "url":  "https://github.com/advisories/GHSA-48c2-rrv3-qjmp"
+                                    },
+                                    {
+                                        "name":  "yaml",
+                                        "severity":  "moderate",
+                                        "vulnerableVersions":  "\u003e=2.0.0 \u003c2.8.3",
+                                        "patchedVersions":  "\u003e=2.8.3",
+                                        "url":  "https://github.com/advisories/GHSA-48c2-rrv3-qjmp"
+                                    },
+                                    {
+                                        "name":  "follow-redirects",
+                                        "severity":  "moderate",
+                                        "vulnerableVersions":  "\u003c=1.15.11",
+                                        "patchedVersions":  "\u003e=1.16.0",
+                                        "url":  "https://github.com/advisories/GHSA-r4q5-vmmm-2653"
+                                    },
+                                    {
+                                        "name":  "qs",
+                                        "severity":  "moderate",
+                                        "vulnerableVersions":  "\u003e=6.11.1 \u003c=6.15.1",
+                                        "patchedVersions":  "\u003e=6.15.2",
+                                        "url":  "https://github.com/advisories/GHSA-q8mj-m7cp-5q26"
+                                    },
+                                    {
+                                        "name":  "js-yaml",
+                                        "severity":  "moderate",
+                                        "vulnerableVersions":  "\u003e=4.0.0 \u003c=4.1.1",
+                                        "patchedVersions":  "\u003e=4.2.0",
+                                        "url":  "https://github.com/advisories/GHSA-h67p-54hq-rp68"
+                                    },
+                                    {
+                                        "name":  "brace-expansion",
+                                        "severity":  "high",
+                                        "vulnerableVersions":  "\u003e=2.0.0 \u003c2.1.2",
+                                        "patchedVersions":  "\u003e=2.1.2",
+                                        "url":  "https://github.com/advisories/GHSA-3jxr-9vmj-r5cp"
+                                    },
+                                    {
+                                        "name":  "brace-expansion",
+                                        "severity":  "high",
+                                        "vulnerableVersions":  "\u003c1.1.16",
+                                        "patchedVersions":  "\u003e=1.1.16",
+                                        "url":  "https://github.com/advisories/GHSA-3jxr-9vmj-r5cp"
+                                    },
+                                    {
+                                        "name":  "js-yaml",
+                                        "severity":  "high",
+                                        "vulnerableVersions":  "\u003e=4.0.0 \u003c4.3.0",
+                                        "patchedVersions":  "\u003e=4.3.0",
+                                        "url":  "https://github.com/advisories/GHSA-52cp-r559-cp3m"
+                                    },
+                                    {
+                                        "name":  "valibot",
+                                        "severity":  "moderate",
+                                        "vulnerableVersions":  "\u003c=1.4.1",
+                                        "patchedVersions":  "\u003e=1.4.2",
+                                        "url":  "https://github.com/advisories/GHSA-5qjj-4xww-7phc"
+                                    },
+                                    {
+                                        "name":  "brace-expansion",
+                                        "severity":  "high",
+                                        "vulnerableVersions":  "\u003c1.1.17",
+                                        "patchedVersions":  "\u003e=1.1.17",
+                                        "url":  "https://github.com/advisories/GHSA-mh99-v99m-4gvg"
+                                    },
+                                    {
+                                        "name":  "brace-expansion",
+                                        "severity":  "high",
+                                        "vulnerableVersions":  "\u003e=2.0.0 \u003c2.1.3",
+                                        "patchedVersions":  "\u003e=2.1.3",
+                                        "url":  "https://github.com/advisories/GHSA-mh99-v99m-4gvg"
+                                    },
+                                    {
+                                        "name":  "brace-expansion",
+                                        "severity":  "high",
+                                        "vulnerableVersions":  "\u003e=2.0.0 \u003c2.1.4",
+                                        "patchedVersions":  "\u003e=2.1.4",
+                                        "url":  "https://github.com/advisories/GHSA-rgw5-rvv9-x895"
+                                    },
+                                    {
+                                        "name":  "brace-expansion",
+                                        "severity":  "high",
+                                        "vulnerableVersions":  "\u003c1.1.18",
+                                        "patchedVersions":  "\u003e=1.1.18",
+                                        "url":  "https://github.com/advisories/GHSA-rgw5-rvv9-x895"
+                                    },
+                                    {
+                                        "name":  "js-yaml",
+                                        "severity":  "high",
+                                        "vulnerableVersions":  "\u003e=4.0.0 \u003c4.3.1",
+                                        "patchedVersions":  "\u003e=4.3.1",
+                                        "url":  "https://github.com/advisories/GHSA-5p4m-2wfm-xmqj"
+                                    },
+                                    {
+                                        "name":  "postcss-selector-parser",
+                                        "severity":  "low",
+                                        "vulnerableVersions":  "\u003e=6.1.0 \u003c6.1.3",
+                                        "patchedVersions":  "\u003e=6.1.3",
+                                        "url":  "https://github.com/advisories/GHSA-w9m9-85wc-3x92"
+                                    },
+                                    {
+                                        "name":  "qs",
+                                        "severity":  "moderate",
+                                        "vulnerableVersions":  "\u003e=2.2.5 \u003c6.16.0",
+                                        "patchedVersions":  "\u003e=6.16.0",
+                                        "url":  "https://github.com/advisories/GHSA-4mjr-xmp4-gh2g"
+                                    },
+                                    {
+                                        "name":  "js-yaml",
+                                        "severity":  "high",
+                                        "vulnerableVersions":  "\u003e=4.0.0 \u003c4.3.2",
+                                        "patchedVersions":  "\u003e=4.3.2",
+                                        "url":  "https://github.com/advisories/GHSA-2883-xcg3-v3hh"
+                                    }
+                                ]
+             }
+}

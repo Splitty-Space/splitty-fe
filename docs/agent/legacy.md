@@ -1,5 +1,7 @@
 # Legacy risks and investigation guide
 
+> Historical snapshot: implementation and verification changed during the 2026-09-20 audit. See [the current audit](../technical-audit.md) for fixes, dependency versions, checks, and remaining risks.
+
 This is a selective source audit, not a runtime verification. Observed behavior is
 separated below from consequences that still need reproduction or backend context.
 Dependency drift, missing test infrastructure, and deployment limitations are

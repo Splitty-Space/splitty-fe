@@ -51,6 +51,21 @@ export default function Tutorial({steps, isOpen, onRequestClose}: TutorialProps)
 
     return isOpen ? (
         <Tour
+            styles={{
+                popover: (base) => ({
+                    ...base,
+                    backgroundColor: "var(--tgui--secondary_bg_color, #1c1c1d)",
+                    color: "var(--tgui--text_color, #fff)",
+                    whiteSpace: "pre-line",
+                }),
+                close: (base) => ({...base, color: "var(--tgui--text_color, #fff)"}),
+                arrow: (base, state) => ({
+                    ...base,
+                    color: state?.disabled
+                        ? "var(--tgui--hint_color, #8e8e93)"
+                        : "var(--tgui--text_color, #fff)",
+                }),
+            }}
             steps={tourSteps}
             isOpen={isOpen}
             setIsOpen={setIsOpen}

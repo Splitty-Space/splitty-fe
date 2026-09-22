@@ -40,6 +40,10 @@ import {TUTORIAL_USER_ID} from "@/const/tutorialUserId";
 import {generateTestExpense, generateTestExpenseWithSplit} from "@/utils/generateTestExpense";
 import useUpdateUserSettings from "@/services/useUpdateUserSettings";
 import "./globals.css";
+import useAuth from "@/hooks/useAuth";
+import {isTMA} from "@telegram-apps/bridge";
+import "dayjs/locale/ru";
+import "dayjs/locale/uk";
 
 
 const Tour = dynamic(
@@ -60,6 +64,9 @@ let viewportMountTask: Promise<void> = Promise.resolve();
 export default function RootLayout({children}: Readonly<{
     children: React.ReactNode;
 }>) {
+    useAuth();
+    const isRequestErrorSnackbarShown = useStore((state) => state.isRequestErrorSnackbarShown);
+    const setIsRequestErrorSnackbarShown = useStore((state) => state.setIsRequestErrorSnackbarShown);
     const [platform, setPlatform] = useState<PLATFORM_TYPE>(DEFAULT_PLATFORM);
     const [appearance, setAppearance] = useState<THEME_TYPE>(DEFAULT_THEME);
 
@@ -179,7 +186,9 @@ export default function RootLayout({children}: Readonly<{
     }, []);
 
     useEffect(() => {
-        postEvent("web_app_toggle_orientation_lock", {locked: true});
+        if (isTMA()) {
+            postEvent("web_app_toggle_orientation_lock", {locked: true});
+        }
     }, []);
 
     const router = useRouter();
@@ -250,8 +259,8 @@ export default function RootLayout({children}: Readonly<{
 
         updateUserSettings({
             isGuideShown: true
-        }).then(() => refetchMe());
-    }, [refetchMe, setIsTourOpen, updateUserSettings]);
+        }).then(() => refetchMe()).catch(() => setIsRequestErrorSnackbarShown(true));
+    }, [refetchMe, setIsTourOpen, updateUserSettings, setIsRequestErrorSnackbarShown]);
 
     const testFriend = friends?.find((friend) => friend.id === TUTORIAL_USER_ID);
     const isTestFriendAlreadyExist = testFriend;
@@ -269,12 +278,9 @@ export default function RootLayout({children}: Readonly<{
             content: t("tour.Share"),
             action: () => {
                 if (!isTestFriendAlreadyExist) {
-                    console.log("addFriend");
                     addFriend(TUTORIAL_USER_ID)
                         .then(() => refetchFriends())
-                        .catch((err) => {
-                            console.error("addFriend error: ", err);
-                        });
+                        .catch(() => setIsRequestErrorSnackbarShown(true));
                 }
             }
         },
@@ -376,7 +382,7 @@ export default function RootLayout({children}: Readonly<{
                 router.push(account);
             }
         },
-    ], [isTestFriendAlreadyExist, me, refetchFriends, router, setIsForceExpenseSaveEnabled, setSelectedExpense, setSelectedUserId, t, testFriend]);
+    ], [isTestFriendAlreadyExist, me, refetchFriends, router, setIsForceExpenseSaveEnabled, setSelectedExpense, setSelectedUserId, setIsRequestErrorSnackbarShown, t, testFriend]);
 
     return (
         <html lang="en">
@@ -400,6 +406,17 @@ export default function RootLayout({children}: Readonly<{
                             className="app-root"
                         >
                             {children}
+
+                            {isRequestErrorSnackbarShown && (
+                                <Snackbar
+                                    className="mb-20"
+                                    before={<Icon28Warning/>}
+                                    onClose={() => setIsRequestErrorSnackbarShown(false)}
+                                    duration={6000}
+                                >
+                                    {t("common.RequestFailed")}
+                                </Snackbar>
+                            )}
 
                             <Footer
                                 friends={friends}

@@ -1,6 +1,5 @@
 "use client"
 
-import React from "react";
 import {useTranslation} from "react-i18next";
 import useMe from "@/services/useMe";
 import {Cell, Divider, List, Text} from "@telegram-apps/telegram-ui";

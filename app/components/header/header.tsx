@@ -1,6 +1,6 @@
 "use client"
 
-import React, {FC, forwardRef, memo, ReactElement} from "react";
+import {FC, forwardRef, memo, ReactElement} from "react";
 import classNames from "classnames";
 import {FixedLayout} from "@telegram-apps/telegram-ui";
 import {viewport} from "@telegram-apps/sdk";

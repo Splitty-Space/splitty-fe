@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useState, useEffect, useCallback} from "react";
+import {useState, useEffect, useCallback, useRef} from "react";
 import {useTranslation} from "react-i18next";
 import {
     AvatarStack,
@@ -38,7 +38,7 @@ import {currencyToCurrencySymbol} from "@/utils/currencyToCurrencySymbol";
 export default function FriendPage() {
     const {t} = useTranslation();
 
-    const {data: me} = useMe();
+    const {data: me, loading: loadingMe} = useMe();
 
     const searchValue = useStore((state) => state.searchValue);
     const selectedUserId = useStore((state) => state.selectedUserId);
@@ -48,6 +48,9 @@ export default function FriendPage() {
     const setSettleUpPaymentInfo = useStore((state) => state.setSettleUpPaymentInfo);
     const router = useRouter();
 
+    const showError = useStore((state) => state.setIsRequestErrorSnackbarShown);
+    const listController = useRef<AbortController | null>(null);
+    const pendingPages = useRef(new Map<number, Promise<void>>());
     const pageSize = defaultPageSize;
     const [rowCount, setRowCount] = useState(pageSize);
     const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -58,6 +61,8 @@ export default function FriendPage() {
 
     useEffect(() => {
         const controller = new AbortController();
+        listController.current = controller;
+        pendingPages.current.clear();
         let isActive = true;
 
         if (loadingFriends) {
@@ -93,14 +98,14 @@ export default function FriendPage() {
             setExpenses(data.data);
 
             if (data.meta.has_more) {
-                setRowCount(prevState => prevState + pageSize);
+                setRowCount(data.data.length + pageSize);
             } else {
                 setRowCount(data.data.length);
             }
-        }).catch((error) => {
+        }).catch(() => {
             if (isActive) {
                 setLoadingExpenses(false);
-                console.log({error});
+                showError(true);
             }
         });
 
@@ -108,36 +113,42 @@ export default function FriendPage() {
             isActive = false;
             controller.abort();
         }
-    }, [friend, loadingFriends, pageSize, router, token]);
+    }, [friend, loadingFriends, pageSize, router, showError, token]);
 
     const isRowLoaded = ({index}: { index: number }) => {
         return expenses && !!expenses[index];
     };
 
     const loadMoreRows = ({startIndex}: { startIndex: number }) => {
-        if (!friend || !Number.isInteger(startIndex / pageSize)) {
-            return;
-        }
-
-        getExpenses({
-            page: startIndex / pageSize + 1,
-            limit: pageSize,
-            friend_id: friend.id,
-        }).then(({data}) => {
-            if (data.meta.has_more) {
-                setRowCount(prevState => prevState + pageSize);
-            } else {
-                setRowCount(expenses.length + data.data.length);
-            }
-
-            setExpenses(prevState => [...prevState, ...data.data]);
-        }).catch((error) => {
-            console.log({error});
-        });
+        const controller = listController.current;
+        if (!friend || loadingExpenses || !controller || controller.signal.aborted) return Promise.resolve();
+        const page = Math.floor(startIndex / pageSize) + 1;
+        const pending = pendingPages.current.get(page);
+        if (pending) return pending;
+        const request = getExpenses({page, limit: pageSize, friend_id: friend.id, signal: controller.signal})
+            .then(({data}) => {
+                if (controller.signal.aborted) return;
+                const loadedCount = (page - 1) * pageSize + data.data.length;
+                setRowCount(data.meta.has_more ? loadedCount + pageSize : loadedCount);
+                setExpenses(previous => {
+                    const next = [...previous];
+                    data.data.forEach((item: Expense, index: number) => {
+                        next[(page - 1) * pageSize + index] = item;
+                    });
+                    return next;
+                });
+            }).catch(() => {
+                if (!controller.signal.aborted) showError(true);
+            }).finally(() => {
+                if (!controller.signal.aborted) pendingPages.current.delete(page);
+            });
+        pendingPages.current.set(page, request);
+        return request;
     };
 
     const onSettleUp = useCallback(() => {
         if (friend) {
+            setSelectedExpense(null);
             if (friend.total.length > 1) {
                 router.push(settleUp);
             } else if (friend.total.length === 1) {
@@ -145,7 +156,7 @@ export default function FriendPage() {
                 router.push(settleUpPayment);
             }
         }
-    }, [friend, setSettleUpPaymentInfo, router]);
+    }, [friend, setSelectedExpense, setSettleUpPaymentInfo, router]);
 
     const rowRenderer = ({index, key, style}: { index: number, key: string, style: object }) => {
         const expense = expenses[index];
@@ -188,7 +199,7 @@ export default function FriendPage() {
         let whoPaid;
         if (borrowersAmount === 1) {
             // @ts-ignore
-            if (borrowers[me.id]) {
+            if (borrowers[me?.id]) {
                 whoPaid = "You";
             } else {
                 whoPaid = transactions[0].borrower.name;
@@ -197,7 +208,7 @@ export default function FriendPage() {
             whoPaid = `${borrowersAmount} people`;
         }
 
-        const payerName = expense_users.find(({user}) => user.id !== me.id)?.user.name;
+        const payerName = expense_users.find(({user}) => user.id !== me?.id)?.user.name;
 
         const participants = expense_users
             .filter(x => Number(x.lent_amount) > 0)
@@ -342,7 +353,7 @@ export default function FriendPage() {
                 center={loadingExpenses}
                 style={{height: expenses?.length > 0 ? "auto" : "calc(100% - 16rem)"}}
             >
-                {loadingExpenses ?
+                {loadingExpenses || loadingMe ?
                     <Loader/> :
                     expenses?.length > 0 ?
                         <PullToRefresh onRefresh={onRefresh}>

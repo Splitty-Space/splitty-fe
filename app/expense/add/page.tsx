@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
 import classNames from "classnames";
 import Header from "@/app/components/header/header";
@@ -35,6 +35,8 @@ import Avatar from "@/app/components/avatar/Avatar";
 import {vibration} from "@/utils/vibration";
 import {Icon28Warning} from "@/Icons";
 import {TEST_EXPENSE_ID} from "@/const/testExpenseId";
+import {isAllocationBalanced} from "@/utils/expenseValidation";
+import {EXPENSE_CURRENCY_PRECISION} from "@/const/currencies";
 import "./addExpense.css";
 
 
@@ -70,17 +72,19 @@ export default function AddExpense() {
     const setIsUpdateExpenseSnackbarShown = useStore((state) => state.setIsUpdateExpenseSnackbarShown);
     const setSelectedExpense = useStore((state) => state.setSelectedExpense);
     const isForceExpenseSaveEnabled = useStore((state) => state.isForceExpenseSaveEnabled);
+    const setIsForceExpenseSaveEnabled = useStore((state) => state.setIsForceExpenseSaveEnabled);
+    const showError = useStore((state) => state.setIsRequestErrorSnackbarShown);
+    const saveInFlight = useRef(false);
 
     const {refetchFriends} = useFriends(searchValue);
 
     const participants = selectedExpense?.expense_users.map(expense => expense.user) ?? (me ? [me, ...selectedFriends] : [...selectedFriends]);
 
-    const [isSaveDisabled, setIsSaveDisabled] = useState(true);
     const [isSaveInProgress, setIsSaveInProgress] = useState(false);
 
     const [expenseName, setExpenseName] = useState(selectedExpense?.description ?? "");
 
-    const [moneySpent, setMoneySpent] = useState<number>(Number(selectedExpense?.amount) ?? 0);
+    const [moneySpent, setMoneySpent] = useState<number>(Number(selectedExpense?.amount ?? 0));
     const [rawMoneySpent, setRawMoneySpent] = useState<string>(selectedExpense ? String(Number(selectedExpense?.amount)) : "");
     const [currency, setCurrency] = useState<string | undefined>();
 
@@ -138,27 +142,19 @@ export default function AddExpense() {
         }
     }, [me, selectedExpense]);
 
-    useEffect(() => {
-        if (expenseName.length > 0 &&
-            moneySpent && moneySpent > 0 &&
-            (isFullyPaidByYou || paidBy.some(x => x.isSelected)) &&
-            currentPaidMoneyAmount === moneySpent &&
-            (isSplitEquallyBetweenAll || splitBetween.some(x => x.isSelected))
-        ) {
-            setIsSaveDisabled(false);
-        } else {
-            setIsSaveDisabled(true);
-        }
-    }, [expenseName, isFullyPaidByYou, isSplitEquallyBetweenAll, moneySpent, paidBy, splitBetween, currentPaidMoneyAmount]);
+    const isSaveDisabled = !me || !currency || !expenseName.trim() || !dayjs(date).isValid() ||
+        !isAllocationBalanced(moneySpent, paidBy) || !isAllocationBalanced(moneySpent, splitBetween);
 
     const router = useRouter();
 
-    const onSave = useCallback(() => {
-        if (isSaveInProgress) {
+    const onSave = useCallback(async () => {
+        if (saveInFlight.current || isSaveDisabled) {
             return;
         }
 
+        saveInFlight.current = true;
         setIsSaveInProgress(true);
+        setIsForceExpenseSaveEnabled(false);
 
         const payers = paidBy
             .map(x => x.isSelected ? x : {...x, amount: 0})
@@ -170,35 +166,41 @@ export default function AddExpense() {
         const amount = Number(moneySpent);
         const description = expenseName;
 
-        if (!selectedExpense || selectedExpense?.id === TEST_EXPENSE_ID) {
-            addExpense({
-                payers,
-                debtors,
-                users,
-                amount,
-                payment: false,
-                currency,
-                date,
-                description,
-            })
-                .then(({data}) => setSelectedExpense({...data}))
-                .then(() => setIsCreateExpenseSnackbarShown(true))
-                .then(() => refetchFriends())
-                .then(() => router.replace(expenseDetails));
-        } else {
-            putExpense({
-                expense_id: selectedExpense.id,
-                payers,
-                debtors,
-                users,
-                amount,
-                description
-            })
-                .then(() => refetchFriends())
-                .then(() => setIsUpdateExpenseSnackbarShown(true))
-                .then(() => router.push(expenseDetails));
+        try {
+            if (!selectedExpense || selectedExpense?.id === TEST_EXPENSE_ID) {
+                const {data} = await addExpense({
+                    payers,
+                    debtors,
+                    users,
+                    amount,
+                    payment: false,
+                    currency,
+                    date,
+                    description,
+                });
+                setSelectedExpense(data);
+                setIsCreateExpenseSnackbarShown(true);
+            } else {
+                await putExpense({
+                    expense_id: selectedExpense.id,
+                    payers,
+                    debtors,
+                    users,
+                    amount,
+                    description
+                });
+                setIsUpdateExpenseSnackbarShown(true);
+            }
+            // A refresh failure must not turn a confirmed write into a retryable write.
+            await refetchFriends().catch(() => showError(true));
+            if (!selectedExpense || selectedExpense.id === TEST_EXPENSE_ID) router.replace(expenseDetails);
+            else router.push(expenseDetails);
+        } catch {
+            saveInFlight.current = false;
+            setIsSaveInProgress(false);
+            showError(true);
         }
-    }, [currency, date, expenseName, isSaveInProgress, moneySpent, paidBy, refetchFriends, router, selectedExpense, setIsCreateExpenseSnackbarShown, setIsUpdateExpenseSnackbarShown, setSelectedExpense, splitBetween]);
+    }, [currency, date, expenseName, isSaveDisabled, moneySpent, paidBy, refetchFriends, router, selectedExpense, setIsCreateExpenseSnackbarShown, setIsUpdateExpenseSnackbarShown, setSelectedExpense, setIsForceExpenseSaveEnabled, showError, splitBetween]);
 
     useEffect(() => {
         if (isForceExpenseSaveEnabled) {
@@ -210,6 +212,18 @@ export default function AddExpense() {
         if (e.target.value.length <= maxExpenseNameLength) {
             setExpenseName(e.target.value);
         }
+    };
+
+    const equalPayments = (amount: number, selectedCurrency = currency): Payment[] => {
+        const precision = EXPENSE_CURRENCY_PRECISION[selectedCurrency ?? ""] ?? 2;
+        const parts = splitNumberIntoParts(amount, participants.length, precision);
+        return participants.map((participant, index) => ({
+            id: participant.id,
+            isSelected: true,
+            amount: parts[index],
+            amountRaw: String(parts[index]),
+            isDirty: false,
+        }));
     };
 
     const onMoneySpentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -224,30 +238,29 @@ export default function AddExpense() {
         setMoneySpent(amount);
 
         if (isFullyPaidByYou) {
-            setPaidBy(participants.map((x, index) => ({
+            setPaidBy(participants.map((x) => ({
                 id: x.id,
                 isSelected: true,
-                amount: index === 0 ? amount : 0,
-                amountRaw: index === 0 ? value : "0",
+                amount: x.id === me?.id ? amount : 0,
+                amountRaw: x.id === me?.id ? value : "0",
                 isDirty: false,
             })));
         }
 
         if (isSplitEquallyBetweenAll) {
-            const parts = splitNumberIntoParts(amount, participants.length);
-
-            setSplitBetween(participants.map((x, index) => ({
-                id: x.id,
-                isSelected: true,
-                amount: parts[index],
-                amountRaw: parts[index],
-                isDirty: false,
-            })));
+            setSplitBetween(equalPayments(amount));
         }
     };
 
     const onCurrencyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setCurrency(e.target.value);
+        const nextCurrency = e.target.value;
+        setCurrency(nextCurrency);
+        if (isSplitEquallyBetweenAll || splitBetween.every(payment => !payment.isDirty)) {
+            setSplitBetween(equalPayments(moneySpent, nextCurrency));
+        }
+        if (!isFullyPaidByYou && paidBy.every(payment => !payment.isDirty)) {
+            setPaidBy(equalPayments(moneySpent, nextCurrency));
+        }
     };
 
     const onDateChange = (newDate: Dayjs | null) => {
@@ -262,21 +275,13 @@ export default function AddExpense() {
         vibration();
 
         if (!e.target.checked && moneySpent) {
-            const parts = splitNumberIntoParts(moneySpent, participants.length);
-
-            setPaidBy(participants.map((x, index) => ({
-                id: x.id,
-                isSelected: true,
-                amount: parts[index],
-                amountRaw: parts[index],
-                isDirty: false,
-            })));
+            setPaidBy(equalPayments(moneySpent));
         } else {
-            setPaidBy(participants.map((x, index) => ({
+            setPaidBy(participants.map((x) => ({
                 id: x.id,
                 isSelected: true,
-                amount: index === 0 && moneySpent ? Number(moneySpent) : 0,
-                amountRaw: index === 0 && moneySpent ? String(moneySpent) : "0",
+                amount: x.id === me?.id && moneySpent ? Number(moneySpent) : 0,
+                amountRaw: x.id === me?.id && moneySpent ? String(moneySpent) : "0",
                 isDirty: false,
             })));
         }
@@ -320,24 +325,7 @@ export default function AddExpense() {
 
         vibration();
 
-        const parts = splitNumberIntoParts(moneySpent ? Number(moneySpent) : 0, participants.length);
-        if (!e.target.checked && moneySpent) {
-            setSplitBetween(participants.map((x, index) => ({
-                id: x.id,
-                isSelected: true,
-                amount: parts[index],
-                amountRaw: parts[index],
-                isDirty: false,
-            })));
-        } else {
-            setSplitBetween(participants.map((x, index) => ({
-                id: x.id,
-                isSelected: true,
-                amount: parts[index],
-                amountRaw: parts[index],
-                isDirty: false,
-            })));
-        }
+        setSplitBetween(equalPayments(moneySpent));
     };
 
     const onSplitBetweenChange = (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -397,7 +385,7 @@ export default function AddExpense() {
                         size="l"
                         mode="plain"
                         onClick={onSave}
-                        disabled={isSaveDisabled}
+                        disabled={isSaveDisabled || isSaveInProgress}
                         loading={isSaveInProgress}
                         id="expense-add-save-button"
                     >
@@ -559,7 +547,7 @@ export default function AddExpense() {
                                     <div className="flex items-center w-1/2">
                                         <Switch
                                             className="shrink-0"
-                                            defaultChecked={isItemSelected}
+                                            checked={!!isItemSelected}
                                             onChange={onPaidByChange(id)}
                                         />
 
@@ -674,7 +662,7 @@ export default function AddExpense() {
                                         <div className="flex items-center w-1/2">
                                             <Switch
                                                 className="shrink-0"
-                                                defaultChecked={isItemSelected}
+                                                checked={!!isItemSelected}
                                                 onChange={onSplitBetweenChange(id)}
                                             />
 

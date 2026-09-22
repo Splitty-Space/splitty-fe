@@ -3,9 +3,7 @@ import {useCallback, useEffect, useState, useLayoutEffect} from "react"
 const useBrowserLayoutEffect =
     typeof window !== "undefined"
         ? useLayoutEffect
-        : // eslint-disable-next-line @typescript-eslint/no-empty-function
-        () => {
-        }
+        : useEffect
 
 type Width = number
 type Height = number
@@ -58,11 +56,13 @@ const useViewportSize = () => {
     useBrowserLayoutEffect(updateViewportSize, [updateViewportSize])
 
     useEffect(() => {
+        let resizeTimeout: ReturnType<typeof setTimeout> | undefined;
         const effectTwice = () => {
             updateViewportSize()
             // Closing the OSK in iOS does not immediately update the visual viewport
             // size :<
-            setTimeout(updateViewportSize, 1000)
+            clearTimeout(resizeTimeout)
+            resizeTimeout = setTimeout(updateViewportSize, 1000)
         }
 
         window.addEventListener("resize", effectTwice)
@@ -75,6 +75,7 @@ const useViewportSize = () => {
         window.visualViewport?.addEventListener("resize", effectTwice)
 
         return () => {
+            clearTimeout(resizeTimeout)
             window.removeEventListener("resize", effectTwice)
             window.removeEventListener("orientationchange", effectTwice)
             window.visualViewport?.removeEventListener("resize", effectTwice)

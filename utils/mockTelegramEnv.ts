@@ -24,7 +24,7 @@ const themeParams = {
 } as const;
 
 // Client components are also evaluated during Next.js server rendering.
-if (typeof window !== "undefined") {
+if (process.env.NODE_ENV === "development" && typeof window !== "undefined") {
     mockTelegramEnv({
         launchParams: {
             tgWebAppThemeParams: themeParams,

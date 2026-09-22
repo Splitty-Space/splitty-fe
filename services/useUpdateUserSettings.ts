@@ -3,7 +3,7 @@ import getCurrentUserId from "@/utils/getCurrentUserId";
 import {useStore} from "@/app/store";
 
 const useUpdateUserSettings = () => {
-    const token = useStore.getState().token;
+    const token = useStore((state) => state.token);
 
     const [{data, loading, error}, refetch] = useAxios({
         url: "/settings",
