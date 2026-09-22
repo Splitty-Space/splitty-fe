@@ -2,7 +2,7 @@ import i18n from "i18next";
 import {initReactI18next} from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 
-i18n
+void i18n
     // detect user language
     // learn more: https://github.com/i18next/i18next-browser-languageDetector
     .use(LanguageDetector)
@@ -448,6 +448,8 @@ i18n
                 }
             }
         }
+    }).catch((error: unknown) => {
+        console.error("Failed to initialize translations", error);
     });
 
 export default i18n;

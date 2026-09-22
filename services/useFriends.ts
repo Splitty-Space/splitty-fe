@@ -10,7 +10,7 @@ export interface UseFriends {
         meta: object;
     },
     loadingFriends: boolean;
-    error: AxiosError<any, any> | null;
+    error: AxiosError<any> | null;
     refetchFriends: RefetchFunction<any, any>;
 }
 

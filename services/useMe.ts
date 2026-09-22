@@ -17,7 +17,7 @@ export interface Me {
 export interface useMe {
     data: Me
     loading: boolean,
-    error: AxiosError<any, any> | null;
+    error: AxiosError<any> | null;
     refetch: RefetchFunction<any, any>;
 }
 

@@ -15,12 +15,19 @@ const useAuth = () => {
             try {
                 cleanup = init();
                 const initDataRaw = retrieveRawInitData();
-                if (!initDataRaw) throw new Error("Missing Telegram initialization data");
+                if (!initDataRaw) {
+                    showError(true);
+                    return;
+                }
                 const {data} = await apiClient.post<{token: string}>("/auth", {
                     init_data_raw: initDataRaw,
                 }, {signal: controller.signal});
-                if (!data.token) throw new Error("Missing authentication token");
-                if (!controller.signal.aborted) setToken(data.token);
+                if (controller.signal.aborted) return;
+                if (!data.token) {
+                    showError(true);
+                    return;
+                }
+                setToken(data.token);
             } catch {
                 if (!controller.signal.aborted) showError(true);
             }

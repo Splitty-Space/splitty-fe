@@ -100,14 +100,14 @@ export default function RootLayout({children}: Readonly<{
 
     useEffect(() => {
         if (me) {
-            i18next.changeLanguage(me.language);
+            void i18next.changeLanguage(me.language).catch(() => setIsRequestErrorSnackbarShown(true));
 
             setIsTourOpen(!me.isGuideShown);
         } else {
             // Omitting the language invokes the browser language detector.
-            i18next.changeLanguage();
+            void i18next.changeLanguage().catch(() => setIsRequestErrorSnackbarShown(true));
         }
-    }, [me, setIsTourOpen]);
+    }, [me, setIsTourOpen, setIsRequestErrorSnackbarShown]);
 
     useEffect(() => {
         setAppearance(DARK);

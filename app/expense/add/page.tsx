@@ -204,7 +204,7 @@ export default function AddExpense() {
 
     useEffect(() => {
         if (isForceExpenseSaveEnabled) {
-            onSave();
+            void onSave();
         }
     }, [isForceExpenseSaveEnabled, onSave]);
 

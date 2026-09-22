@@ -7,7 +7,8 @@ const allocations = (...amounts) => amounts.map(amount => ({amount, isSelected: 
 const {EXPENSE_CURRENCY_PRECISION} = load("const/currencies.ts");
 
 test("crypto equal splits preserve small amounts and distribute the smallest units", () => {
-    for (const [currency, amount, count, expected] of [
+    /** @type {Array<[string, number, number, number[]]>} */
+    const cases = [
         ["BTC", 0.0001, 2, [0.00005, 0.00005]],
         ["BTC", 0.12345678, 2, [0.06172839, 0.06172839]],
         ["BTC", 0.00000003, 5, [0.00000001, 0.00000001, 0.00000001, 0, 0]],
@@ -16,7 +17,8 @@ test("crypto equal splits preserve small amounts and distribute the smallest uni
         ["ETH", 1, 2, [0.5, 0.5]],
         ["USDT", 0.000003, 2, [0.000002, 0.000001]],
         ["USDC", 0.000003, 2, [0.000002, 0.000001]],
-    ]) {
+    ];
+    for (const [currency, amount, count, expected] of cases) {
         const parts = splitNumberIntoParts(amount, count, EXPENSE_CURRENCY_PRECISION[currency]);
         assert.deepEqual(parts, expected, currency);
         assert.equal(isAllocationBalanced(amount, allocations(...parts)), true, currency);

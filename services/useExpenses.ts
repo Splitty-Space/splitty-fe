@@ -10,7 +10,7 @@ export interface UseExpenses {
         meta: object;
     },
     loading: boolean;
-    error: AxiosError<any, any> | null;
+    error: AxiosError<any> | null;
     refetch: RefetchFunction<any, any>;
 }
 

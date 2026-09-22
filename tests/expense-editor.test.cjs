@@ -6,7 +6,7 @@ function editor(currency = "BTC") {
     const slots = [];
     const writes = [];
     let cursor = 0;
-    let effects = [];
+    const effects = [];
     let dirty = false;
     const me = {id: 1, name: "Me", default_currency: currency};
     const state = {
@@ -73,10 +73,10 @@ function editor(currency = "BTC") {
     const render = () => {
         do {
             cursor = 0;
-            effects = [];
+            effects.length = 0;
             dirty = false;
             tree = Page();
-            const pending = effects;
+            const pending = effects.splice(0);
             pending.forEach(effect => effect());
         } while (dirty);
     };

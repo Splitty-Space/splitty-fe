@@ -12,7 +12,7 @@ export interface ActivityData {
 export interface useActivity {
     data: ActivityData,
     loading: boolean;
-    error: AxiosError<any, any> | null;
+    error: AxiosError<any> | null;
     refetch: RefetchFunction<any, any>;
 }
 

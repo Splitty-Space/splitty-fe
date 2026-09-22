@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint . --ext .js,.mjs,.ts,.tsx",
+    "lint": "eslint . --ext .js,.mjs,.cjs,.ts,.tsx",
     "typecheck": "tsc --noEmit --incremental false",
     "test": "node --test tests/*.test.cjs"
   },

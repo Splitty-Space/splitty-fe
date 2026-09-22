@@ -82,8 +82,7 @@ export default function ActivityPage() {
     }, [authToken, pageSize, showError]);
 
     useEffect(() => {
-        const controller = new AbortController();
-        listController.current = controller;
+        listController.current = new AbortController();
         pendingPages.current.clear();
         setActivities([]);
         setIsLoaded(false);
