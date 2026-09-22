@@ -1,5 +1,7 @@
 "use client"
 
+// The module enables the Telegram mock only in the development browser.
+import "@/utils/mockTelegramEnv";
 import {usePathname, useRouter} from "next/navigation";
 import React, {useCallback, useEffect, useMemo, useState} from "react";
 import i18next from "i18next";

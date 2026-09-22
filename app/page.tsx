@@ -1,9 +1,8 @@
 "use client"
 
-import React, {useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import classNames from "classnames";
 import {useTranslation} from "react-i18next";
-import {init} from "@telegram-apps/sdk";
 import {useRouter} from "next/navigation";
 import {Cell, Placeholder, Divider, Caption} from "@telegram-apps/telegram-ui";
 import Main from "@/app/components/main/main";
@@ -23,19 +22,12 @@ import useContentHeight from "@/hooks/useContentHeight";
 import Loader from "@/app/components/loader/loader";
 import PullToRefresh from "@/app/components/pullToRefresh/pullToRefresh";
 import TelegramAnalytics from "@telegram-apps/analytics";
-import useAuth from "@/hooks/useAuth";
 import "dayjs/locale/ru";
 import "dayjs/locale/uk";
-
-// import "@/utils/mockTelegramEnv"; // TODO DO NOT UNCOMMENT
-
-
 
 export default function FriendsList() {
     const {t} = useTranslation();
     const router = useRouter();
-
-    useAuth();
 
     const {data: me} = useMe();
 
@@ -49,11 +41,9 @@ export default function FriendsList() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     useEffect(() => {
-        const cleanup = init();
-
         // Analytics uses SDK v1 and cannot read the SDK v3 development mock.
         if (process.env.NODE_ENV !== "production") {
-            return cleanup;
+            return;
         }
 
         TelegramAnalytics.init({
@@ -62,8 +52,6 @@ export default function FriendsList() {
         }).catch((error: unknown) => {
             console.warn("Telegram analytics initialization failed:", error);
         });
-
-        return cleanup;
     }, []);
 
     const [rowCount, setRowCount] = useState(defaultPageSize);
