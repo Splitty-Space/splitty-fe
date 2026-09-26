@@ -38,7 +38,8 @@ void i18n
                     },
                     friendsList: {
                         AddFirstFriend: "Add you first friend to your friends list",
-                        FriendNotFound: "Friend not found"
+                        FriendNotFound: "Friend not found",
+                        Retry: "Retry"
                     },
                     friend: {
                         SettleUp: "Settle up",
@@ -179,7 +180,8 @@ void i18n
                     },
                     friendsList: {
                         AddFirstFriend: "Добавьте своего первого друга в список друзей",
-                        FriendNotFound: "Друг не найден"
+                        FriendNotFound: "Друг не найден",
+                        Retry: "Повторить"
                     },
                     friend: {
                         SettleUp: "Рассчитаться",
@@ -320,7 +322,8 @@ void i18n
                     },
                     friendsList: {
                         AddFirstFriend: "Додайте свого першого друга до списку друзів",
-                        FriendNotFound: "Друга не знайдено"
+                        FriendNotFound: "Друга не знайдено",
+                        Retry: "Повторити"
                     },
                     friend: {
                         SettleUp: "Розраховуватися",
