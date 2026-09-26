@@ -11,7 +11,7 @@ void i18n
     // init i18next
     // for all options read: https://www.i18next.com/overview/configuration-options
     .init({
-        debug: process.env.NODE_ENV === "development",
+        debug: false,
         // Keep server HTML and the first client render in the same language.
         // Browser language detection runs after hydration in RootLayout.
         lng: "en",
