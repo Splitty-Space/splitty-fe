@@ -55,8 +55,8 @@ export default function AddGroup() {
                 setSearchValue={setSearchValue}
                 isNextDisabled={isNextDisabled}
                 isPrevVisible={isGroupUserSettings}
-                onPrev={() => setStep(step => step - 1)}
-                onNext={() => setStep(step => step + 1)}
+                onPrevAction={() => setStep(step => step - 1)}
+                onNextAction={() => setStep(step => step + 1)}
             />
             <main className={classNames({
                 "p-4": isGroupSettings,

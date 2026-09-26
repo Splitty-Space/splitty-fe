@@ -6,13 +6,13 @@ import classNames from "classnames";
 import {Button} from "@telegram-apps/telegram-ui";
 import HeaderWithSearch from "@/app/components/header/headerWithSearch";
 
-export default function AddGroupsHeader({searchValue, setSearchValue, isPrevVisible, isNextDisabled, onPrev, onNext}: {
+export default function AddGroupsHeader({searchValue, setSearchValue, isPrevVisible, isNextDisabled, onPrevAction, onNextAction}: {
     searchValue: string,
     setSearchValue: Function,
     isPrevVisible: boolean,
     isNextDisabled: boolean,
-    onPrev: MouseEventHandler<HTMLButtonElement>,
-    onNext: MouseEventHandler<HTMLButtonElement>
+    onPrevAction: MouseEventHandler<HTMLButtonElement>,
+    onNextAction: MouseEventHandler<HTMLButtonElement>
 }) {
     const {t} = useTranslation();
     return (
@@ -24,7 +24,7 @@ export default function AddGroupsHeader({searchValue, setSearchValue, isPrevVisi
                 <Button
                     size="l"
                     mode="plain"
-                    onClick={onPrev}
+                    onClick={onPrevAction}
                     className={classNames({
                         "invisible": !isPrevVisible
                     })}
@@ -36,7 +36,7 @@ export default function AddGroupsHeader({searchValue, setSearchValue, isPrevVisi
                 <Button
                     size="l"
                     mode="plain"
-                    onClick={onNext}
+                    onClick={onNextAction}
                     disabled={isNextDisabled}
                 >
                     {t("addGroup.Next")}
