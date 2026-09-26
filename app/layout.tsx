@@ -17,9 +17,6 @@ import {DARK, DEFAULT_THEME, THEME_TYPE} from "@/const/theme";
 import {DEFAULT_PLATFORM, IOS, PLATFORM_TYPE} from "@/const/platform";
 import {AppRootContext} from "./AppRootContext";
 import {backButton, closingBehavior, miniApp, swipeBehavior, viewport, postEvent} from "@telegram-apps/sdk";
-import {LocalizationProvider} from "@mui/x-date-pickers";
-import {createTheme, ThemeProvider} from "@mui/material/styles";
-import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import Footer from "@/app/components/footer/footer";
 import {useStore} from "@/app/store";
 import useFriends from "@/services/useFriends";
@@ -33,8 +30,7 @@ import {
     expenseParticipants,
     friend,
     friendsList,
-    groups,
-    urls
+    groups
 } from "@/const/urls";
 import {DEFAULT_SNACKBAR_DURATION} from "@/const/defaultSnackbarDuration";
 import {addFriend} from "@/services/addFriend";
@@ -44,20 +40,12 @@ import useUpdateUserSettings from "@/services/useUpdateUserSettings";
 import "./globals.css";
 import useAuth from "@/hooks/useAuth";
 import {isTMA} from "@telegram-apps/bridge";
-import "dayjs/locale/ru";
-import "dayjs/locale/uk";
 
 
 const Tour = dynamic(
     () => import("@/app/components/tour/tour"),
     {ssr: false}
 );
-
-const darkTheme = createTheme({
-    palette: {
-        mode: DARK,
-    },
-});
 
 // Wait for the full mount promise to settle before starting another mount.
 // The SDK clears its concurrency guard asynchronously after cancellation.
@@ -235,12 +223,6 @@ export default function RootLayout({children}: Readonly<{
         };
     }, [router, pathname]);
 
-    useEffect(() => {
-        urls.forEach((route) => {
-            router.prefetch(route);
-        });
-    }, [router]);
-
     const {t} = useTranslation();
 
     const {data, refetchFriends} = useFriends(searchValue);
@@ -399,9 +381,6 @@ export default function RootLayout({children}: Readonly<{
         })}>
         {platform && appearance && (
             <AppRootContext.Provider value={{platform, appearance}}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}
-                                      adapterLocale={i18next?.language === "ua" ? "uk" : i18next?.language}>
-                    <ThemeProvider theme={darkTheme}>
                         <AppRoot
                             platform={platform}
                             appearance={appearance}
@@ -512,8 +491,6 @@ export default function RootLayout({children}: Readonly<{
                                 </Snackbar>
                             )}
                         </AppRoot>
-                    </ThemeProvider>
-                </LocalizationProvider>
             </AppRootContext.Provider>)
         }
         </body>
