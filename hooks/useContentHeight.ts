@@ -1,6 +1,6 @@
 import {useRef, useState, useLayoutEffect, type RefObject} from "react";
 
-const useContentHeight = (): [RefObject<HTMLDivElement>, number] => {
+const useContentHeight = (): [RefObject<HTMLDivElement | null>, number] => {
     const refContainer = useRef<HTMLDivElement>(null);
     const [height, setHeight] = useState(0);
 
