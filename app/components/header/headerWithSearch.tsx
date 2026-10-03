@@ -58,6 +58,7 @@ export default function HeaderWithSearch({
         (<IconButton
             mode="bezeled"
             size="l"
+            aria-label={t(isSearchOpen ? "accessibility.CloseSearch" : "header.Search")}
             className={classNames({
                 "invisible": isSearchDisabled
             })}
@@ -96,7 +97,9 @@ export default function HeaderWithSearch({
                 before={<Icon24Search/>}
                 after={
                     <Tappable
-                        Component="div"
+                        Component="button"
+                        aria-label={t("accessibility.ClearSearch")}
+                        type="button"
                         onClick={clearSearch}
                     >
                         <Icon24Close/>

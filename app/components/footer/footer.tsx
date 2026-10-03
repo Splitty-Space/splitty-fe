@@ -155,6 +155,7 @@ export default function Footer({
                         id={htmlId}
                         key={id}
                         text={text}
+                        aria-label={text ?? t("expenses.AddAnExpense")}
                         selected={path === pathname}
                         onClick={onBarItemClick(id)}
                     >

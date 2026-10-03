@@ -27,6 +27,7 @@ import {defaultPageSize} from "@/const/defaultPageSize";
 import useContentHeight from "@/hooks/useContentHeight";
 import Loader from "@/app/components/loader/loader";
 import PullToRefresh from "@/app/components/pullToRefresh/pullToRefresh";
+import {listAccessibilityProps} from "@/app/components/listAccessibilityProps";
 
 export default function ActivityPage() {
     const {t} = useTranslation();
@@ -136,7 +137,7 @@ export default function ActivityPage() {
         } = activity;
 
         return (
-            <div key={key} style={style}>
+            <div key={key} style={style} role="listitem">
                 <Cell
                     className="friends-list_shrink-0"
                     subtitle={formatDateTime(created_at, me?.language ?? "en")}
@@ -192,6 +193,7 @@ export default function ActivityPage() {
                                             {({width}) => (
                                                 // @ts-ignore
                                                 <List
+                                                    {...listAccessibilityProps}
                                                     ref={registerChild}
                                                     width={width}
                                                     height={height}

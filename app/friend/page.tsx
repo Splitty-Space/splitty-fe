@@ -31,6 +31,7 @@ import {defaultPageSize} from "@/const/defaultPageSize";
 import useContentHeight from "@/hooks/useContentHeight";
 import Loader from "@/app/components/loader/loader";
 import PullToRefresh from "@/app/components/pullToRefresh/pullToRefresh";
+import {listAccessibilityProps} from "@/app/components/listAccessibilityProps";
 import useRefreshToken from "@/utils/useRefreshToken";
 import {currencyToCurrencySymbol} from "@/utils/currencyToCurrencySymbol";
 
@@ -217,7 +218,7 @@ export default function FriendPage() {
         const avatarSize = participants.length === 1 ? 48 : participants.length <= 2 ? 28 : 24;
 
         return (
-            <div key={key} style={style}>
+            <div key={key} style={style} role="listitem">
                 <Cell
                     className="friends-list_shrink-0"
                     subtitle={formatDate(date)}
@@ -305,6 +306,7 @@ export default function FriendPage() {
                 <IconButton
                     size="l"
                     mode="bezeled"
+                    aria-label={t("accessibility.EditFriend")}
                     className="absolute top-4 right-4"
                     onClick={() => {
                         router.push(friendSettings);
@@ -370,6 +372,7 @@ export default function FriendPage() {
                                         {({width}) => (
                                             // @ts-ignore
                                             <List
+                                                {...listAccessibilityProps}
                                                 ref={registerChild}
                                                 width={width}
                                                 height={height}

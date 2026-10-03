@@ -9,7 +9,7 @@ const SkeletonCell = ({style, me}: { style: object, me?: Me }) => {
     const {t} = useTranslation();
 
     return (
-        <div style={style}>
+        <div style={style} role="listitem">
             <Cell
                 className="blur-block"
                 subtitle={formatDateTime("2025-04-05T23:11:18.682875", me?.language ?? "en")}

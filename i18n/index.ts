@@ -26,6 +26,16 @@ void i18n
         resources: {
             en: {
                 translation: {
+                    accessibility: {
+                        CloseSearch: "Close search",
+                        ClearSearch: "Clear search",
+                        ClearGroupName: "Clear group name",
+                        InviteFriend: "Invite a friend",
+                        AddGroup: "Add group",
+                        EditFriend: "Edit friend",
+                        DeleteExpense: "Delete expense",
+                        EditExpense: "Edit expense",
+                    },
                     common: {RequestFailed: "Request could not be confirmed. Check your data before trying again."},
                     header: {
                         Search: "Search",
@@ -168,6 +178,16 @@ void i18n
             },
             ru: {
                 translation: {
+                    accessibility: {
+                        CloseSearch: "Закрыть поиск",
+                        ClearSearch: "Очистить поиск",
+                        ClearGroupName: "Очистить название группы",
+                        InviteFriend: "Пригласить друга",
+                        AddGroup: "Добавить группу",
+                        EditFriend: "Редактировать друга",
+                        DeleteExpense: "Удалить расход",
+                        EditExpense: "Редактировать расход",
+                    },
                     common: {RequestFailed: "Не удалось подтвердить запрос. Проверьте данные перед повторной попыткой."},
                     header: {
                         Search: "Поиск",
@@ -310,6 +330,16 @@ void i18n
             },
             ua: {
                 translation: {
+                    accessibility: {
+                        CloseSearch: "Закрити пошук",
+                        ClearSearch: "Очистити пошук",
+                        ClearGroupName: "Очистити назву групи",
+                        InviteFriend: "Запросити друга",
+                        AddGroup: "Додати групу",
+                        EditFriend: "Редагувати друга",
+                        DeleteExpense: "Видалити витрату",
+                        EditExpense: "Редагувати витрату",
+                    },
                     common: {RequestFailed: "Не вдалося підтвердити запит. Перевірте дані перед повторною спробою."},
                     header: {
                         Search: "Пошук",

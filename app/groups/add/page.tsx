@@ -73,7 +73,9 @@ export default function AddGroup() {
                             onChange={e => setGroupName(e.target.value)}
                             after={
                                 <Tappable
-                                    Component="div"
+                                    Component="button"
+                                    type="button"
+                                    aria-label={t("accessibility.ClearGroupName")}
                                     style={{display: "flex"}}
                                     onClick={() => setGroupName("")}
                                 >

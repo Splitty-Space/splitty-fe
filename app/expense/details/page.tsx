@@ -153,6 +153,7 @@ export default function ExpenseDetails() {
                             <IconButton
                                 size="l"
                                 mode="bezeled"
+                                aria-label={t("accessibility.DeleteExpense")}
                                 onClick={onDelete}
                             >
                                 <Icon28Bin color={"var(--tgui--destructive_text_color)"}/>
@@ -163,6 +164,7 @@ export default function ExpenseDetails() {
                         <IconButton
                             size="l"
                             mode="bezeled"
+                            aria-label={t("accessibility.EditExpense")}
                             onClick={onEdit}
                         >
                             <Icon28Edit/>

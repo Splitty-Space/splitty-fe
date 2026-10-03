@@ -29,6 +29,7 @@ import useContentHeight from "@/hooks/useContentHeight";
 import {focusOnExpenseNameInput} from "@/app/expense/add/focusOnExpenseNameInput";
 import Loader from "@/app/components/loader/loader";
 import PullToRefresh from "@/app/components/pullToRefresh/pullToRefresh";
+import {listAccessibilityProps} from "@/app/components/listAccessibilityProps";
 
 export default function AddExpenseParticipants() {
     const {data: me} = useMe();
@@ -104,7 +105,7 @@ export default function AddExpenseParticipants() {
         const {id, name, username} = _friend;
 
         return (
-            <div key={id} style={style}>
+            <div key={id} style={style} role="listitem">
                 <Cell
                     className="friends-list_shrink-0"
                     before={<Avatar size={48} user_id={id}/>}
@@ -176,6 +177,7 @@ export default function AddExpenseParticipants() {
                                             {({width}) => (
                                                 // @ts-ignore
                                                 <List
+                                                    {...listAccessibilityProps}
                                                     ref={registerChild}
                                                     width={width}
                                                     height={height}

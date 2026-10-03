@@ -17,6 +17,7 @@ import useMe from "@/services/useMe";
 import compactNumber from "@/utils/compactNumber";
 import classNames from "classnames";
 import useContentHeight from "@/hooks/useContentHeight";
+import {listAccessibilityProps} from "@/app/components/listAccessibilityProps";
 
 export default function SettleUp() {
     const {t} = useTranslation();
@@ -48,7 +49,7 @@ export default function SettleUp() {
         const {id, name, username} = selectedFriend;
 
         return (
-            <div key={id + currency} style={style}>
+            <div key={id + currency} style={style} role="listitem">
                 <Cell
                     className="friends-list_shrink-0"
                     before={<Avatar
@@ -91,6 +92,7 @@ export default function SettleUp() {
                     {({width}) => (
                         // @ts-ignore
                         <List
+                            {...listAccessibilityProps}
                             width={width}
                             height={height}
                             rowHeight={68}

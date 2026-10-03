@@ -38,11 +38,12 @@ export default function FriendsHeader({searchValue, setSearchValue, onSearchChan
         <IconButton
             size="l"
             mode="bezeled"
+            aria-label={t("accessibility.InviteFriend")}
             onClick={shareSplitty}
             id="share-button"
         >
             <Icon28PersonAdd/>
-        </IconButton>), [shareSplitty]);
+        </IconButton>), [shareSplitty, t]);
 
     return (
         <HeaderWithSearch

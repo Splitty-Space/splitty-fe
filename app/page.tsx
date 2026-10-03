@@ -17,6 +17,7 @@ import useFriends from "@/services/useFriends";
 import useContentHeight from "@/hooks/useContentHeight";
 import Loader from "@/app/components/loader/loader";
 import PullToRefresh from "@/app/components/pullToRefresh/pullToRefresh";
+import {listAccessibilityProps} from "@/app/components/listAccessibilityProps";
 
 export default function FriendsList() {
     const {t} = useTranslation();
@@ -90,6 +91,7 @@ export default function FriendsList() {
                 <AutoSizer disableHeight>
                     {({width}) => (
                         <List
+                            {...listAccessibilityProps}
                             key={searchValue}
                             width={width}
                             height={height}

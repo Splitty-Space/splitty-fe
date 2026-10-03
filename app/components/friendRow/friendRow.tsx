@@ -15,7 +15,7 @@ export default function FriendRow({friend, style, onSelect}: {
     const {t} = useTranslation();
 
     return (
-        <div id={`friend_${friend.id}`} style={style}>
+        <div id={`friend_${friend.id}`} style={style} role="listitem">
             <Cell
                 className="friends-list_shrink-0"
                 before={<Avatar size={48} user_id={friend.id}/>}
