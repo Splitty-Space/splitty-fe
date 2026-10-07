@@ -9,6 +9,6 @@ Splitty is a single Next.js App Router frontend for a Telegram expense-sharing m
 
 For a feature, trace its `app/` route through `app/store.ts` and the relevant `services/` calls. Friend, expense, and settlement routes depend on selections held in memory, outside the URL.
 
-Both npm and pnpm lockfiles exist; Docker uses npm. The canonical local package manager is unconfirmed. No automated test suite was found; do not report unrun or blocked checks as passing.
+npm is the package manager (`package-lock.json`, installed with `npm ci`); Node 24 is pinned in `.nvmrc` and the Dockerfile. Pull requests run `npm run lint`, `npm run typecheck`, `npm test` and a Docker build in `.github/workflows/checks.yml`. Do not report unrun or blocked checks as passing.
 
 Do not manually edit generated artifacts or installed dependencies. Fix their source/configuration instead; use the owning tool for required regeneration or lockfile updates, as described in the generated-files guide.

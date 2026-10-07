@@ -1,5 +1,5 @@
 # Base image
-FROM node:20
+FROM node:24
 
 ARG NEXT_PUBLIC_SERVER_URL
 ENV NEXT_PUBLIC_SERVER_URL=${NEXT_PUBLIC_SERVER_URL}
@@ -9,7 +9,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN npm install
+RUN npm ci
 RUN npm run build
 
 # Expose the port for the React dev server

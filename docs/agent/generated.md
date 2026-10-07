@@ -29,9 +29,9 @@ Do not assume these directories need to be created or regenerated. Their current
 
 ## Tool-managed lockfiles
 
-[package-lock.json](../../package-lock.json) and [pnpm-lock.yaml](../../pnpm-lock.yaml) are tracked dependency lockfiles, not disposable build output. Do not hand-edit them. Use the relevant package manager when an intentional dependency change requires an update; review the resulting diff and retain the lockfile in version control.
+[package-lock.json](../../package-lock.json) is the tracked dependency lockfile, not disposable build output. Do not hand-edit it. Use npm when an intentional dependency change requires an update; review the resulting diff and retain the lockfile in version control.
 
-Both lockfiles exist and resolve some dependencies differently. Docker uses npm, but the canonical local manager remains **unknown**. Do not refresh, replace, or synchronize both lockfiles incidentally. See [commands.md](commands.md) for the verified workflow.
+npm is the only package manager; `pnpm-lock.yaml` was removed. CI and Docker install with `npm ci`, which fails if the lockfile and `package.json` disagree.
 
 ## Files outside these exclusions
 
