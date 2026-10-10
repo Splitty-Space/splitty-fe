@@ -3,7 +3,7 @@
 // The module enables the Telegram mock only in the development browser.
 import "@/utils/mockTelegramEnv";
 import {usePathname, useRouter} from "next/navigation";
-import React, {useCallback, useEffect, useMemo, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import i18next from "i18next";
 import "@/i18n";
 import dynamic from "next/dynamic"
@@ -237,13 +237,18 @@ export default function ClientLayout({children}: Readonly<{
 
     const {updateUserSettings} = useUpdateUserSettings();
 
+    // The tutorial expense is saved once per tour, however often its save step is re-entered.
+    const isTutorialSaveRequested = useRef(false);
+
     const closeTour = useCallback(() => {
         setIsTourOpen(false);
+        setIsForceExpenseSaveEnabled(false);
+        isTutorialSaveRequested.current = false;
 
         updateUserSettings({
             isGuideShown: true
         }).then(() => refetchMe()).catch(() => setIsRequestErrorSnackbarShown(true));
-    }, [refetchMe, setIsTourOpen, updateUserSettings, setIsRequestErrorSnackbarShown]);
+    }, [refetchMe, setIsTourOpen, setIsForceExpenseSaveEnabled, updateUserSettings, setIsRequestErrorSnackbarShown]);
 
     const testFriend = friends?.find((friend) => friend.id === TUTORIAL_USER_ID);
     const isTestFriendAlreadyExist = testFriend;
@@ -332,7 +337,10 @@ export default function ClientLayout({children}: Readonly<{
             selector: "#expense-details",
             content: t("tour.NewExpenseAdded"),
             action: () => {
-                setIsForceExpenseSaveEnabled(true);
+                if (!isTutorialSaveRequested.current) {
+                    isTutorialSaveRequested.current = true;
+                    setIsForceExpenseSaveEnabled(true);
+                }
                 router.push(expenseDetails);
             }
         },

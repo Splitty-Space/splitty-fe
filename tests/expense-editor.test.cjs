@@ -2,7 +2,7 @@ const {test} = require("node:test");
 const assert = require("node:assert/strict");
 const load = require("./load-typescript.cjs");
 
-function editor(currency = "BTC") {
+function editor(currency = "BTC", overrides = {}) {
     const slots = [];
     const writes = [];
     let cursor = 0;
@@ -14,11 +14,15 @@ function editor(currency = "BTC") {
         selectedExpense: null,
         searchValue: "",
         isForceExpenseSaveEnabled: false,
-        setIsForceExpenseSaveEnabled: () => {},
+        setIsForceExpenseSaveEnabled: value => {
+            if (state.isForceExpenseSaveEnabled !== value) dirty = true;
+            state.isForceExpenseSaveEnabled = value;
+        },
         setIsCreateExpenseSnackbarShown: () => {},
         setIsUpdateExpenseSnackbarShown: () => {},
         setSelectedExpense: () => {},
         setIsRequestErrorSnackbarShown: () => {},
+        ...overrides,
     };
     const jsx = (type, props) => ({type, props});
     const mocks = {
@@ -92,7 +96,9 @@ function editor(currency = "BTC") {
     render();
     change(node => node.props?.id === "expenseName", {value: "Dinner"});
     return {
+        state,
         writes,
+        render,
         amount: value => change(node => node.props?.id === "moneySpentInput", {value}),
         currency: value => change(node => node.type === "CurrencySelect", {value}),
         toggle: (label, checked) => {
@@ -131,4 +137,26 @@ test("switching currency recalculates automatic allocations before saving", asyn
     assert.equal(form.writes[0].currency, "BTC");
     assert.deepEqual(form.writes[0].payers.map(x => x.amount), [0.00005, 0.00005]);
     assert.deepEqual(form.writes[0].debtors.map(x => x.amount), [0.00005, 0.00005]);
+});
+
+const {generateTestExpenseWithSplit} = load("utils/generateTestExpense.ts", {"@/const/testExpenseId": {TEST_EXPENSE_ID: -1}});
+const tutorialExpense = () => generateTestExpenseWithSplit({id: 1, name: "Me"}, {id: 2, name: "Friend"}, key => key);
+
+test("a save request left over from the tour does not save a real expense", () => {
+    const form = editor("USD", {isForceExpenseSaveEnabled: true});
+    assert.equal(form.state.isForceExpenseSaveEnabled, false);
+    form.amount("1");
+    assert.equal(form.save().disabled, false);
+    assert.equal(form.writes.length, 0);
+});
+
+test("the tour saves the tutorial expense once per request", () => {
+    const form = editor("USD", {selectedExpense: tutorialExpense()});
+    assert.equal(form.writes.length, 0);
+    form.state.isForceExpenseSaveEnabled = true;
+    form.render();
+    form.render();
+    assert.equal(form.writes.length, 1);
+    assert.equal(form.writes[0].amount, 70);
+    assert.equal(form.state.isForceExpenseSaveEnabled, false);
 });

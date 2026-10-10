@@ -202,11 +202,15 @@ export default function AddExpense() {
         }
     }, [currency, date, expenseName, isSaveDisabled, moneySpent, paidBy, refetchFriends, router, selectedExpense, setIsCreateExpenseSnackbarShown, setIsUpdateExpenseSnackbarShown, setSelectedExpense, setIsForceExpenseSaveEnabled, showError, splitBetween]);
 
+    // The tour's save request is consumed on first sight and only ever saves the tutorial expense,
+    // so a leftover request cannot save a real expense while the user is still typing it.
     useEffect(() => {
-        if (isForceExpenseSaveEnabled) {
+        if (!isForceExpenseSaveEnabled) return;
+        setIsForceExpenseSaveEnabled(false);
+        if (selectedExpense?.id === TEST_EXPENSE_ID) {
             void onSave();
         }
-    }, [isForceExpenseSaveEnabled, onSave]);
+    }, [isForceExpenseSaveEnabled, onSave, selectedExpense, setIsForceExpenseSaveEnabled]);
 
     const onExpenseNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.value.length <= maxExpenseNameLength) {
