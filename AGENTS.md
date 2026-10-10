@@ -12,3 +12,17 @@ For a feature, trace its `app/` route through `app/store.ts` and the relevant `s
 npm is the package manager (`package-lock.json`, installed with `npm ci`); Node 24 is pinned in `.nvmrc` and the Dockerfile. Pull requests run `npm run lint`, `npm run typecheck`, `npm test` and a Docker build in `.github/workflows/checks.yml`. Do not report unrun or blocked checks as passing.
 
 Do not manually edit generated artifacts or installed dependencies. Fix their source/configuration instead; use the owning tool for required regeneration or lockfile updates, as described in the generated-files guide.
+
+## Agent skills
+
+### Issue tracker
+
+Issues live in GitHub Issues for `Splitty-Space/splitty-fe`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `CONTEXT.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
