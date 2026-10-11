@@ -5,6 +5,7 @@ const load = require("./load-typescript.cjs");
 function editor(currency = "BTC", overrides = {}) {
     const slots = [];
     const writes = [];
+    const puts = [];
     let cursor = 0;
     const effects = [];
     let dirty = false;
@@ -54,7 +55,7 @@ function editor(currency = "BTC", overrides = {}) {
         "@/services/useMe": () => ({data: me}),
         "@/services/useFriends": () => ({refetchFriends: async () => {}}),
         "@/services/addExpense": {addExpense: async payload => {writes.push(payload); return {data: {id: 3}};}},
-        "@/services/putExpense": {putExpense: async () => {}},
+        "@/services/putExpense": {putExpense: async payload => {puts.push(payload);}},
         "@/app/store": {useStore: selector => selector(state)},
         "next/navigation": {useRouter: () => ({replace: () => {}, push: () => {}})},
         "@/const/urls": {expenseDetails: "/expense/details"},
@@ -84,21 +85,47 @@ function editor(currency = "BTC", overrides = {}) {
             pending.forEach(effect => effect());
         } while (dirty);
     };
-    const find = (predicate, node = tree) => {
-        if (!node || typeof node !== "object") return;
-        if (predicate(node)) return node;
-        for (const child of Array.isArray(node) ? node : Object.values(node.props ?? {})) {
-            const result = find(predicate, child);
-            if (result) return result;
-        }
+    const findAll = (predicate, root = tree) => {
+        const found = [];
+        const visit = node => {
+            if (!node || typeof node !== "object") return;
+            if (predicate(node)) found.push(node);
+            for (const child of Array.isArray(node) ? node : Object.values(node.props ?? {})) visit(child);
+        };
+        visit(root);
+        return found;
     };
+    const find = (predicate, root = tree) => findAll(predicate, root)[0];
+    const section = id => find(node => node.props?.id === id);
     const change = (predicate, target) => {find(predicate).props.onChange({target}); render();};
     render();
     change(node => node.props?.id === "expenseName", {value: "Dinner"});
+    const inSection = (id, predicate) => {
+        const root = section(id);
+        assert.ok(root, `${id} is not rendered`);
+        return findAll(predicate, root);
+    };
     return {
         state,
         writes,
+        puts,
         render,
+        isRendered: id => !!section(id),
+        name: value => change(node => node.props?.id === "expenseName", {value}),
+        // Section ids: "expense-add-paid-by" and "expense-add-split-equally".
+        values: id => inSection(id, node => node.type === "Input").map(node => node.props.value),
+        enterAllocation: (id, index, value) => {
+            inSection(id, node => node.type === "Input")[index].props.onChange({target: {value}});
+            render();
+        },
+        selectParticipant: (id, index, checked) => {
+            inSection(id, node => node.type === "Switch")[index].props.onChange({target: {checked}});
+            render();
+        },
+        showPercents: id => {
+            inSection(id, node => node.props?.children === "%")[0].props.onClick();
+            render();
+        },
         amount: value => change(node => node.props?.id === "moneySpentInput", {value}),
         currency: value => change(node => node.type === "CurrencySelect", {value}),
         toggle: (label, checked) => {
@@ -159,4 +186,139 @@ test("the tour saves the tutorial expense once per request", () => {
     assert.equal(form.writes.length, 1);
     assert.equal(form.writes[0].amount, 70);
     assert.equal(form.state.isForceExpenseSaveEnabled, false);
+});
+
+const PAID_BY = "expense-add-paid-by";
+const SPLIT = "expense-add-split-equally";
+const amountsOf = rows => rows.map(row => row.amount);
+
+test("a new expense defaults to me paying in full and an equal split", async () => {
+    const form = editor("USD");
+    assert.equal(form.save().disabled, true);
+    form.amount("10");
+    assert.equal(form.isRendered(PAID_BY), false);
+    assert.equal(form.isRendered(SPLIT), false);
+    await form.save().onClick();
+    const [write] = form.writes;
+    assert.deepEqual(amountsOf(write.payers), [10, 0]);
+    assert.deepEqual(amountsOf(write.debtors), [5, 5]);
+    assert.deepEqual(write.users, [1, 2]);
+    assert.deepEqual([write.amount, write.currency, write.description, write.payment], [10, "USD", "Dinner", false]);
+});
+
+test("the expense amount accepts a decimal comma and ignores input past 15 characters", async () => {
+    const form = editor("USD");
+    form.amount("10,5");
+    form.amount("1234567890123456");
+    await form.save().onClick();
+    assert.equal(form.writes[0].amount, 10.5);
+    assert.deepEqual(amountsOf(form.writes[0].debtors), [5.25, 5.25]);
+});
+
+test("a blank or overlong expense name cannot be saved or entered", () => {
+    const form = editor("USD");
+    form.amount("10");
+    form.name("x".repeat(257));
+    assert.equal(form.save().disabled, false);
+    form.name("   ");
+    assert.equal(form.save().disabled, true);
+});
+
+test("turning off fully paid by me splits who paid equally, turning it on restores my full payment", async () => {
+    const form = editor("USD");
+    form.amount("10");
+    form.toggle("expenses.FullyPaidByYou", false);
+    assert.deepEqual(form.values(PAID_BY), ["5", "5"]);
+    form.toggle("expenses.FullyPaidByYou", true);
+    assert.equal(form.isRendered(PAID_BY), false);
+    await form.save().onClick();
+    assert.deepEqual(amountsOf(form.writes[0].payers), [10, 0]);
+});
+
+test("an unequal split saves the entered amounts and stays blocked until it balances", async () => {
+    const form = editor("USD");
+    form.amount("10");
+    form.toggle("expenses.SplitEquallyBetweenAll", false);
+    assert.deepEqual(form.values(SPLIT), ["5", "5"]);
+    form.enterAllocation(SPLIT, 1, "8");
+    assert.equal(form.save().disabled, true);
+    form.enterAllocation(SPLIT, 0, "2");
+    await form.save().onClick();
+    assert.deepEqual(amountsOf(form.writes[0].debtors), [2, 8]);
+});
+
+test("deselecting a participant zeroes their allocation", async () => {
+    const form = editor("USD");
+    form.amount("10");
+    form.toggle("expenses.SplitEquallyBetweenAll", false);
+    form.selectParticipant(SPLIT, 1, false);
+    assert.deepEqual(form.values(SPLIT), ["5", "0"]);
+    assert.equal(form.save().disabled, true);
+    form.enterAllocation(SPLIT, 0, "10");
+    form.selectParticipant(SPLIT, 1, true);
+    await form.save().onClick();
+    assert.deepEqual(amountsOf(form.writes[0].debtors), [10, 0]);
+});
+
+test("percent allocations are converted to amounts of the expense total", async () => {
+    const form = editor("USD");
+    form.amount("200");
+    form.toggle("expenses.SplitEquallyBetweenAll", false);
+    form.showPercents(SPLIT);
+    assert.deepEqual(form.values(SPLIT), [50, 50]);
+    form.enterAllocation(SPLIT, 0, "25");
+    form.enterAllocation(SPLIT, 1, "75");
+    assert.deepEqual(form.values(SPLIT), ["25", "75"]);
+    await form.save().onClick();
+    assert.deepEqual(amountsOf(form.writes[0].debtors), [50, 150]);
+});
+
+test("changing the amount keeps an unequal split as entered", () => {
+    const form = editor("USD");
+    form.amount("10");
+    form.toggle("expenses.SplitEquallyBetweenAll", false);
+    form.enterAllocation(SPLIT, 0, "3");
+    form.enterAllocation(SPLIT, 1, "7");
+    form.amount("20");
+    assert.deepEqual(form.values(SPLIT), ["3", "7"]);
+    assert.equal(form.save().disabled, true);
+});
+
+test("switching currency keeps an unequal split that was edited", () => {
+    const form = editor("USD");
+    form.amount("0.0001");
+    form.toggle("expenses.SplitEquallyBetweenAll", false);
+    form.enterAllocation(SPLIT, 0, "0.0001");
+    form.enterAllocation(SPLIT, 1, "0");
+    form.currency("BTC");
+    assert.deepEqual(form.values(SPLIT), ["0.0001", "0"]);
+    assert.equal(form.save().disabled, false);
+});
+
+test("editing an expense starts from its saved allocations and updates it", async () => {
+    const me = {id: 1, name: "Me"};
+    const friend = {id: 2, name: "Friend"};
+    const form = editor("USD", {
+        selectedFriends: [],
+        selectedExpense: {
+            id: 3, description: "Taxi", amount: "30.00", currency: "EUR", date: "2026-10-01",
+            expense_users: [
+                {user: me, lent_amount: 30, debt_amount: 10},
+                {user: friend, lent_amount: 0, debt_amount: 20},
+            ],
+        },
+    });
+    assert.equal(form.isRendered(PAID_BY), false);
+    assert.deepEqual(form.values(SPLIT), ["10", "20"]);
+    assert.equal(form.save().disabled, false);
+    await form.save().onClick();
+    assert.equal(form.writes.length, 0);
+    assert.deepEqual(form.puts, [{
+        expense_id: 3,
+        payers: [{user_id: 1, amount: 30}, {user_id: 2, amount: 0}],
+        debtors: [{user_id: 1, amount: 10}, {user_id: 2, amount: 20}],
+        users: [1, 2],
+        amount: 30,
+        description: "Dinner",
+    }]);
 });
