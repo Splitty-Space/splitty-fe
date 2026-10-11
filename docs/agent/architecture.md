@@ -76,4 +76,4 @@ These are frontend representations; backend validation and guarantees remain unv
 
 ## Debugging entry points
 
-Start with the affected route and its state in `app/store.ts`, then inspect its service call, Telegram user ID/token, and response shape. For expense calculations read the editor and [splitNumberIntoParts.ts](../../utils/splitNumberIntoParts.ts). For blank startup read the home page, root layout, and auth hook. For scrolling/keyboard issues start with `Main`, `useContentHeight`, the footer, and global CSS.
+Start with the affected route and its state in `app/store.ts`, then inspect its service call, Telegram user ID/token, and response shape. For expense calculations read the [expense draft](../../app/expense/expenseDraft.ts), which holds the editor's allocation rules, and [splitNumberIntoParts.ts](../../utils/splitNumberIntoParts.ts). For blank startup read the home page, root layout, and auth hook. For scrolling/keyboard issues start with `Main`, `useContentHeight`, the footer, and global CSS.
