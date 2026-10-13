@@ -17,14 +17,12 @@ documented in [commands.md](commands.md).
   **Risk to verify:** requests before authentication, missing retries after the
   token changes, and direct entry to routes that never mount home.
 
-- **Navigation depends on memory.** [Zustand state](../../app/store.ts) holds the
-  selected expense, participants and settlement data without persistence. Friend
-  routes take the friend from the URL instead ([ADR 0001](../adr/0001-selection-in-url.md)).
-  [Expense details](../../app/expense/details/page.tsx) immediately fetches using
-  `selectedExpense?.id`; [getExpense](../../services/getExpense.ts) interpolates
-  that value into the URL without a guard.
-  **Risk to verify:** reloads/direct links can lose context and request
-  `/expenses/undefined`. Do not assume routes are independently loadable.
+- **New-expense participants live in memory.** Friend, expense and settlement
+  routes take their entity from the URL ([ADR 0001](../adr/0001-selection-in-url.md)),
+  but [Zustand state](../../app/store.ts) still holds the participants chosen on
+  `/expense/participants` without persistence.
+  **Risk to verify:** a reload on `/expense/add` without `expenseId` loses the
+  chosen participants.
 
 - **Mutation failures are suppressed.** [Add](../../services/addExpense.ts),
   [update](../../services/putExpense.ts) and [delete](../../services/deleteExpense.ts)
@@ -45,10 +43,10 @@ documented in [commands.md](commands.md).
 
 - **Layout controls feature workflows.** [Layout](../../app/layout.tsx) combines
   Telegram lifecycle/back-button behavior, profile loading, tour steps, navigation
-  and global snackbars. Tour actions write selected entities and enable
+  and global snackbars. Tour actions write `tutorialExpense` and enable
   `isForceExpenseSaveEnabled`; [expense editing](../../app/expense/add/page.tsx)
   watches that flag and calls save. [Footer](../../app/components/footer/footer.tsx)
-  also clears or changes selection state during navigation.
+  also sets or clears new-expense participants during navigation.
   **Risk to verify:** isolated page changes can break tour or back-navigation
   behavior; inspect these shared controllers before changing workflow state.
 

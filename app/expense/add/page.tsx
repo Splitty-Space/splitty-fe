@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useCallback, useEffect, useReducer, useRef, useState} from "react";
+import React, {Suspense, useCallback, useEffect, useReducer, useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
 import classNames from "classnames";
 import Header from "@/app/components/header/header";
@@ -35,6 +35,9 @@ import Avatar from "@/app/components/avatar/Avatar";
 import {vibration} from "@/utils/vibration";
 import {Icon28Warning} from "@/Icons";
 import {TEST_EXPENSE_ID} from "@/const/testExpenseId";
+import {SEARCH_PARAMS} from "@/const/searchParams";
+import {withSearchParams} from "@/utils/withSearchParams";
+import useSelectedExpense from "@/hooks/useSelectedExpense";
 import {EXPENSE_DRAFT_ACTIONS} from "@/const/expenseDraftActions";
 import {ALLOCATION_SIDES} from "@/const/allocationSides";
 import {
@@ -61,7 +64,7 @@ enum EDITOR_ACTIONS {
 }
 
 interface Editor {
-    // The selected expense the draft was created from; a new one replaces the draft.
+    // The expense the draft was created from (null for a new expense); a different one replaces the draft.
     source: Expense | null;
     draft: ExpenseDraft;
 }
@@ -76,7 +79,7 @@ function reduceEditor(editor: Editor | null, action: EditorAction): Editor | nul
 const percentOf = (allocation: Allocation | undefined, amount: number) =>
     allocation?.percentRaw ?? Number(allocation?.amountRaw) * 100 / amount;
 
-export default function AddExpense() {
+function AddExpense() {
     const {t} = useTranslation();
 
     const {data: me} = useMe();
@@ -88,10 +91,10 @@ export default function AddExpense() {
 
     const searchValue = useStore((state) => state.searchValue);
     const selectedFriends = useStore((state) => state.selectedFriends);
-    const selectedExpense = useStore((state) => state.selectedExpense);
+    // An expense id in the URL means editing that expense; without one the page creates a new expense.
+    const {expenseId, expense: selectedExpense} = useSelectedExpense({required: false});
     const setIsCreateExpenseSnackbarShown = useStore((state) => state.setIsCreateExpenseSnackbarShown);
     const setIsUpdateExpenseSnackbarShown = useStore((state) => state.setIsUpdateExpenseSnackbarShown);
-    const setSelectedExpense = useStore((state) => state.setSelectedExpense);
     const isForceExpenseSaveEnabled = useStore((state) => state.isForceExpenseSaveEnabled);
     const setIsForceExpenseSaveEnabled = useStore((state) => state.setIsForceExpenseSaveEnabled);
     const showError = useStore((state) => state.setIsRequestErrorSnackbarShown);
@@ -103,8 +106,9 @@ export default function AddExpense() {
 
     // The draft needs the current user, so it is created once the profile has loaded.
     const [editor, dispatch] = useReducer(reduceEditor, null);
-    const isDraftOutdated = !!me && editor?.source !== selectedExpense;
-    if (me && (editor === null || isDraftOutdated)) {
+    const isSourceReady = expenseId === null || !!selectedExpense;
+    const isDraftOutdated = !!me && isSourceReady && editor?.source !== selectedExpense;
+    if (me && isSourceReady && (editor === null || isDraftOutdated)) {
         dispatch({
             type: EDITOR_ACTIONS.DRAFT_CREATED,
             editor: {
@@ -113,7 +117,7 @@ export default function AddExpense() {
             },
         });
     }
-    const draft = editor && !isDraftOutdated ? editor.draft : null;
+    const draft = editor && isSourceReady && !isDraftOutdated ? editor.draft : null;
 
     const isSaveDisabled = !draft || !canSaveExpenseDraft(draft);
 
@@ -131,7 +135,9 @@ export default function AddExpense() {
         const {payers, debtors, users, amount, description, currency, date} = expenseDraftPayload(draft);
 
         try {
-            if (!selectedExpense || selectedExpense?.id === TEST_EXPENSE_ID) {
+            const isNew = !selectedExpense || selectedExpense.id === TEST_EXPENSE_ID;
+            let savedId: number;
+            if (isNew) {
                 const {data} = await addExpense({
                     payers,
                     debtors,
@@ -142,7 +148,7 @@ export default function AddExpense() {
                     date,
                     description,
                 });
-                setSelectedExpense(data);
+                savedId = data.id;
                 setIsCreateExpenseSnackbarShown(true);
             } else {
                 await putExpense({
@@ -153,18 +159,20 @@ export default function AddExpense() {
                     amount,
                     description
                 });
+                savedId = selectedExpense.id;
                 setIsUpdateExpenseSnackbarShown(true);
             }
             // A refresh failure must not turn a confirmed write into a retryable write.
             await refetchFriends().catch(() => showError(true));
-            if (!selectedExpense || selectedExpense.id === TEST_EXPENSE_ID) router.replace(expenseDetails);
-            else router.push(expenseDetails);
+            const detailsUrl = withSearchParams(expenseDetails, {[SEARCH_PARAMS.EXPENSE_ID]: savedId});
+            if (isNew) router.replace(detailsUrl);
+            else router.push(detailsUrl);
         } catch {
             saveInFlight.current = false;
             setIsSaveInProgress(false);
             showError(true);
         }
-    }, [draft, isSaveDisabled, refetchFriends, router, selectedExpense, setIsCreateExpenseSnackbarShown, setIsUpdateExpenseSnackbarShown, setSelectedExpense, setIsForceExpenseSaveEnabled, showError]);
+    }, [draft, isSaveDisabled, refetchFriends, router, selectedExpense, setIsCreateExpenseSnackbarShown, setIsUpdateExpenseSnackbarShown, setIsForceExpenseSaveEnabled, showError]);
 
     // The tour's save request is consumed on first sight and only ever saves the tutorial expense,
     // so a leftover request cannot save a real expense while the user is still typing it.
@@ -572,5 +580,13 @@ export default function AddExpense() {
                 }
             </Main>
         </>
+    );
+}
+
+export default function AddExpenseRoute() {
+    return (
+        <Suspense>
+            <AddExpense/>
+        </Suspense>
     );
 }

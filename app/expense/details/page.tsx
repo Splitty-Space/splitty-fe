@@ -1,6 +1,6 @@
 "use client"
 
-import {useEffect, useRef, useState} from "react";
+import {Suspense, useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
 import classNames from "classnames";
 import Header from "@/app/components/header/header";
@@ -11,12 +11,11 @@ import {Icon28Bin} from "@/Icons";
 import Logo from "@/app/components/header/logo";
 import useMe from "@/services/useMe";
 import {deleteExpense} from "@/services/deleteExpense";
-import getExpense from "@/services/getExpense";
 import {useStore} from "@/app/store";
 import ExpenseHistoryList from "@/app/expense/details/ExpenseHistoryList";
 import useFriends from "@/services/useFriends";
 import {useRouter} from "next/navigation";
-import {addExpense, friendsList, settleUpPayment} from "@/const/urls";
+import {addExpense, settleUpPayment} from "@/const/urls";
 import {popup} from "@telegram-apps/sdk";
 import Avatar from "@/app/components/avatar/Avatar";
 import {formatDateTime} from "@/utils/formatDateTime";
@@ -26,52 +25,27 @@ import useRefreshToken from "@/utils/useRefreshToken";
 import PullToRefresh from "@/app/components/pullToRefresh/pullToRefresh";
 import "./expenseDetails.css";
 import {TEST_EXPENSE_ID} from "@/const/testExpenseId";
+import useSelectedExpense from "@/hooks/useSelectedExpense";
+import {SEARCH_PARAMS} from "@/const/searchParams";
+import {withSearchParams} from "@/utils/withSearchParams";
 
-export default function ExpenseDetails() {
+function ExpenseDetails() {
     const {t} = useTranslation();
-    const authToken = useStore((state) => state.token);
     const showError = useStore((state) => state.setIsRequestErrorSnackbarShown);
     const deleteInFlight = useRef(false);
-    // Set once an expense has been shown, so clearing the selection on the way out (footer, delete) does not redirect.
-    const hadSelectedExpense = useRef(false);
 
-    const selectedExpense = useStore((state) => state.selectedExpense);
-    const setSelectedExpense = useStore((state) => state.setSelectedExpense);
     const setIsDeleteExpenseSnackbarShown = useStore((state) => state.setIsDeleteExpenseSnackbarShown);
-    const setSettleUpPaymentInfo = useStore((state) => state.setSettleUpPaymentInfo);
 
     const {data: me, loading: loadingMe} = useMe();
 
     const searchValue = useStore((state) => state.searchValue);
-    const {data, refetchFriends} = useFriends(searchValue);
-    const friends = data?.data;
+    const {refetchFriends} = useFriends(searchValue);
 
     const [deleteExpenseLoading, setDeleteExpenseLoading] = useState(false);
 
     const [token, refreshToken] = useRefreshToken();
-    const [isExpenseLoading, setIsExpenseLoading] = useState(false);
+    const {expense: selectedExpense, isLoading: isExpenseLoading} = useSelectedExpense({refreshKey: token});
     const router = useRouter();
-
-    useEffect(() => {
-        const expenseId = selectedExpense?.id;
-
-        if (expenseId === undefined) {
-            if (!hadSelectedExpense.current) router.replace(friendsList);
-            return;
-        }
-        hadSelectedExpense.current = true;
-
-        if (!authToken || expenseId === TEST_EXPENSE_ID) return;
-        const controller = new AbortController();
-        setIsExpenseLoading(true);
-        getExpense({expense_id: expenseId, signal: controller.signal})
-            .then(({data}) => {
-                if (!controller.signal.aborted) setSelectedExpense(data);
-            })
-            .catch(() => { if (!controller.signal.aborted) showError(true); })
-            .finally(() => { if (!controller.signal.aborted) setIsExpenseLoading(false); });
-        return () => controller.abort();
-    }, [authToken, router, selectedExpense?.id, setSelectedExpense, showError, token]);
 
     const expenseDelete = () => {
         if (selectedExpense?.id && selectedExpense.id !== TEST_EXPENSE_ID && !deleteInFlight.current) {
@@ -81,7 +55,6 @@ export default function ExpenseDetails() {
                 .then(async () => {
                     await refetchFriends().catch(() => showError(true));
                     setIsDeleteExpenseSnackbarShown(true);
-                    setSelectedExpense(null);
                     router.back();
                 }).catch(() => {
                     deleteInFlight.current = false;
@@ -111,22 +84,10 @@ export default function ExpenseDetails() {
     };
 
     const onEdit = () => {
-        if (selectedExpense?.payment) {
-            const friend = friends?.find(({id}) => id === selectedExpense.expense_users.find(({user}) => user.id !== me?.id)?.user.id);
-            if (friend) {
-                setSettleUpPaymentInfo(
-                    {
-                        friend: friend,
-                        currency: selectedExpense.currency,
-                    }
-                );
-
-                router.push(settleUpPayment);
-            }
-        } else {
-            router.push(addExpense);
-            focusOnExpenseNameInput();
-        }
+        if (!selectedExpense) return;
+        const editUrl = selectedExpense.payment ? settleUpPayment : addExpense;
+        router.push(withSearchParams(editUrl, {[SEARCH_PARAMS.EXPENSE_ID]: selectedExpense.id}));
+        if (!selectedExpense.payment) focusOnExpenseNameInput();
     };
 
     const onRefresh = () => {
@@ -347,6 +308,21 @@ export default function ExpenseDetails() {
                             }
                         </PullToRefresh>
                     </Main>)}
+
+                {!selectedExpense &&
+                    (<Main className="px-4 pt-24">
+                        <PullToRefresh onRefresh={onRefresh}>
+                            <div className="h-full"/>
+                        </PullToRefresh>
+                    </Main>)}
             </>
         );
+}
+
+export default function ExpenseDetailsRoute() {
+    return (
+        <Suspense>
+            <ExpenseDetails/>
+        </Suspense>
+    );
 }

@@ -19,8 +19,9 @@ interface State {
     selectedFriends: Friend[],
     setSelectedFriends: (newFriends: Friend[]) => void,
 
-    selectedExpense: Expense | null,
-    setSelectedExpense: (newExpense: Expense | null) => void,
+    // The tour's sample expense has no backend id, so pages read it from here when the URL says TEST_EXPENSE_ID.
+    tutorialExpense: Expense | null,
+    setTutorialExpense: (newExpense: Expense | null) => void,
 
     pageData: PageData,
     setPageData: (newPageData: PageData) => void,
@@ -49,9 +50,6 @@ interface State {
     isGroupComingSoonSnackbarShown: boolean,
     setIsGroupComingSoonSnackbarShown: (newIsGroupComingSoonSnackbarShown: boolean) => void,
 
-    settleUpPaymentInfo: { friend: Friend, currency: string } | null,
-    setSettleUpPaymentInfo: (newSettleUpPaymentInfo: { friend: Friend, currency: string } | null) => void,
-
     isForceExpenseSaveEnabled: boolean,
     setIsForceExpenseSaveEnabled: (newIsForceExpenseSaveEnabled: boolean) => void,
 }
@@ -71,8 +69,8 @@ export const useStore = create<State>()(
             selectedFriends: [],
             setSelectedFriends: (newFriends) => set(() => ({selectedFriends: newFriends})),
 
-            selectedExpense: null,
-            setSelectedExpense: (newExpense) => set(() => ({selectedExpense: newExpense})),
+            tutorialExpense: null,
+            setTutorialExpense: (newExpense) => set(() => ({tutorialExpense: newExpense})),
 
             pageData: {
                 isFromActivity: false
@@ -102,9 +100,6 @@ export const useStore = create<State>()(
 
             isGroupComingSoonSnackbarShown: false,
             setIsGroupComingSoonSnackbarShown: (newIsGroupComingSoonSnackbarShown) => set(() => ({isGroupComingSoonSnackbarShown: newIsGroupComingSoonSnackbarShown})),
-
-            settleUpPaymentInfo: null,
-            setSettleUpPaymentInfo: (newSettleUpPaymentInfo) => set(() => ({settleUpPaymentInfo: newSettleUpPaymentInfo})),
 
             isForceExpenseSaveEnabled: false,
             setIsForceExpenseSaveEnabled: (newIsForceExpenseSaveEnabled) => set(() => ({isForceExpenseSaveEnabled: newIsForceExpenseSaveEnabled})),

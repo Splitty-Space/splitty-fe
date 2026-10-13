@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useRef, useState} from "react";
+import React, {Suspense, useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
 import classNames from "classnames";
 import dayjs, {Dayjs} from "dayjs";
@@ -9,48 +9,77 @@ import Header from "@/app/components/header/header";
 import {Button, Input, Section, Text, Title} from "@telegram-apps/telegram-ui";
 import {CurrencySelect} from "@/components/CurrencySelect";
 import {addExpense} from "@/services/addExpense";
-import useMe from "@/services/useMe";
+import useMe, {type Me} from "@/services/useMe";
 import {Arrow} from "@/Icons";
 import {putExpense} from "@/services/putExpense";
 import {useStore} from "@/app/store";
-import useFriends from "@/services/useFriends";
-import {useRouter} from "next/navigation";
+import {useRouter, useSearchParams} from "next/navigation";
 import {friend as friendURL} from "@/const/urls";
 import {SEARCH_PARAMS} from "@/const/searchParams";
 import {withSearchParams} from "@/utils/withSearchParams";
 import Avatar from "@/app/components/avatar/Avatar";
 import Main from "@/app/components/main/main";
 import Loader from "@/app/components/loader/loader";
+import {useFriend} from "@/hooks/useSelectedFriend";
+import useSelectedExpense from "@/hooks/useSelectedExpense";
+import {parseId} from "@/utils/parseId";
+import type {Expense, Friend} from "@/entities";
+import type {RefetchFunction} from "axios-hooks";
 
-export default function SettleUpPayment() {
+// Editing takes the settlement from ?expenseId= and the friend from its participants;
+// a new settlement takes ?friendId= and ?currency=.
+function SettleUpPayment() {
+    const searchParams = useSearchParams();
+    const isEditing = searchParams.has(SEARCH_PARAMS.EXPENSE_ID);
+    const {expense} = useSelectedExpense({required: false});
+    const {data: me, loading} = useMe();
+
+    const otherUserId = expense?.expense_users.find(({user}) => user.id !== me?.id)?.user.id ?? null;
+    const friendId = isEditing ?
+        (expense && me ? otherUserId : undefined) :
+        parseId(searchParams.get(SEARCH_PARAMS.FRIEND_ID));
+    const {friend, refetchFriends} = useFriend(friendId);
+    const defaultCurrency = isEditing ? expense?.currency : searchParams.get(SEARCH_PARAMS.CURRENCY) ?? undefined;
+
+    if (loading || !me || !friend || (isEditing && !expense)) return <Loader/>;
+
+    return (
+        <SettleUpPaymentForm
+            key={`${friend.id}-${expense?.id}`}
+            me={me}
+            friend={friend}
+            selectedExpense={expense}
+            defaultCurrency={defaultCurrency}
+            refetchFriends={refetchFriends}
+        />
+    );
+}
+
+function SettleUpPaymentForm({me, friend, selectedExpense, defaultCurrency, refetchFriends}: {
+    me: Me,
+    friend: Friend,
+    selectedExpense: Expense | null,
+    defaultCurrency: string | undefined,
+    refetchFriends: RefetchFunction<any, any>,
+}) {
     const {t} = useTranslation();
 
-    const selectedExpense = useStore((state) => state.selectedExpense);
     const showError = useStore((state) => state.setIsRequestErrorSnackbarShown);
     const saveInFlight = useRef(false);
-    const searchValue = useStore((state) => state.searchValue);
     const setIsCreateExpenseSnackbarShown = useStore((state) => state.setIsCreateExpenseSnackbarShown);
     const setIsUpdateExpenseSnackbarShown = useStore((state) => state.setIsUpdateExpenseSnackbarShown);
 
-    const settleUpPaymentInfo = useStore((state) => state.settleUpPaymentInfo);
-    const friend = settleUpPaymentInfo?.friend;
-    const defaultCurrency = settleUpPaymentInfo?.currency;
-
-    const {data: me, loading} = useMe();
-
-    const {refetchFriends} = useFriends(searchValue);
-
     const [isSaveInProgress, setIsSaveInProgress] = useState(false);
 
-    const defaultAmount = Number(selectedExpense ? selectedExpense.amount : friend?.total.find(x => x.currency === defaultCurrency)?.amount);
+    const defaultAmount = Number(selectedExpense ? selectedExpense.amount : friend.total.find(x => x.currency === defaultCurrency)?.amount);
     const isYouAreDebtor = selectedExpense
-        ? selectedExpense.expense_users.some(({user, lent_amount}) => user.id === me?.id && Number(lent_amount) > 0)
+        ? selectedExpense.expense_users.some(({user, lent_amount}) => user.id === me.id && Number(lent_amount) > 0)
         : defaultAmount < 0;
 
     const [amountPaid, setAmountPaid] = useState(Math.abs(defaultAmount));
     const [currency, setCurrency] = useState(selectedExpense ? selectedExpense.currency : defaultCurrency);
     const [date, setDate] = useState(selectedExpense ? selectedExpense.date : new Date());
-    const isSaveDisabled = !me || !friend || !currency || !Number.isFinite(amountPaid) || amountPaid <= 0 || !dayjs(date).isValid();
+    const isSaveDisabled = !currency || !Number.isFinite(amountPaid) || amountPaid <= 0 || !dayjs(date).isValid();
 
     const onAmountPaidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const amount = Number(e.target.value.replace(",", "."));
@@ -75,7 +104,7 @@ export default function SettleUpPayment() {
     const router = useRouter();
 
     const onSave = async () => {
-        if (saveInFlight.current || isSaveDisabled || !friend) return;
+        if (saveInFlight.current || isSaveDisabled) return;
         saveInFlight.current = true;
         setIsSaveInProgress(true);
 
@@ -125,9 +154,8 @@ export default function SettleUpPayment() {
         }
     };
 
-    return loading ?
-        (<Loader/>) :
-        (<>
+    return (
+            <>
                 <Header
                     LeftComponent={() => (
                         <Button
@@ -215,4 +243,12 @@ export default function SettleUpPayment() {
                 </Main>
             </>
         );
+}
+
+export default function SettleUpPaymentRoute() {
+    return (
+        <Suspense>
+            <SettleUpPayment/>
+        </Suspense>
+    );
 }

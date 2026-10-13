@@ -9,23 +9,23 @@ function renderPayment({editing = false, paidByMe = false, amount = 10, mutation
     const me = {id: 1, name: "Me"};
     const friend = {id: 2, name: "Friend", total: [{currency: "USD", amount: paidByMe ? -amount : amount}]};
     const state = {
-        selectedExpense: editing ? {id: 3, amount, currency: "USD", date: "2026-09-20", expense_users: [
-            {user: me, lent_amount: paidByMe ? amount : 0},
-            {user: friend, lent_amount: paidByMe ? 0 : amount},
-        ]} : null,
-        settleUpPaymentInfo: {friend, currency: "USD"},
         searchValue: "",
         setIsRequestErrorSnackbarShown: value => calls.errors.push(value),
         setIsCreateExpenseSnackbarShown: value => calls.successes.push(value),
         setIsUpdateExpenseSnackbarShown: value => calls.successes.push(value),
     };
+    const expense = editing ? {id: 3, amount, currency: "USD", date: "2026-09-20", expense_users: [
+        {user: me, lent_amount: paidByMe ? amount : 0},
+        {user: friend, lent_amount: paidByMe ? 0 : amount},
+    ]} : null;
+    const query = editing ? "expenseId=3" : "friendId=2&currency=USD";
     const write = async payload => {
         calls.writes.push(payload);
         if (mutation) await mutation();
     };
     const jsx = (type, props) => ({type, props});
     const mocks = {
-        react: {useState: value => [value, () => {}], useRef: value => ({current: value})},
+        react: {useState: value => [value, () => {}], useRef: value => ({current: value}), useEffect: () => {}},
         "react/jsx-runtime": {jsx, jsxs: jsx, Fragment: "Fragment"},
         "react-i18next": {useTranslation: () => ({t: key => key})},
         classnames: () => "",
@@ -36,18 +36,29 @@ function renderPayment({editing = false, paidByMe = false, amount = 10, mutation
         "@/services/addExpense": {addExpense: write},
         "@/services/putExpense": {putExpense: write},
         "@/services/useMe": () => ({data: me, loading: false}),
-        "@/services/useFriends": () => ({refetchFriends: refresh ?? (() => Promise.resolve())}),
+        "@/hooks/useSelectedFriend": {useFriend: id => ({
+            friend: id === friend.id ? friend : undefined,
+            refetchFriends: refresh ?? (() => Promise.resolve()),
+        })},
+        "@/hooks/useSelectedExpense": () => ({expense}),
+        "@/utils/parseId": load("utils/parseId.ts"),
         "@/Icons": {Arrow: "Arrow"},
         "@/app/store": {useStore: selector => selector(state)},
-        "next/navigation": {useRouter: () => ({push: route => calls.routes.push(route)})},
+        "next/navigation": {
+            useRouter: () => ({push: route => calls.routes.push(route)}),
+            useSearchParams: () => new URLSearchParams(query),
+        },
         "@/const/urls": {friend: "/friend"},
         "@/const/searchParams": searchParams,
         "@/utils/withSearchParams": load("utils/withSearchParams.ts", {"@/const/searchParams": searchParams}),
     };
     for (const name of ["header/header", "avatar/Avatar", "main/main", "loader/loader"]) mocks[`@/app/components/${name}`] = name;
-    const Page = load("app/settleUpPayment/page.tsx", mocks).default;
-    const page = Page();
-    const header = page.props.children[0];
+    // The route wraps the page in <Suspense>; the page resolves the friend and renders the form.
+    const page = load("app/settleUpPayment/page.tsx", mocks).default().props.children;
+    const form = page.type(page.props);
+    assert.equal(form.props.friend, friend);
+    const view = form.type(form.props);
+    const header = view.props.children[0];
     return {calls, save: header.props.RightComponent().props.onClick};
 }
 
