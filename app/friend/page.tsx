@@ -52,6 +52,8 @@ export default function FriendPage() {
     const showError = useStore((state) => state.setIsRequestErrorSnackbarShown);
     const listController = useRef<AbortController | null>(null);
     const pendingPages = useRef(new Map<number, Promise<void>>());
+    // Set once a friend has been shown, so clearing the selection on the way out (footer) does not redirect.
+    const hadFriend = useRef(false);
     const pageSize = defaultPageSize;
     const [rowCount, setRowCount] = useState(pageSize);
     const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -75,7 +77,7 @@ export default function FriendPage() {
 
         if (!friend) {
             setLoadingExpenses(false);
-            router.replace(friendsList);
+            if (!hadFriend.current) router.replace(friendsList);
 
             return () => {
                 isActive = false;
@@ -83,6 +85,7 @@ export default function FriendPage() {
             };
         }
 
+        hadFriend.current = true;
         setLoadingExpenses(true);
 
         getExpenses({
