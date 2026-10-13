@@ -61,8 +61,8 @@ export default function FriendsList() {
     };
 
     const onRetry = () => {
-        void refetchFriends().catch(() => {
-            // The hook exposes the failure through `error`.
+        void refetchFriends().catch((err: unknown) => {
+            console.warn("Friends list retry failed:", err);
         });
     };
 
