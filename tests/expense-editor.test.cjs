@@ -2,13 +2,24 @@ const {test} = require("node:test");
 const assert = require("node:assert/strict");
 const load = require("./load-typescript.cjs");
 
-function editor(currency = "BTC", overrides = {}) {
+const loadExpenseDraft = () => load("app/expense/expenseDraft.ts", {
+    dayjs: require("dayjs"),
+    "@/const/currencies": load("const/currencies.ts"),
+    "@/utils/splitNumberIntoParts": load("utils/splitNumberIntoParts.ts"),
+    "@/utils/expenseValidation": load("utils/expenseValidation.ts"),
+    "@/const/expenseDraftActions": load("const/expenseDraftActions.ts"),
+    "@/const/allocationSides": load("const/allocationSides.ts"),
+});
+
+function editor(currency = "BTC", overrides = {}, {isProfileLoaded = true} = {}) {
     const slots = [];
     const writes = [];
+    const puts = [];
     let cursor = 0;
     const effects = [];
     let dirty = false;
-    const me = {id: 1, name: "Me", default_currency: currency};
+    const profile = {id: 1, name: "Me", default_currency: currency};
+    let me = isProfileLoaded ? profile : undefined;
     const state = {
         selectedFriends: [{id: 2, name: "Friend"}],
         selectedExpense: null,
@@ -40,6 +51,15 @@ function editor(currency = "BTC", overrides = {}) {
                 const index = cursor++;
                 return slots[index] ?? (slots[index] = {current: initial});
             },
+            useReducer: (reducer, initial) => {
+                const index = cursor++;
+                if (!(index in slots)) slots[index] = initial;
+                return [slots[index], action => {
+                    const next = reducer(slots[index], action);
+                    if (!Object.is(next, slots[index])) dirty = true;
+                    slots[index] = next;
+                }];
+            },
             useCallback: callback => callback,
             useEffect: (callback, deps) => {
                 const index = cursor++;
@@ -54,14 +74,14 @@ function editor(currency = "BTC", overrides = {}) {
         "@/services/useMe": () => ({data: me}),
         "@/services/useFriends": () => ({refetchFriends: async () => {}}),
         "@/services/addExpense": {addExpense: async payload => {writes.push(payload); return {data: {id: 3}};}},
-        "@/services/putExpense": {putExpense: async () => {}},
+        "@/services/putExpense": {putExpense: async payload => {puts.push(payload);}},
         "@/app/store": {useStore: selector => selector(state)},
         "next/navigation": {useRouter: () => ({replace: () => {}, push: () => {}})},
         "@/const/urls": {expenseDetails: "/expense/details"},
         "@/const/testExpenseId": {TEST_EXPENSE_ID: -1},
-        "@/const/currencies": load("const/currencies.ts"),
-        "@/utils/splitNumberIntoParts": load("utils/splitNumberIntoParts.ts"),
-        "@/utils/expenseValidation": load("utils/expenseValidation.ts"),
+        "@/const/expenseDraftActions": load("const/expenseDraftActions.ts"),
+        "@/const/allocationSides": load("const/allocationSides.ts"),
+        "@/app/expense/expenseDraft": loadExpenseDraft(),
         "@/utils/handleInputFocus": () => {},
         "@/utils/vibration": {vibration: () => {}},
         "@/app/expense/add/focusOnExpenseNameInput": {ExpenseNameInputId: "expenseName"},
@@ -71,7 +91,7 @@ function editor(currency = "BTC", overrides = {}) {
         "@telegram-apps/telegram-ui": new Proxy({}, {get: (_, name) => name}),
         "./addExpense.css": {},
     };
-    for (const name of ["header/header", "main/main", "avatar/Avatar"]) mocks[`@/app/components/${name}`] = name;
+    for (const name of ["header/header", "main/main", "avatar/Avatar", "loader/loader"]) mocks[`@/app/components/${name}`] = name;
     const Page = load("app/expense/add/page.tsx", mocks).default;
     let tree;
     const render = () => {
@@ -84,23 +104,44 @@ function editor(currency = "BTC", overrides = {}) {
             pending.forEach(effect => effect());
         } while (dirty);
     };
-    const find = (predicate, node = tree) => {
-        if (!node || typeof node !== "object") return;
-        if (predicate(node)) return node;
-        for (const child of Array.isArray(node) ? node : Object.values(node.props ?? {})) {
-            const result = find(predicate, child);
-            if (result) return result;
-        }
+    const findAll = (predicate, root = tree) => {
+        const found = [];
+        const visit = node => {
+            if (!node || typeof node !== "object") return;
+            if (predicate(node)) found.push(node);
+            for (const child of Array.isArray(node) ? node : Object.values(node.props ?? {})) visit(child);
+        };
+        visit(root);
+        return found;
     };
+    const find = (predicate, root = tree) => findAll(predicate, root)[0];
+    const section = id => find(node => node.props?.id === id);
     const change = (predicate, target) => {find(predicate).props.onChange({target}); render();};
     render();
-    change(node => node.props?.id === "expenseName", {value: "Dinner"});
+    if (me) change(node => node.props?.id === "expenseName", {value: "Dinner"});
+    const inSection = (id, predicate) => {
+        const root = section(id);
+        assert.ok(root, `${id} is not rendered`);
+        return findAll(predicate, root);
+    };
     return {
         state,
         writes,
+        puts,
         render,
+        tree: () => tree,
+        loadProfile: () => {
+            me = profile;
+            render();
+        },
+        isRendered: id => !!section(id),
+        // Section ids: "expense-add-paid-by" and "expense-add-split-equally".
+        values: id => inSection(id, node => node.type === "Input").map(node => node.props.value),
+        showPercents: id => {
+            inSection(id, node => node.props?.children === "%")[0].props.onClick();
+            render();
+        },
         amount: value => change(node => node.props?.id === "moneySpentInput", {value}),
-        currency: value => change(node => node.type === "CurrencySelect", {value}),
         toggle: (label, checked) => {
             find(node => node.props?.children === label).props.after.props.onChange({target: {checked}});
             render();
@@ -109,38 +150,82 @@ function editor(currency = "BTC", overrides = {}) {
     };
 }
 
-test("expense editor saves an equal BTC split with either payer mode", async () => {
-    for (const fullyPaidByMe of [true, false]) {
-        const form = editor();
-        form.amount("0.0001");
-        if (!fullyPaidByMe) form.toggle("expenses.FullyPaidByYou", false);
-        form.toggle("expenses.SplitEquallyBetweenAll", false);
-        form.toggle("expenses.SplitEquallyBetweenAll", true);
-        assert.equal(form.save().disabled, false);
-        await form.save().onClick();
-        assert.deepEqual(form.writes[0].debtors.map(x => x.amount), [0.00005, 0.00005]);
-        assert.deepEqual(form.writes[0].payers.map(x => x.amount), fullyPaidByMe ? [0.0001, 0] : [0.00005, 0.00005]);
-    }
-});
+const PAID_BY = "expense-add-paid-by";
+const SPLIT = "expense-add-split-equally";
 
-test("switching currency recalculates automatic allocations before saving", async () => {
+const {generateTestExpense, generateTestExpenseWithSplit} =
+    load("utils/generateTestExpense.ts", {"@/const/testExpenseId": {TEST_EXPENSE_ID: -1}});
+const tutorialMe = {id: 1, name: "Me"};
+const tutorialFriend = {id: 2, name: "Friend"};
+const tutorialExpense = () => generateTestExpenseWithSplit(tutorialMe, tutorialFriend, key => key);
+
+test("saving a new expense sends the draft to addExpense", async () => {
     const form = editor("USD");
-    form.amount("0.0001");
-    form.toggle("expenses.FullyPaidByYou", false);
-    assert.equal(form.save().disabled, true);
-    form.currency("BTC");
-    assert.equal(form.save().disabled, false);
-    form.currency("USD");
-    assert.equal(form.save().disabled, true);
-    form.currency("BTC");
+    form.amount("10");
     await form.save().onClick();
-    assert.equal(form.writes[0].currency, "BTC");
-    assert.deepEqual(form.writes[0].payers.map(x => x.amount), [0.00005, 0.00005]);
-    assert.deepEqual(form.writes[0].debtors.map(x => x.amount), [0.00005, 0.00005]);
+    assert.deepEqual(form.writes, [{
+        payers: [{user_id: 1, amount: 10}, {user_id: 2, amount: 0}],
+        debtors: [{user_id: 1, amount: 5}, {user_id: 2, amount: 5}],
+        users: [1, 2],
+        amount: 10,
+        payment: false,
+        currency: "USD",
+        date: form.writes[0].date,
+        description: "Dinner",
+    }]);
+    assert.ok(form.writes[0].date instanceof Date);
 });
 
-const {generateTestExpenseWithSplit} = load("utils/generateTestExpense.ts", {"@/const/testExpenseId": {TEST_EXPENSE_ID: -1}});
-const tutorialExpense = () => generateTestExpenseWithSplit({id: 1, name: "Me"}, {id: 2, name: "Friend"}, key => key);
+test("saving an edited expense sends the draft to putExpense", async () => {
+    const form = editor("USD", {
+        selectedFriends: [],
+        selectedExpense: {
+            id: 3, description: "Taxi", amount: "30.00", currency: "EUR", date: "2026-10-01",
+            expense_users: [
+                {user: tutorialMe, lent_amount: 30, debt_amount: 10},
+                {user: tutorialFriend, lent_amount: 0, debt_amount: 20},
+            ],
+        },
+    });
+    assert.equal(form.isRendered(PAID_BY), false);
+    assert.deepEqual(form.values(SPLIT), ["10", "20"]);
+    await form.save().onClick();
+    assert.equal(form.writes.length, 0);
+    assert.deepEqual(form.puts, [{
+        expense_id: 3,
+        payers: [{user_id: 1, amount: 30}, {user_id: 2, amount: 0}],
+        debtors: [{user_id: 1, amount: 10}, {user_id: 2, amount: 20}],
+        users: [1, 2],
+        amount: 30,
+        description: "Dinner",
+    }]);
+});
+
+test("percent mode shows each allocation as a share of the total", () => {
+    const form = editor("USD");
+    form.amount("200");
+    form.toggle("expenses.SplitEquallyBetweenAll", false);
+    form.showPercents(SPLIT);
+    assert.deepEqual(form.values(SPLIT), [50, 50]);
+});
+
+test("the editor waits for the profile before starting the draft", () => {
+    const form = editor("USD", {}, {isProfileLoaded: false});
+    assert.equal(form.tree().type, "loader/loader");
+    form.loadProfile();
+    form.amount("10");
+    form.toggle("expenses.SplitEquallyBetweenAll", false);
+    assert.deepEqual(form.values(SPLIT), ["5", "5"]);
+});
+
+test("a newly selected expense replaces the draft", () => {
+    const form = editor("USD", {selectedExpense: generateTestExpense(tutorialMe, tutorialFriend, key => key)});
+    assert.equal(form.isRendered(PAID_BY), false);
+    form.state.selectedExpense = tutorialExpense();
+    form.render();
+    assert.deepEqual(form.values(PAID_BY), ["20", "50"]);
+    assert.deepEqual(form.values(SPLIT), ["40", "30"]);
+});
 
 test("a save request left over from the tour does not save a real expense", () => {
     const form = editor("USD", {isForceExpenseSaveEnabled: true});

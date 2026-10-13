@@ -1,10 +1,11 @@
 "use client"
 
-import React, {useCallback, useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useReducer, useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
 import classNames from "classnames";
 import Header from "@/app/components/header/header";
 import Main from "@/app/components/main/main";
+import Loader from "@/app/components/loader/loader";
 import {
     Button,
     Caption,
@@ -22,7 +23,6 @@ import useMe from "@/services/useMe";
 import {CurrencySelect} from "@/components/CurrencySelect";
 import {DateTimePicker} from "@mui/x-date-pickers/DateTimePicker";
 import dayjs, {Dayjs} from "dayjs";
-import {splitNumberIntoParts} from "@/utils/splitNumberIntoParts";
 import {ExpenseNameInputId} from "@/app/expense/add/focusOnExpenseNameInput";
 import {addExpense} from "@/services/addExpense";
 import {putExpense} from "@/services/putExpense";
@@ -35,24 +35,46 @@ import Avatar from "@/app/components/avatar/Avatar";
 import {vibration} from "@/utils/vibration";
 import {Icon28Warning} from "@/Icons";
 import {TEST_EXPENSE_ID} from "@/const/testExpenseId";
-import {isAllocationBalanced} from "@/utils/expenseValidation";
-import {EXPENSE_CURRENCY_PRECISION} from "@/const/currencies";
+import {EXPENSE_DRAFT_ACTIONS} from "@/const/expenseDraftActions";
+import {ALLOCATION_SIDES} from "@/const/allocationSides";
+import {
+    allocatedTotal,
+    applyToExpenseDraft,
+    canSaveExpenseDraft,
+    createExpenseDraft,
+    expenseDraftPayload,
+    type Allocation,
+    type ExpenseDraft,
+    type ExpenseDraftAction,
+} from "@/app/expense/expenseDraft";
+import type {Expense} from "@/entities";
 import "./addExpense.css";
 
-
-interface Payment {
-    id: number;
-    isSelected: boolean;
-    amount?: number;
-    amountRaw?: string;
-    percentRaw?: string;
-    isDirty: boolean;
-}
 
 enum NUMBER_MODES {
     AMOUNT = "AMOUNT",
     PERCENT = "PERCENT"
 }
+
+enum EDITOR_ACTIONS {
+    DRAFT_CREATED = "draftCreated",
+}
+
+interface Editor {
+    // The selected expense the draft was created from; a new one replaces the draft.
+    source: Expense | null;
+    draft: ExpenseDraft;
+}
+
+type EditorAction = {type: EDITOR_ACTIONS.DRAFT_CREATED, editor: Editor} | ExpenseDraftAction;
+
+function reduceEditor(editor: Editor | null, action: EditorAction): Editor | null {
+    if (action.type === EDITOR_ACTIONS.DRAFT_CREATED) return action.editor;
+    return editor && {...editor, draft: applyToExpenseDraft(editor.draft, action)};
+}
+
+const percentOf = (allocation: Allocation | undefined, amount: number) =>
+    allocation?.percentRaw ?? Number(allocation?.amountRaw) * 100 / amount;
 
 export default function AddExpense() {
     const {t} = useTranslation();
@@ -60,7 +82,6 @@ export default function AddExpense() {
     const {data: me} = useMe();
 
     const maxExpenseNameLength = 256;
-    const maxMoneySpentLength = 15;
 
     const [paidByMode, setPaidByMode] = useState<NUMBER_MODES>(NUMBER_MODES.AMOUNT);
     const [splitEquallyMode, setSplitEquallyMode] = useState<NUMBER_MODES>(NUMBER_MODES.AMOUNT);
@@ -78,77 +99,28 @@ export default function AddExpense() {
 
     const {refetchFriends} = useFriends(searchValue);
 
-    const participants = selectedExpense?.expense_users.map(expense => expense.user) ?? (me ? [me, ...selectedFriends] : [...selectedFriends]);
-
     const [isSaveInProgress, setIsSaveInProgress] = useState(false);
 
-    const [expenseName, setExpenseName] = useState(selectedExpense?.description ?? "");
+    // The draft needs the current user, so it is created once the profile has loaded.
+    const [editor, dispatch] = useReducer(reduceEditor, null);
+    const isDraftOutdated = !!me && editor?.source !== selectedExpense;
+    if (me && (editor === null || isDraftOutdated)) {
+        dispatch({
+            type: EDITOR_ACTIONS.DRAFT_CREATED,
+            editor: {
+                source: selectedExpense,
+                draft: createExpenseDraft({me, expense: selectedExpense, friends: selectedFriends}),
+            },
+        });
+    }
+    const draft = editor && !isDraftOutdated ? editor.draft : null;
 
-    const [moneySpent, setMoneySpent] = useState<number>(Number(selectedExpense?.amount ?? 0));
-    const [rawMoneySpent, setRawMoneySpent] = useState<string>(selectedExpense ? String(Number(selectedExpense?.amount)) : "");
-    const [currency, setCurrency] = useState<string | undefined>();
-
-    const [date, setDate] = useState(selectedExpense?.date ?? new Date());
-
-    const [isFullyPaidByYou, setIsFullyPaidByYou] = useState<boolean | undefined>();
-    const [paidBy, setPaidBy] = useState<Payment[]>(selectedExpense ?
-        selectedExpense.expense_users.map((expense) => ({
-            id: expense.user.id,
-            amount: Number(expense.lent_amount),
-            amountRaw: String(expense.lent_amount),
-            isSelected: Number(expense.lent_amount) !== 0,
-            isDirty: false,
-        })) :
-        participants.map((x) => ({
-            id: x.id,
-            isSelected: true,
-            amount: 0,
-            amountRaw: "0",
-            isDirty: false,
-        })));
-
-    const [isSplitEquallyBetweenAll, setIsSplitEquallyBetweenAll] = useState(selectedExpense ?
-        selectedExpense.expense_users.every(e => e.debt_amount === selectedExpense.expense_users[0].debt_amount) :
-        true);
-    const [splitBetween, setSplitBetween] = useState<Payment[]>(selectedExpense ?
-        selectedExpense.expense_users.map((expense) => ({
-            id: expense.user.id,
-            amount: Number(expense.debt_amount),
-            amountRaw: String(expense.debt_amount),
-            isSelected: Number(expense.debt_amount) !== 0,
-            isDirty: false,
-        })) :
-        participants.map((x) => ({
-            id: x.id,
-            isSelected: true,
-            amount: 0,
-            amountRaw: "0",
-            isDirty: false,
-        })));
-
-    const currentPaidMoneyAmount = paidBy.reduce((acc, value) => value.isSelected && value.amount ? acc + value.amount : acc, 0);
-    const currentSplitBetweenMoneyAmount = splitBetween.reduce((acc, value) => value.isSelected && value.amount ? acc + value.amount : acc, 0);
-
-    useEffect(() => {
-        if (me) {
-            setCurrency(selectedExpense?.currency ?? me?.default_currency);
-            setIsFullyPaidByYou(selectedExpense ?
-                selectedExpense.expense_users
-                    .some(e => Number(e.lent_amount) === Number(selectedExpense?.amount) && e.user.id === me.id) : true);
-
-            setIsSplitEquallyBetweenAll(selectedExpense ?
-                selectedExpense.expense_users.every(e => e.debt_amount === selectedExpense.expense_users[0].debt_amount) :
-                true);
-        }
-    }, [me, selectedExpense]);
-
-    const isSaveDisabled = !me || !currency || !expenseName.trim() || !dayjs(date).isValid() ||
-        !isAllocationBalanced(moneySpent, paidBy) || !isAllocationBalanced(moneySpent, splitBetween);
+    const isSaveDisabled = !draft || !canSaveExpenseDraft(draft);
 
     const router = useRouter();
 
     const onSave = useCallback(async () => {
-        if (saveInFlight.current || isSaveDisabled) {
+        if (saveInFlight.current || !draft || isSaveDisabled) {
             return;
         }
 
@@ -156,15 +128,7 @@ export default function AddExpense() {
         setIsSaveInProgress(true);
         setIsForceExpenseSaveEnabled(false);
 
-        const payers = paidBy
-            .map(x => x.isSelected ? x : {...x, amount: 0})
-            .map((x) => ({user_id: x.id, amount: x.amount}));
-        const debtors = splitBetween
-            .map(x => x.isSelected ? x : {...x, amount: 0})
-            .map((x) => ({user_id: x.id, amount: x.amount}));
-        const users = Array.from(new Set([...paidBy, ...splitBetween].map((x) => x.id)));
-        const amount = Number(moneySpent);
-        const description = expenseName;
+        const {payers, debtors, users, amount, description, currency, date} = expenseDraftPayload(draft);
 
         try {
             if (!selectedExpense || selectedExpense?.id === TEST_EXPENSE_ID) {
@@ -200,7 +164,7 @@ export default function AddExpense() {
             setIsSaveInProgress(false);
             showError(true);
         }
-    }, [currency, date, expenseName, isSaveDisabled, moneySpent, paidBy, refetchFriends, router, selectedExpense, setIsCreateExpenseSnackbarShown, setIsUpdateExpenseSnackbarShown, setSelectedExpense, setIsForceExpenseSaveEnabled, showError, splitBetween]);
+    }, [draft, isSaveDisabled, refetchFriends, router, selectedExpense, setIsCreateExpenseSnackbarShown, setIsUpdateExpenseSnackbarShown, setSelectedExpense, setIsForceExpenseSaveEnabled, showError]);
 
     // The tour's save request is consumed on first sight and only ever saves the tutorial expense,
     // so a leftover request cannot save a real expense while the user is still typing it.
@@ -212,158 +176,41 @@ export default function AddExpense() {
         }
     }, [isForceExpenseSaveEnabled, onSave, selectedExpense, setIsForceExpenseSaveEnabled]);
 
-    const onExpenseNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.value.length <= maxExpenseNameLength) {
-            setExpenseName(e.target.value);
-        }
-    };
+    if (!draft) {
+        return <Loader/>;
+    }
 
-    const equalPayments = (amount: number, selectedCurrency = currency): Payment[] => {
-        const precision = EXPENSE_CURRENCY_PRECISION[selectedCurrency ?? ""] ?? 2;
-        const parts = splitNumberIntoParts(amount, participants.length, precision);
-        return participants.map((participant, index) => ({
-            id: participant.id,
-            isSelected: true,
-            amount: parts[index],
-            amountRaw: String(parts[index]),
-            isDirty: false,
-        }));
-    };
-
-    const onMoneySpentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        if (value.length > maxMoneySpentLength) {
-            return;
-        }
-
-        setRawMoneySpent(value);
-
-        const amount = Number(value.replace(/,/g, "."));
-        setMoneySpent(amount);
-
-        if (isFullyPaidByYou) {
-            setPaidBy(participants.map((x) => ({
-                id: x.id,
-                isSelected: true,
-                amount: x.id === me?.id ? amount : 0,
-                amountRaw: x.id === me?.id ? value : "0",
-                isDirty: false,
-            })));
-        }
-
-        if (isSplitEquallyBetweenAll) {
-            setSplitBetween(equalPayments(amount));
-        }
-    };
-
-    const onCurrencyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const nextCurrency = e.target.value;
-        setCurrency(nextCurrency);
-        if (isSplitEquallyBetweenAll || splitBetween.every(payment => !payment.isDirty)) {
-            setSplitBetween(equalPayments(moneySpent, nextCurrency));
-        }
-        if (!isFullyPaidByYou && paidBy.every(payment => !payment.isDirty)) {
-            setPaidBy(equalPayments(moneySpent, nextCurrency));
-        }
-    };
+    const {participants} = draft;
+    const currentPaidMoneyAmount = allocatedTotal(draft, ALLOCATION_SIDES.PAID_BY);
+    const currentSplitBetweenMoneyAmount = allocatedTotal(draft, ALLOCATION_SIDES.SPLIT);
+    const findAllocation = (side: ALLOCATION_SIDES, id: number) => draft[side].find(x => x.id === id);
 
     const onDateChange = (newDate: Dayjs | null) => {
         if (newDate) {
-            setDate(newDate?.toDate());
+            dispatch({type: EXPENSE_DRAFT_ACTIONS.DATE_CHANGED, value: newDate.toDate()});
         }
     };
 
     const onFullyPaidByYouChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setIsFullyPaidByYou(e.target.checked);
-
         vibration();
-
-        if (!e.target.checked && moneySpent) {
-            setPaidBy(equalPayments(moneySpent));
-        } else {
-            setPaidBy(participants.map((x) => ({
-                id: x.id,
-                isSelected: true,
-                amount: x.id === me?.id && moneySpent ? Number(moneySpent) : 0,
-                amountRaw: x.id === me?.id && moneySpent ? String(moneySpent) : "0",
-                isDirty: false,
-            })));
-        }
-    };
-
-    const onPaidByChange = (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-        vibration();
-
-        setPaidBy(paidBy => paidBy.map(x => x.id === id ? {
-            ...x,
-            isSelected: e.target.checked,
-            amount: e.target.checked ? x.amount : 0,
-            amountRaw: e.target.checked ? x.amountRaw : "0",
-            isDirty: true,
-        } : x));
-    };
-
-    const onPaidByAmountChange = (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPaidBy(paidBy.map(x => x.id === id ? {
-            ...x,
-            amount: e.target.value ? Number(e.target.value.replace(/,/g, ".")) : 0,
-            amountRaw: e.target.value,
-            isDirty: true,
-        } : x));
-    };
-
-    const onPaidByPercentChange = (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newPercent = e.target.value ? Number(e.target.value.replace(/,/g, ".")) : 0;
-        const newAmount = newPercent === 0 ? 0 : (moneySpent ? moneySpent * newPercent / 100 : 0);
-        setPaidBy(paidBy.map(x => x.id === id ? {
-            ...x,
-            amount: newAmount,
-            amountRaw: newAmount.toString(),
-            percentRaw: e.target.value,
-            isDirty: true,
-        } : x));
+        dispatch({type: EXPENSE_DRAFT_ACTIONS.FULLY_PAID_BY_ME_CHANGED, checked: e.target.checked});
     };
 
     const onSplitEquallyBetweenAllChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setIsSplitEquallyBetweenAll(e.target.checked);
-
         vibration();
-
-        setSplitBetween(equalPayments(moneySpent));
+        dispatch({type: EXPENSE_DRAFT_ACTIONS.SPLIT_EQUALLY_CHANGED, checked: e.target.checked});
     };
 
-    const onSplitBetweenChange = (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const onParticipantSelected = (side: ALLOCATION_SIDES, id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
         vibration();
-
-        setSplitBetween(splitBetween => splitBetween.map(x => x.id === id ? {
-            ...x,
-            isSelected: e.target.checked,
-            amount: e.target.checked ? x.amount : 0,
-            amountRaw: e.target.checked ? x.amountRaw : "0",
-            isDirty: true,
-        } : x));
+        dispatch({type: EXPENSE_DRAFT_ACTIONS.PARTICIPANT_SELECTED, side, id, checked: e.target.checked});
     };
 
-    const onSplitBetweenAmountChange = (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSplitBetween(splitBetween.map(x => x.id === id ? {
-            ...x,
-            amount: e.target.value ? Number(e.target.value.replace(/,/g, ".")) : 0,
-            amountRaw: e.target.value,
-            isDirty: true,
-        } : x));
-    };
+    const onAllocationAmountChange = (side: ALLOCATION_SIDES, id: number) => (e: React.ChangeEvent<HTMLInputElement>) =>
+        dispatch({type: EXPENSE_DRAFT_ACTIONS.ALLOCATION_AMOUNT_CHANGED, side, id, value: e.target.value});
 
-    const onSplitBetweenPercentChange = (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newPercent = e.target.value ? Number(e.target.value.replace(/,/g, ".")) : 0;
-        const newAmount = newPercent === 0 ? 0 : (moneySpent ? moneySpent * newPercent / 100 : 0);
-        setSplitBetween(splitBetween.map(x => x.id === id ? {
-            ...x,
-            amount: newAmount,
-            amountRaw: newAmount.toString(),
-            percentRaw: e.target.value,
-            isDirty: true,
-        } : x));
-    };
+    const onAllocationPercentChange = (side: ALLOCATION_SIDES, id: number) => (e: React.ChangeEvent<HTMLInputElement>) =>
+        dispatch({type: EXPENSE_DRAFT_ACTIONS.ALLOCATION_PERCENT_CHANGED, side, id, value: e.target.value});
 
     return (
         <>
@@ -417,12 +264,12 @@ export default function AddExpense() {
                 <div id="expense-add-name-and-money">
                     <Input
                         id={ExpenseNameInputId}
-                        value={expenseName}
-                        onChange={onExpenseNameChange}
+                        value={draft.name}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => dispatch({type: EXPENSE_DRAFT_ACTIONS.NAME_CHANGED, value: e.target.value})}
                         maxLength={maxExpenseNameLength}
                         placeholder={t("expenses.ExpenseName")}
                         className="mb-2"
-                        status={expenseName.length < 3 ? "error" : "default"}
+                        status={draft.name.length < 3 ? "error" : "default"}
                     />
 
                     <div className="flex items-center justify-between">
@@ -431,15 +278,15 @@ export default function AddExpense() {
                                 id="moneySpentInput"
                                 type="text"
                                 inputMode="decimal"
-                                value={rawMoneySpent}
-                                onChange={onMoneySpentChange}
+                                value={draft.amountRaw}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => dispatch({type: EXPENSE_DRAFT_ACTIONS.AMOUNT_CHANGED, value: e.target.value})}
                                 placeholder={t("expenses.MoneySpent")}
-                                status={(moneySpent && moneySpent > 0) ? "default" : "error"}
+                                status={(draft.amount && draft.amount > 0) ? "default" : "error"}
                             />
                         </div>
                         <CurrencySelect
-                            defaultCurrency={currency}
-                            onChange={onCurrencyChange}
+                            defaultCurrency={draft.currency}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => dispatch({type: EXPENSE_DRAFT_ACTIONS.CURRENCY_CHANGED, value: e.target.value})}
                             disabled={!!selectedExpense}
                         />
                     </div>
@@ -455,7 +302,7 @@ export default function AddExpense() {
                         className="p-0 addExpense__cell"
                         after={
                             <DateTimePicker
-                                value={dayjs(date)}
+                                value={dayjs(draft.date)}
                                 onChange={onDateChange}
                                 disabled={!!selectedExpense}
                                 className="w-52 rounded-3xl"
@@ -465,31 +312,28 @@ export default function AddExpense() {
                     </Cell>
                     <Divider className="!m-0"/>
 
-                    {typeof isFullyPaidByYou === "boolean" &&
-                        <>
-                            <Cell
-                                className="p-0 addExpense__cell"
-                                after={
-                                    <Switch
-                                        disabled={!(moneySpent && moneySpent > 0)}
-                                        checked={isFullyPaidByYou}
-                                        onChange={onFullyPaidByYouChange}
-                                        style={{"backgroundColor": "red"}}
-                                    />
-                                }
-                            >
-                                {t("expenses.FullyPaidByYou")}
-                            </Cell>
-                            <Divider className="!m-0"/>
-                        </>
-                    }
+                    <Cell
+                        className="p-0 addExpense__cell"
+                        after={
+                            <Switch
+                                disabled={!(draft.amount && draft.amount > 0)}
+                                checked={draft.isFullyPaidByMe}
+                                onChange={onFullyPaidByYouChange}
+                                style={{"backgroundColor": "red"}}
+                            />
+                        }
+                    >
+                        {t("expenses.FullyPaidByYou")}
+                    </Cell>
+                    <Divider className="!m-0"/>
+
 
                     <Cell
                         className="p-0 addExpense__cell"
                         after={
                             <Switch
-                                disabled={!(moneySpent && moneySpent > 0)}
-                                checked={isSplitEquallyBetweenAll}
+                                disabled={!(draft.amount && draft.amount > 0)}
+                                checked={draft.isSplitEqually}
                                 onChange={onSplitEquallyBetweenAllChange}
                             />
                         }
@@ -498,7 +342,7 @@ export default function AddExpense() {
                     </Cell>
                 </List>
 
-                {!isFullyPaidByYou &&
+                {!draft.isFullyPaidByMe &&
                     <div className="mb-4" id="expense-add-paid-by">
                         <div className="mt-4 flex items-center justify-between">
                             <Headline weight="3">{t("expenses.PaidBy")}</Headline>
@@ -526,7 +370,7 @@ export default function AddExpense() {
 
                         <Divider className="mt-2 border-2"/>
 
-                        {Number(moneySpent) > 0 && (Number(moneySpent) - currentPaidMoneyAmount) !== 0 &&
+                        {Number(draft.amount) > 0 && (Number(draft.amount) - currentPaidMoneyAmount) !== 0 &&
                             <div className="flex items-center bg-surface_dark rounded-lg p-2 mt-4">
                                 <IconContainer className="ml-2 red">
                                     <Icon28Warning/>
@@ -534,10 +378,10 @@ export default function AddExpense() {
 
                                 <div className="flex flex-col ml-4">
                                     <Caption level="1" weight="3">
-                                        {`${currentPaidMoneyAmount} ${t("expenses.Of")} ${moneySpent} ${currency} ${t("expenses.Filled")}`}
+                                        {`${currentPaidMoneyAmount} ${t("expenses.Of")} ${draft.amount} ${draft.currency} ${t("expenses.Filled")}`}
                                     </Caption>
                                     <Caption level="1" weight="3">
-                                        {`${Number(moneySpent) - currentPaidMoneyAmount} ${currency} ${t("expenses.Left")}`}
+                                        {`${Number(draft.amount) - currentPaidMoneyAmount} ${draft.currency} ${t("expenses.Left")}`}
                                     </Caption>
                                 </div>
                             </div>}
@@ -545,14 +389,14 @@ export default function AddExpense() {
                         <List className="mt-4 w-full rounded-3xl px-0">
                             {participants.map(({id, name}) => {
 
-                                const isItemSelected = paidBy.find(x => x.id === id)?.isSelected;
+                                const isItemSelected = findAllocation(ALLOCATION_SIDES.PAID_BY, id)?.isSelected;
 
                                 return (<div key={id} className="flex items-center justify-between">
                                     <div className="flex items-center w-1/2">
                                         <Switch
                                             className="shrink-0"
                                             checked={!!isItemSelected}
-                                            onChange={onPaidByChange(id)}
+                                            onChange={onParticipantSelected(ALLOCATION_SIDES.PAID_BY, id)}
                                         />
 
                                         <Avatar
@@ -575,10 +419,10 @@ export default function AddExpense() {
                                             type="text"
                                             inputMode="decimal"
                                             maxLength={15}
-                                            value={paidBy.find(x => x.id === id)?.amountRaw}
-                                            onChange={onPaidByAmountChange(id)}
+                                            value={findAllocation(ALLOCATION_SIDES.PAID_BY, id)?.amountRaw}
+                                            onChange={onAllocationAmountChange(ALLOCATION_SIDES.PAID_BY, id)}
                                             className="w-36 ml-auto"
-                                            status={currentPaidMoneyAmount !== moneySpent && isItemSelected ? "error" : undefined}
+                                            status={currentPaidMoneyAmount !== draft.amount && isItemSelected ? "error" : undefined}
                                             disabled={!isItemSelected}
                                             onFocus={handleInputFocus()}
                                             after={
@@ -586,17 +430,16 @@ export default function AddExpense() {
                                                     level="1"
                                                     weight="3"
                                                 >
-                                                    {currency}
+                                                    {draft.currency}
                                                 </Caption>}
                                         /> : <Input
                                             type="text"
                                             inputMode="decimal"
                                             maxLength={15}
-                                            // @ts-ignore
-                                            value={paidBy.find(x => x.id === id)?.percentRaw ?? paidBy.find(x => x.id === id)?.amountRaw * 100 / moneySpent}
-                                            onChange={onPaidByPercentChange(id)}
+                                            value={percentOf(findAllocation(ALLOCATION_SIDES.PAID_BY, id), draft.amount)}
+                                            onChange={onAllocationPercentChange(ALLOCATION_SIDES.PAID_BY, id)}
                                             className="w-36 ml-auto"
-                                            status={currentPaidMoneyAmount !== moneySpent && isItemSelected ? "error" : undefined}
+                                            status={currentPaidMoneyAmount !== draft.amount && isItemSelected ? "error" : undefined}
                                             disabled={!isItemSelected}
                                             onFocus={handleInputFocus()}
                                             after={
@@ -615,7 +458,7 @@ export default function AddExpense() {
                 }
 
                 {
-                    !isSplitEquallyBetweenAll &&
+                    !draft.isSplitEqually &&
                     <div className="mb-4" id="expense-add-split-equally">
                         <div className="mt-4 flex items-center justify-between">
                             <Headline weight="3">{t("expenses.Split")}</Headline>
@@ -642,7 +485,7 @@ export default function AddExpense() {
                         </div>
                         <Divider className="mt-2 border-2"/>
 
-                        {Number(moneySpent) > 0 && (Number(moneySpent) - currentSplitBetweenMoneyAmount) !== 0 &&
+                        {Number(draft.amount) > 0 && (Number(draft.amount) - currentSplitBetweenMoneyAmount) !== 0 &&
                             <div className="flex items-center bg-surface_dark rounded-lg p-2 mt-4">
                                 <IconContainer className="ml-2 red">
                                     <Icon28Warning/>
@@ -650,24 +493,24 @@ export default function AddExpense() {
 
                                 <div className="flex flex-col ml-4">
                                     <Caption level="1" weight="3">
-                                        {`${currentSplitBetweenMoneyAmount} ${t("expenses.Of")} ${moneySpent} ${currency} ${t("expenses.Filled")}`}
+                                        {`${currentSplitBetweenMoneyAmount} ${t("expenses.Of")} ${draft.amount} ${draft.currency} ${t("expenses.Filled")}`}
                                     </Caption>
                                     <Caption level="1" weight="3">
-                                        {`${Number(moneySpent) - currentSplitBetweenMoneyAmount} ${currency} ${t("expenses.Left")}`}
+                                        {`${Number(draft.amount) - currentSplitBetweenMoneyAmount} ${draft.currency} ${t("expenses.Left")}`}
                                     </Caption>
                                 </div>
                             </div>}
 
                         <List className="mt-4 w-full rounded-3xl px-0">
                             {participants?.map(({id, name}) => {
-                                    const isItemSelected = splitBetween.find(x => x.id === id)?.isSelected;
+                                    const isItemSelected = findAllocation(ALLOCATION_SIDES.SPLIT, id)?.isSelected;
 
                                     return (<div key={id} className="flex items-center justify-between">
                                         <div className="flex items-center w-1/2">
                                             <Switch
                                                 className="shrink-0"
                                                 checked={!!isItemSelected}
-                                                onChange={onSplitBetweenChange(id)}
+                                                onChange={onParticipantSelected(ALLOCATION_SIDES.SPLIT, id)}
                                             />
 
                                             <Avatar
@@ -690,10 +533,10 @@ export default function AddExpense() {
                                                 type="text"
                                                 inputMode="decimal"
                                                 maxLength={15}
-                                                value={splitBetween.find(x => x.id === id)?.amountRaw}
-                                                onChange={onSplitBetweenAmountChange(id)}
+                                                value={findAllocation(ALLOCATION_SIDES.SPLIT, id)?.amountRaw}
+                                                onChange={onAllocationAmountChange(ALLOCATION_SIDES.SPLIT, id)}
                                                 className="w-36 ml-auto"
-                                                status={currentSplitBetweenMoneyAmount !== moneySpent ? "error" : undefined}
+                                                status={currentSplitBetweenMoneyAmount !== draft.amount ? "error" : undefined}
                                                 disabled={!isItemSelected}
                                                 onFocus={handleInputFocus()}
                                                 after={
@@ -701,17 +544,16 @@ export default function AddExpense() {
                                                         level="1"
                                                         weight="3"
                                                     >
-                                                        {currency}
+                                                        {draft.currency}
                                                     </Caption>}
                                             /> : <Input
                                                 type="text"
                                                 inputMode="decimal"
                                                 maxLength={15}
-                                                // @ts-ignore
-                                                value={splitBetween.find(x => x.id === id)?.percentRaw ?? splitBetween.find(x => x.id === id)?.amountRaw * 100 / moneySpent}
-                                                onChange={onSplitBetweenPercentChange(id)}
+                                                value={percentOf(findAllocation(ALLOCATION_SIDES.SPLIT, id), draft.amount)}
+                                                onChange={onAllocationPercentChange(ALLOCATION_SIDES.SPLIT, id)}
                                                 className="w-36 ml-auto"
-                                                status={currentSplitBetweenMoneyAmount !== moneySpent ? "error" : undefined}
+                                                status={currentSplitBetweenMoneyAmount !== draft.amount ? "error" : undefined}
                                                 disabled={!isItemSelected}
                                                 onFocus={handleInputFocus()}
                                                 after={

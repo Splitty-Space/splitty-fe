@@ -78,7 +78,8 @@ working-tree changes and do not copy embedded mock authentication values into do
   [server URL configuration](../../API/APIConstants.ts) and
   [Telegram user ID](../../utils/getCurrentUserId.ts). Check request identity and
   response shape before assuming a rendering issue.
-- For expense problems, inspect [editing](../../app/expense/add/page.tsx),
+- For expense problems, inspect [editing](../../app/expense/add/page.tsx) and its
+  [expense draft](../../app/expense/expenseDraft.ts) allocation rules,
   [details](../../app/expense/details/page.tsx), mutation helpers and
   [splitting](../../utils/splitNumberIntoParts.ts). Settlements reuse expense writes
   with `payment: true` in [settlement payment](../../app/settleUpPayment/page.tsx).
