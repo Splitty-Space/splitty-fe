@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import {splitNumberIntoParts} from "@/utils/splitNumberIntoParts";
 import {isAllocationBalanced} from "@/utils/expenseValidation";
 import {EXPENSE_CURRENCY_PRECISION} from "@/const/currencies";
+import {EXPENSE_DRAFT_ACTIONS} from "@/const/expenseDraftActions";
 import type {Expense} from "@/entities";
 
 const MAX_NAME_LENGTH = 256;
@@ -38,15 +39,15 @@ export interface ExpenseDraft {
 }
 
 export type ExpenseDraftAction =
-    | {type: "nameChanged", value: string}
-    | {type: "amountChanged", value: string}
-    | {type: "currencyChanged", value: string}
-    | {type: "dateChanged", value: Date}
-    | {type: "fullyPaidByMeChanged", checked: boolean}
-    | {type: "splitEquallyChanged", checked: boolean}
-    | {type: "participantSelected", side: AllocationSide, id: number, checked: boolean}
-    | {type: "allocationAmountChanged", side: AllocationSide, id: number, value: string}
-    | {type: "allocationPercentChanged", side: AllocationSide, id: number, value: string};
+    | {type: EXPENSE_DRAFT_ACTIONS.NAME_CHANGED, value: string}
+    | {type: EXPENSE_DRAFT_ACTIONS.AMOUNT_CHANGED, value: string}
+    | {type: EXPENSE_DRAFT_ACTIONS.CURRENCY_CHANGED, value: string}
+    | {type: EXPENSE_DRAFT_ACTIONS.DATE_CHANGED, value: Date}
+    | {type: EXPENSE_DRAFT_ACTIONS.FULLY_PAID_BY_ME_CHANGED, checked: boolean}
+    | {type: EXPENSE_DRAFT_ACTIONS.SPLIT_EQUALLY_CHANGED, checked: boolean}
+    | {type: EXPENSE_DRAFT_ACTIONS.PARTICIPANT_SELECTED, side: AllocationSide, id: number, checked: boolean}
+    | {type: EXPENSE_DRAFT_ACTIONS.ALLOCATION_AMOUNT_CHANGED, side: AllocationSide, id: number, value: string}
+    | {type: EXPENSE_DRAFT_ACTIONS.ALLOCATION_PERCENT_CHANGED, side: AllocationSide, id: number, value: string};
 
 export interface ExpenseDraftPayload {
     payers: {user_id: number, amount?: number}[];
@@ -148,10 +149,10 @@ export function createExpenseDraft({me, expense, friends}: CreateExpenseDraft): 
 
 export function applyToExpenseDraft(draft: ExpenseDraft, action: ExpenseDraftAction): ExpenseDraft {
     switch (action.type) {
-        case "nameChanged":
+        case EXPENSE_DRAFT_ACTIONS.NAME_CHANGED:
             return action.value.length <= MAX_NAME_LENGTH ? {...draft, name: action.value} : draft;
 
-        case "amountChanged": {
+        case EXPENSE_DRAFT_ACTIONS.AMOUNT_CHANGED: {
             if (action.value.length > MAX_AMOUNT_LENGTH) return draft;
             const amount = parseNumber(action.value);
             return {
@@ -163,7 +164,7 @@ export function applyToExpenseDraft(draft: ExpenseDraft, action: ExpenseDraftAct
             };
         }
 
-        case "currencyChanged": {
+        case EXPENSE_DRAFT_ACTIONS.CURRENCY_CHANGED: {
             const currency = action.value;
             const isSplitUntouched = draft.split.every(({isDirty}) => !isDirty);
             const isPaidByUntouched = draft.paidBy.every(({isDirty}) => !isDirty);
@@ -179,10 +180,10 @@ export function applyToExpenseDraft(draft: ExpenseDraft, action: ExpenseDraftAct
             };
         }
 
-        case "dateChanged":
+        case EXPENSE_DRAFT_ACTIONS.DATE_CHANGED:
             return {...draft, date: action.value};
 
-        case "fullyPaidByMeChanged":
+        case EXPENSE_DRAFT_ACTIONS.FULLY_PAID_BY_ME_CHANGED:
             return {
                 ...draft,
                 isFullyPaidByMe: action.checked,
@@ -191,27 +192,27 @@ export function applyToExpenseDraft(draft: ExpenseDraft, action: ExpenseDraftAct
                     paidInFullByMe(draft, draft.amount || 0, draft.amount ? String(draft.amount) : "0"),
             };
 
-        case "splitEquallyChanged":
+        case EXPENSE_DRAFT_ACTIONS.SPLIT_EQUALLY_CHANGED:
             return {
                 ...draft,
                 isSplitEqually: action.checked,
                 split: equalAllocations(draft, draft.amount, draft.currency),
             };
 
-        case "participantSelected":
+        case EXPENSE_DRAFT_ACTIONS.PARTICIPANT_SELECTED:
             return updateAllocation(draft, action.side, action.id, (allocation) => ({
                 isSelected: action.checked,
                 amount: action.checked ? allocation.amount : 0,
                 amountRaw: action.checked ? allocation.amountRaw : "0",
             }));
 
-        case "allocationAmountChanged":
+        case EXPENSE_DRAFT_ACTIONS.ALLOCATION_AMOUNT_CHANGED:
             return updateAllocation(draft, action.side, action.id, () => ({
                 amount: action.value ? parseNumber(action.value) : 0,
                 amountRaw: action.value,
             }));
 
-        case "allocationPercentChanged": {
+        case EXPENSE_DRAFT_ACTIONS.ALLOCATION_PERCENT_CHANGED: {
             const percent = action.value ? parseNumber(action.value) : 0;
             const amount = percent === 0 ? 0 : (draft.amount ? draft.amount * percent / 100 : 0);
             return updateAllocation(draft, action.side, action.id, () => ({

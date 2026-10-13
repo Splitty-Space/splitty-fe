@@ -35,6 +35,7 @@ import Avatar from "@/app/components/avatar/Avatar";
 import {vibration} from "@/utils/vibration";
 import {Icon28Warning} from "@/Icons";
 import {TEST_EXPENSE_ID} from "@/const/testExpenseId";
+import {EXPENSE_DRAFT_ACTIONS} from "@/const/expenseDraftActions";
 import {
     allocatedTotal,
     applyToExpenseDraft,
@@ -55,16 +56,20 @@ enum NUMBER_MODES {
     PERCENT = "PERCENT"
 }
 
+enum EDITOR_ACTIONS {
+    DRAFT_CREATED = "draftCreated",
+}
+
 interface Editor {
     // The selected expense the draft was created from; a new one replaces the draft.
     source: Expense | null;
     draft: ExpenseDraft;
 }
 
-type EditorAction = {type: "draftCreated", editor: Editor} | ExpenseDraftAction;
+type EditorAction = {type: EDITOR_ACTIONS.DRAFT_CREATED, editor: Editor} | ExpenseDraftAction;
 
 function reduceEditor(editor: Editor | null, action: EditorAction): Editor | null {
-    if (action.type === "draftCreated") return action.editor;
+    if (action.type === EDITOR_ACTIONS.DRAFT_CREATED) return action.editor;
     return editor && {...editor, draft: applyToExpenseDraft(editor.draft, action)};
 }
 
@@ -101,7 +106,7 @@ export default function AddExpense() {
     const isDraftOutdated = !!me && editor?.source !== selectedExpense;
     if (me && (editor === null || isDraftOutdated)) {
         dispatch({
-            type: "draftCreated",
+            type: EDITOR_ACTIONS.DRAFT_CREATED,
             editor: {
                 source: selectedExpense,
                 draft: createExpenseDraft({me, expense: selectedExpense, friends: selectedFriends}),
@@ -182,30 +187,30 @@ export default function AddExpense() {
 
     const onDateChange = (newDate: Dayjs | null) => {
         if (newDate) {
-            dispatch({type: "dateChanged", value: newDate.toDate()});
+            dispatch({type: EXPENSE_DRAFT_ACTIONS.DATE_CHANGED, value: newDate.toDate()});
         }
     };
 
     const onFullyPaidByYouChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         vibration();
-        dispatch({type: "fullyPaidByMeChanged", checked: e.target.checked});
+        dispatch({type: EXPENSE_DRAFT_ACTIONS.FULLY_PAID_BY_ME_CHANGED, checked: e.target.checked});
     };
 
     const onSplitEquallyBetweenAllChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         vibration();
-        dispatch({type: "splitEquallyChanged", checked: e.target.checked});
+        dispatch({type: EXPENSE_DRAFT_ACTIONS.SPLIT_EQUALLY_CHANGED, checked: e.target.checked});
     };
 
     const onParticipantSelected = (side: AllocationSide, id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
         vibration();
-        dispatch({type: "participantSelected", side, id, checked: e.target.checked});
+        dispatch({type: EXPENSE_DRAFT_ACTIONS.PARTICIPANT_SELECTED, side, id, checked: e.target.checked});
     };
 
     const onAllocationAmountChange = (side: AllocationSide, id: number) => (e: React.ChangeEvent<HTMLInputElement>) =>
-        dispatch({type: "allocationAmountChanged", side, id, value: e.target.value});
+        dispatch({type: EXPENSE_DRAFT_ACTIONS.ALLOCATION_AMOUNT_CHANGED, side, id, value: e.target.value});
 
     const onAllocationPercentChange = (side: AllocationSide, id: number) => (e: React.ChangeEvent<HTMLInputElement>) =>
-        dispatch({type: "allocationPercentChanged", side, id, value: e.target.value});
+        dispatch({type: EXPENSE_DRAFT_ACTIONS.ALLOCATION_PERCENT_CHANGED, side, id, value: e.target.value});
 
     return (
         <>
@@ -260,7 +265,7 @@ export default function AddExpense() {
                     <Input
                         id={ExpenseNameInputId}
                         value={draft.name}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => dispatch({type: "nameChanged", value: e.target.value})}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => dispatch({type: EXPENSE_DRAFT_ACTIONS.NAME_CHANGED, value: e.target.value})}
                         maxLength={maxExpenseNameLength}
                         placeholder={t("expenses.ExpenseName")}
                         className="mb-2"
@@ -274,14 +279,14 @@ export default function AddExpense() {
                                 type="text"
                                 inputMode="decimal"
                                 value={draft.amountRaw}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => dispatch({type: "amountChanged", value: e.target.value})}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => dispatch({type: EXPENSE_DRAFT_ACTIONS.AMOUNT_CHANGED, value: e.target.value})}
                                 placeholder={t("expenses.MoneySpent")}
                                 status={(draft.amount && draft.amount > 0) ? "default" : "error"}
                             />
                         </div>
                         <CurrencySelect
                             defaultCurrency={draft.currency}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => dispatch({type: "currencyChanged", value: e.target.value})}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => dispatch({type: EXPENSE_DRAFT_ACTIONS.CURRENCY_CHANGED, value: e.target.value})}
                             disabled={!!selectedExpense}
                         />
                     </div>

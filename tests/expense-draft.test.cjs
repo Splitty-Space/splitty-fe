@@ -2,6 +2,9 @@ const {test} = require("node:test");
 const assert = require("node:assert/strict");
 const load = require("./load-typescript.cjs");
 
+const expenseDraftActions = load("const/expenseDraftActions.ts");
+const {EXPENSE_DRAFT_ACTIONS} = expenseDraftActions;
+
 const {
     createExpenseDraft,
     applyToExpenseDraft,
@@ -13,23 +16,24 @@ const {
     "@/const/currencies": load("const/currencies.ts"),
     "@/utils/splitNumberIntoParts": load("utils/splitNumberIntoParts.ts"),
     "@/utils/expenseValidation": load("utils/expenseValidation.ts"),
+    "@/const/expenseDraftActions": expenseDraftActions,
 });
 
 const me = {id: 1, name: "Me"};
 const friend = {id: 2, name: "Friend"};
 
-const named = draft => applyToExpenseDraft(draft, {type: "nameChanged", value: "Dinner"});
+const named = draft => applyToExpenseDraft(draft, {type: EXPENSE_DRAFT_ACTIONS.NAME_CHANGED, value: "Dinner"});
 const newDraft = (currency = "USD") =>
     named(createExpenseDraft({me: {...me, default_currency: currency}, expense: null, friends: [friend]}));
 const apply = (draft, ...actions) => actions.reduce(applyToExpenseDraft, draft);
 
-const amount = value => ({type: "amountChanged", value});
-const currency = value => ({type: "currencyChanged", value});
-const fullyPaidByMe = checked => ({type: "fullyPaidByMeChanged", checked});
-const splitEqually = checked => ({type: "splitEquallyChanged", checked});
-const select = (side, id, checked) => ({type: "participantSelected", side, id, checked});
-const enter = (side, id, value) => ({type: "allocationAmountChanged", side, id, value});
-const enterPercent = (side, id, value) => ({type: "allocationPercentChanged", side, id, value});
+const amount = value => ({type: EXPENSE_DRAFT_ACTIONS.AMOUNT_CHANGED, value});
+const currency = value => ({type: EXPENSE_DRAFT_ACTIONS.CURRENCY_CHANGED, value});
+const fullyPaidByMe = checked => ({type: EXPENSE_DRAFT_ACTIONS.FULLY_PAID_BY_ME_CHANGED, checked});
+const splitEqually = checked => ({type: EXPENSE_DRAFT_ACTIONS.SPLIT_EQUALLY_CHANGED, checked});
+const select = (side, id, checked) => ({type: EXPENSE_DRAFT_ACTIONS.PARTICIPANT_SELECTED, side, id, checked});
+const enter = (side, id, value) => ({type: EXPENSE_DRAFT_ACTIONS.ALLOCATION_AMOUNT_CHANGED, side, id, value});
+const enterPercent = (side, id, value) => ({type: EXPENSE_DRAFT_ACTIONS.ALLOCATION_PERCENT_CHANGED, side, id, value});
 
 const amountsOf = rows => rows.map(row => row.amount);
 const rawAmountsOf = allocations => allocations.map(allocation => allocation.amountRaw);
@@ -83,9 +87,9 @@ test("the expense amount accepts a decimal comma and ignores input past 15 chara
 });
 
 test("a blank or overlong expense name cannot be saved or entered", () => {
-    let draft = apply(newDraft(), amount("10"), {type: "nameChanged", value: "x".repeat(257)});
+    let draft = apply(newDraft(), amount("10"), {type: EXPENSE_DRAFT_ACTIONS.NAME_CHANGED, value: "x".repeat(257)});
     assert.equal(draft.name, "Dinner");
-    draft = apply(draft, {type: "nameChanged", value: "   "});
+    draft = apply(draft, {type: EXPENSE_DRAFT_ACTIONS.NAME_CHANGED, value: "   "});
     assert.equal(canSaveExpenseDraft(draft), false);
 });
 
