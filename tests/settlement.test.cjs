@@ -13,7 +13,6 @@ function renderPayment({editing = false, paidByMe = false, amount = 10, mutation
         ]} : null,
         settleUpPaymentInfo: {friend, currency: "USD"},
         searchValue: "",
-        setSelectedUserId: () => {},
         setIsRequestErrorSnackbarShown: value => calls.errors.push(value),
         setIsCreateExpenseSnackbarShown: value => calls.successes.push(value),
         setIsUpdateExpenseSnackbarShown: value => calls.successes.push(value),
@@ -40,6 +39,8 @@ function renderPayment({editing = false, paidByMe = false, amount = 10, mutation
         "@/app/store": {useStore: selector => selector(state)},
         "next/navigation": {useRouter: () => ({push: route => calls.routes.push(route)})},
         "@/const/urls": {friend: "/friend"},
+        "@/const/searchParams": load("const/searchParams.ts"),
+        "@/utils/withSearchParams": load("utils/withSearchParams.ts", {"@/const/searchParams": load("const/searchParams.ts")}),
     };
     for (const name of ["header/header", "avatar/Avatar", "main/main", "loader/loader"]) mocks[`@/app/components/${name}`] = name;
     const Page = load("app/settleUpPayment/page.tsx", mocks).default;
@@ -88,7 +89,7 @@ test("failed refresh after a confirmed settlement does not enable another write"
     await save();
     assert.equal(calls.writes.length, 1);
     assert.deepEqual(calls.successes, [true]);
-    assert.deepEqual(calls.routes, ["/friend"]);
+    assert.deepEqual(calls.routes, ["/friend?friendId=2"]);
 });
 
 test("invalid settlement amounts are not sent", async () => {

@@ -50,8 +50,8 @@ The footer's Groups action currently shows a coming-soon snackbar instead of nav
 
 The representative flow is `page/component -> local React state + Zustand -> service -> REST backend`. Forms and list pages contain business logic as well as rendering; the folders do not enforce a separate domain-service layer.
 
-- [app/store.ts](../../app/store.ts) uses Zustand with devtools and no persistence middleware. It holds the bearer token, search text, selected friend/expense/participants, settlement context, and tour/snackbar flags.
-- Navigation sets this state before changing a static route. For example, the home page sets `selectedUserId` before pushing `/friend`; the expense details page reads `selectedExpense`. Entity IDs are not encoded in these route paths.
+- [app/store.ts](../../app/store.ts) uses Zustand with devtools and no persistence middleware. It holds the bearer token, search text, selected expense/participants, settlement context, and tour/snackbar flags.
+- Friend routes (`/friend`, `/friend/settings`, `/settleUp`) read the friend id from the `friendId` query parameter through [useSelectedFriend](../../hooks/useSelectedFriend.ts), per [ADR 0001](../adr/0001-selection-in-url.md). Expense and settlement routes still read state that navigation sets before changing a static route; for example, the expense details page reads `selectedExpense`.
 - [hooks/useAuth.ts](../../hooks/useAuth.ts) posts Telegram raw initialization data as `init_data_raw` to `/auth`, then stores the returned `token`. [utils/getCurrentUserId.ts](../../utils/getCurrentUserId.ts) obtains identity from Telegram initialization data.
 - [API/axiosConfig.ts](../../API/axiosConfig.ts) configures axios-hooks with `SERVER_URL`, JSON content type, a 20-second timeout, and an LRU cache of at most 100 entries. Hooks such as [useMe.ts](../../services/useMe.ts) provide bearer headers and user ID per request.
 - Imperative helpers such as [getExpenses.ts](../../services/getExpenses.ts) use direct Axios calls and full URLs. They do not use the configured axios-hooks instance.
