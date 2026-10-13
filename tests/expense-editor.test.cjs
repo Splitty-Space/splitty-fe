@@ -8,6 +8,7 @@ const loadExpenseDraft = () => load("app/expense/expenseDraft.ts", {
     "@/utils/splitNumberIntoParts": load("utils/splitNumberIntoParts.ts"),
     "@/utils/expenseValidation": load("utils/expenseValidation.ts"),
     "@/const/expenseDraftActions": load("const/expenseDraftActions.ts"),
+    "@/const/allocationSides": load("const/allocationSides.ts"),
 });
 
 function editor(currency = "BTC", overrides = {}, {isProfileLoaded = true} = {}) {
@@ -79,6 +80,7 @@ function editor(currency = "BTC", overrides = {}, {isProfileLoaded = true} = {})
         "@/const/urls": {expenseDetails: "/expense/details"},
         "@/const/testExpenseId": {TEST_EXPENSE_ID: -1},
         "@/const/expenseDraftActions": load("const/expenseDraftActions.ts"),
+        "@/const/allocationSides": load("const/allocationSides.ts"),
         "@/app/expense/expenseDraft": loadExpenseDraft(),
         "@/utils/handleInputFocus": () => {},
         "@/utils/vibration": {vibration: () => {}},

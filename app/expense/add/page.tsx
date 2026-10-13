@@ -36,6 +36,7 @@ import {vibration} from "@/utils/vibration";
 import {Icon28Warning} from "@/Icons";
 import {TEST_EXPENSE_ID} from "@/const/testExpenseId";
 import {EXPENSE_DRAFT_ACTIONS} from "@/const/expenseDraftActions";
+import {ALLOCATION_SIDES} from "@/const/allocationSides";
 import {
     allocatedTotal,
     applyToExpenseDraft,
@@ -43,7 +44,6 @@ import {
     createExpenseDraft,
     expenseDraftPayload,
     type Allocation,
-    type AllocationSide,
     type ExpenseDraft,
     type ExpenseDraftAction,
 } from "@/app/expense/expenseDraft";
@@ -181,9 +181,9 @@ export default function AddExpense() {
     }
 
     const {participants} = draft;
-    const currentPaidMoneyAmount = allocatedTotal(draft, "paidBy");
-    const currentSplitBetweenMoneyAmount = allocatedTotal(draft, "split");
-    const findAllocation = (side: AllocationSide, id: number) => draft[side].find(x => x.id === id);
+    const currentPaidMoneyAmount = allocatedTotal(draft, ALLOCATION_SIDES.PAID_BY);
+    const currentSplitBetweenMoneyAmount = allocatedTotal(draft, ALLOCATION_SIDES.SPLIT);
+    const findAllocation = (side: ALLOCATION_SIDES, id: number) => draft[side].find(x => x.id === id);
 
     const onDateChange = (newDate: Dayjs | null) => {
         if (newDate) {
@@ -201,15 +201,15 @@ export default function AddExpense() {
         dispatch({type: EXPENSE_DRAFT_ACTIONS.SPLIT_EQUALLY_CHANGED, checked: e.target.checked});
     };
 
-    const onParticipantSelected = (side: AllocationSide, id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const onParticipantSelected = (side: ALLOCATION_SIDES, id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
         vibration();
         dispatch({type: EXPENSE_DRAFT_ACTIONS.PARTICIPANT_SELECTED, side, id, checked: e.target.checked});
     };
 
-    const onAllocationAmountChange = (side: AllocationSide, id: number) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    const onAllocationAmountChange = (side: ALLOCATION_SIDES, id: number) => (e: React.ChangeEvent<HTMLInputElement>) =>
         dispatch({type: EXPENSE_DRAFT_ACTIONS.ALLOCATION_AMOUNT_CHANGED, side, id, value: e.target.value});
 
-    const onAllocationPercentChange = (side: AllocationSide, id: number) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    const onAllocationPercentChange = (side: ALLOCATION_SIDES, id: number) => (e: React.ChangeEvent<HTMLInputElement>) =>
         dispatch({type: EXPENSE_DRAFT_ACTIONS.ALLOCATION_PERCENT_CHANGED, side, id, value: e.target.value});
 
     return (
@@ -389,14 +389,14 @@ export default function AddExpense() {
                         <List className="mt-4 w-full rounded-3xl px-0">
                             {participants.map(({id, name}) => {
 
-                                const isItemSelected = findAllocation("paidBy", id)?.isSelected;
+                                const isItemSelected = findAllocation(ALLOCATION_SIDES.PAID_BY, id)?.isSelected;
 
                                 return (<div key={id} className="flex items-center justify-between">
                                     <div className="flex items-center w-1/2">
                                         <Switch
                                             className="shrink-0"
                                             checked={!!isItemSelected}
-                                            onChange={onParticipantSelected("paidBy", id)}
+                                            onChange={onParticipantSelected(ALLOCATION_SIDES.PAID_BY, id)}
                                         />
 
                                         <Avatar
@@ -419,8 +419,8 @@ export default function AddExpense() {
                                             type="text"
                                             inputMode="decimal"
                                             maxLength={15}
-                                            value={findAllocation("paidBy", id)?.amountRaw}
-                                            onChange={onAllocationAmountChange("paidBy", id)}
+                                            value={findAllocation(ALLOCATION_SIDES.PAID_BY, id)?.amountRaw}
+                                            onChange={onAllocationAmountChange(ALLOCATION_SIDES.PAID_BY, id)}
                                             className="w-36 ml-auto"
                                             status={currentPaidMoneyAmount !== draft.amount && isItemSelected ? "error" : undefined}
                                             disabled={!isItemSelected}
@@ -436,8 +436,8 @@ export default function AddExpense() {
                                             type="text"
                                             inputMode="decimal"
                                             maxLength={15}
-                                            value={percentOf(findAllocation("paidBy", id), draft.amount)}
-                                            onChange={onAllocationPercentChange("paidBy", id)}
+                                            value={percentOf(findAllocation(ALLOCATION_SIDES.PAID_BY, id), draft.amount)}
+                                            onChange={onAllocationPercentChange(ALLOCATION_SIDES.PAID_BY, id)}
                                             className="w-36 ml-auto"
                                             status={currentPaidMoneyAmount !== draft.amount && isItemSelected ? "error" : undefined}
                                             disabled={!isItemSelected}
@@ -503,14 +503,14 @@ export default function AddExpense() {
 
                         <List className="mt-4 w-full rounded-3xl px-0">
                             {participants?.map(({id, name}) => {
-                                    const isItemSelected = findAllocation("split", id)?.isSelected;
+                                    const isItemSelected = findAllocation(ALLOCATION_SIDES.SPLIT, id)?.isSelected;
 
                                     return (<div key={id} className="flex items-center justify-between">
                                         <div className="flex items-center w-1/2">
                                             <Switch
                                                 className="shrink-0"
                                                 checked={!!isItemSelected}
-                                                onChange={onParticipantSelected("split", id)}
+                                                onChange={onParticipantSelected(ALLOCATION_SIDES.SPLIT, id)}
                                             />
 
                                             <Avatar
@@ -533,8 +533,8 @@ export default function AddExpense() {
                                                 type="text"
                                                 inputMode="decimal"
                                                 maxLength={15}
-                                                value={findAllocation("split", id)?.amountRaw}
-                                                onChange={onAllocationAmountChange("split", id)}
+                                                value={findAllocation(ALLOCATION_SIDES.SPLIT, id)?.amountRaw}
+                                                onChange={onAllocationAmountChange(ALLOCATION_SIDES.SPLIT, id)}
                                                 className="w-36 ml-auto"
                                                 status={currentSplitBetweenMoneyAmount !== draft.amount ? "error" : undefined}
                                                 disabled={!isItemSelected}
@@ -550,8 +550,8 @@ export default function AddExpense() {
                                                 type="text"
                                                 inputMode="decimal"
                                                 maxLength={15}
-                                                value={percentOf(findAllocation("split", id), draft.amount)}
-                                                onChange={onAllocationPercentChange("split", id)}
+                                                value={percentOf(findAllocation(ALLOCATION_SIDES.SPLIT, id), draft.amount)}
+                                                onChange={onAllocationPercentChange(ALLOCATION_SIDES.SPLIT, id)}
                                                 className="w-36 ml-auto"
                                                 status={currentSplitBetweenMoneyAmount !== draft.amount ? "error" : undefined}
                                                 disabled={!isItemSelected}

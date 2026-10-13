@@ -3,6 +3,7 @@ import {splitNumberIntoParts} from "@/utils/splitNumberIntoParts";
 import {isAllocationBalanced} from "@/utils/expenseValidation";
 import {EXPENSE_CURRENCY_PRECISION} from "@/const/currencies";
 import {EXPENSE_DRAFT_ACTIONS} from "@/const/expenseDraftActions";
+import {ALLOCATION_SIDES} from "@/const/allocationSides";
 import type {Expense} from "@/entities";
 
 const MAX_NAME_LENGTH = 256;
@@ -16,8 +17,6 @@ export interface Allocation {
     percentRaw?: string;
     isDirty: boolean;
 }
-
-export type AllocationSide = "paidBy" | "split";
 
 export interface Participant {
     id: number;
@@ -45,9 +44,9 @@ export type ExpenseDraftAction =
     | {type: EXPENSE_DRAFT_ACTIONS.DATE_CHANGED, value: Date}
     | {type: EXPENSE_DRAFT_ACTIONS.FULLY_PAID_BY_ME_CHANGED, checked: boolean}
     | {type: EXPENSE_DRAFT_ACTIONS.SPLIT_EQUALLY_CHANGED, checked: boolean}
-    | {type: EXPENSE_DRAFT_ACTIONS.PARTICIPANT_SELECTED, side: AllocationSide, id: number, checked: boolean}
-    | {type: EXPENSE_DRAFT_ACTIONS.ALLOCATION_AMOUNT_CHANGED, side: AllocationSide, id: number, value: string}
-    | {type: EXPENSE_DRAFT_ACTIONS.ALLOCATION_PERCENT_CHANGED, side: AllocationSide, id: number, value: string};
+    | {type: EXPENSE_DRAFT_ACTIONS.PARTICIPANT_SELECTED, side: ALLOCATION_SIDES, id: number, checked: boolean}
+    | {type: EXPENSE_DRAFT_ACTIONS.ALLOCATION_AMOUNT_CHANGED, side: ALLOCATION_SIDES, id: number, value: string}
+    | {type: EXPENSE_DRAFT_ACTIONS.ALLOCATION_PERCENT_CHANGED, side: ALLOCATION_SIDES, id: number, value: string};
 
 export interface ExpenseDraftPayload {
     payers: {user_id: number, amount?: number}[];
@@ -102,7 +101,7 @@ const paidInFullByMe = (draft: ExpenseDraft, amount: number, amountRaw: string):
 
 const updateAllocation = (
     draft: ExpenseDraft,
-    side: AllocationSide,
+    side: ALLOCATION_SIDES,
     id: number,
     update: (allocation: Allocation) => Partial<Allocation>,
 ): ExpenseDraft => ({
@@ -230,7 +229,7 @@ export function canSaveExpenseDraft(draft: ExpenseDraft): boolean {
 }
 
 /** Sum of the selected Allocations on one side, as shown against the expense total. */
-export function allocatedTotal(draft: ExpenseDraft, side: AllocationSide): number {
+export function allocatedTotal(draft: ExpenseDraft, side: ALLOCATION_SIDES): number {
     return draft[side].reduce((total, {isSelected, amount}) => isSelected && amount ? total + amount : total, 0);
 }
 

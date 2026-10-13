@@ -4,6 +4,8 @@ const load = require("./load-typescript.cjs");
 
 const expenseDraftActions = load("const/expenseDraftActions.ts");
 const {EXPENSE_DRAFT_ACTIONS} = expenseDraftActions;
+const allocationSides = load("const/allocationSides.ts");
+const {SPLIT} = allocationSides.ALLOCATION_SIDES;
 
 const {
     createExpenseDraft,
@@ -17,6 +19,7 @@ const {
     "@/utils/splitNumberIntoParts": load("utils/splitNumberIntoParts.ts"),
     "@/utils/expenseValidation": load("utils/expenseValidation.ts"),
     "@/const/expenseDraftActions": expenseDraftActions,
+    "@/const/allocationSides": allocationSides,
 });
 
 const me = {id: 1, name: "Me"};
@@ -75,7 +78,7 @@ test("switching currency recalculates automatic allocations", () => {
 
 test("switching currency keeps an unequal split that was edited", () => {
     const draft = apply(newDraft(), amount("0.0001"), splitEqually(false),
-        enter("split", 1, "0.0001"), enter("split", 2, "0"), currency("BTC"));
+        enter(SPLIT, 1, "0.0001"), enter(SPLIT, 2, "0"), currency("BTC"));
     assert.deepEqual(rawAmountsOf(draft.split), ["0.0001", "0"]);
     assert.equal(canSaveExpenseDraft(draft), true);
 });
@@ -103,32 +106,32 @@ test("turning off fully paid by me splits who paid equally, turning it on restor
 test("an unequal split saves the entered amounts and stays blocked until it balances", () => {
     let draft = apply(newDraft(), amount("10"), splitEqually(false));
     assert.deepEqual(rawAmountsOf(draft.split), ["5", "5"]);
-    draft = apply(draft, enter("split", 2, "8"));
+    draft = apply(draft, enter(SPLIT, 2, "8"));
     assert.equal(canSaveExpenseDraft(draft), false);
-    draft = apply(draft, enter("split", 1, "2"));
+    draft = apply(draft, enter(SPLIT, 1, "2"));
     assert.equal(canSaveExpenseDraft(draft), true);
     assert.deepEqual(amountsOf(expenseDraftPayload(draft).debtors), [2, 8]);
 });
 
 test("deselecting a participant zeroes their allocation", () => {
-    let draft = apply(newDraft(), amount("10"), splitEqually(false), select("split", 2, false));
+    let draft = apply(newDraft(), amount("10"), splitEqually(false), select(SPLIT, 2, false));
     assert.deepEqual(rawAmountsOf(draft.split), ["5", "0"]);
-    assert.equal(allocatedTotal(draft, "split"), 5);
+    assert.equal(allocatedTotal(draft, SPLIT), 5);
     assert.equal(canSaveExpenseDraft(draft), false);
-    draft = apply(draft, enter("split", 1, "10"), select("split", 2, true));
+    draft = apply(draft, enter(SPLIT, 1, "10"), select(SPLIT, 2, true));
     assert.deepEqual(amountsOf(expenseDraftPayload(draft).debtors), [10, 0]);
 });
 
 test("percent allocations are converted to amounts of the expense total", () => {
     const draft = apply(newDraft(), amount("200"), splitEqually(false),
-        enterPercent("split", 1, "25"), enterPercent("split", 2, "75"));
+        enterPercent(SPLIT, 1, "25"), enterPercent(SPLIT, 2, "75"));
     assert.deepEqual(draft.split.map(allocation => allocation.percentRaw), ["25", "75"]);
     assert.deepEqual(amountsOf(expenseDraftPayload(draft).debtors), [50, 150]);
 });
 
 test("changing the amount keeps an unequal split as entered", () => {
     const draft = apply(newDraft(), amount("10"), splitEqually(false),
-        enter("split", 1, "3"), enter("split", 2, "7"), amount("20"));
+        enter(SPLIT, 1, "3"), enter(SPLIT, 2, "7"), amount("20"));
     assert.deepEqual(rawAmountsOf(draft.split), ["3", "7"]);
     assert.deepEqual(rawAmountsOf(draft.paidBy), ["20", "0"]);
     assert.equal(canSaveExpenseDraft(draft), false);
