@@ -1,6 +1,7 @@
 "use client"
 
 import {useEffect, useState} from "react";
+import {AxiosError, isCancel} from "axios";
 import classNames from "classnames";
 import {useTranslation} from "react-i18next";
 import {useRouter} from "next/navigation";
@@ -61,8 +62,11 @@ export default function FriendsList() {
     };
 
     const onRetry = () => {
-        void refetchFriends().catch(() => {
-            // The hook exposes the failure through `error`.
+        void refetchFriends().catch((err: AxiosError) => {
+            // A newer refetch or leaving the page cancels this one; that is not a failure.
+            if (!isCancel(err)) {
+                console.warn("Friends list retry failed:", err);
+            }
         });
     };
 
