@@ -32,6 +32,8 @@ export default function ExpenseDetails() {
     const authToken = useStore((state) => state.token);
     const showError = useStore((state) => state.setIsRequestErrorSnackbarShown);
     const deleteInFlight = useRef(false);
+    // Set once an expense has been shown, so clearing the selection on the way out (footer, delete) does not redirect.
+    const hadSelectedExpense = useRef(false);
 
     const selectedExpense = useStore((state) => state.selectedExpense);
     const setSelectedExpense = useStore((state) => state.setSelectedExpense);
@@ -54,9 +56,10 @@ export default function ExpenseDetails() {
         const expenseId = selectedExpense?.id;
 
         if (expenseId === undefined) {
-            router.replace(friendsList);
+            if (!hadSelectedExpense.current) router.replace(friendsList);
             return;
         }
+        hadSelectedExpense.current = true;
 
         if (!authToken || expenseId === TEST_EXPENSE_ID) return;
         const controller = new AbortController();
