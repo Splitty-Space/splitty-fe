@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+# CodeRabbit review settings. Docs: https://docs.coderabbit.ai/reference/configuration
+# AGENTS.md is read automatically as the code guidelines; the rules below are the
+# review conventions that are not written down there.
+language: ru-RU
+
+reviews:
+  profile: chill
+  high_level_summary: true
+  poem: false
+  auto_review:
+    enabled: true
+    drafts: false
+  path_filters:
+    - "!package-lock.json"
+    - "!next-env.d.ts"
+    - "!public/**"
+  pre_merge_checks:
+    # The codebase does not use docstrings; an 80% coverage warning would fire on every PR.
+    docstrings:
+      mode: "off"
+  path_instructions:
+    - path: "**/*.{ts,tsx}"
+      instructions: |
+        - A fixed set of values (reducer action types, string-union types such as
+          `"paidBy" | "split"`) must be an enum constant in `const/` (see
+          `const/expenseDraftActions.ts`, `const/groupKinds.ts`) and used instead of
+          string literals. Flag new string literals for such sets.
+        - Caught errors must be logged, never swallowed by an empty catch. The catch
+          parameter gets the real error type from the library (for example
+          `AxiosError` from axios, after skipping `isCancel`), not `unknown` or `any`.
+        - Use the domain terms from `CONTEXT.md` (Expense, Participant, Paid by, Split,
+          Allocation, Expense draft, Settlement) and avoid the synonyms it lists.
+    - path: "app/expense/expenseDraft.ts"
+      instructions: |
+        Expense draft allocation rules live here as pure functions consumed through
+        useReducer. Keep the module free of React, store and network imports, and
+        keep settle-up payment logic out of it.
+    - path: "tests/**"
+      instructions: |
+        Tests run with `node --test tests/*.test.cjs` and load TypeScript through
+        `tests/load-typescript.cjs`. A bug fix should come with a test that fails
+        without the fix.
+
+chat:
+  auto_reply: true
