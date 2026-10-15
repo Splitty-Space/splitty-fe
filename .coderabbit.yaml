@@ -2,7 +2,7 @@
 # CodeRabbit review settings. Docs: https://docs.coderabbit.ai/reference/configuration
 # AGENTS.md is read automatically as the code guidelines; the rules below are the
 # review conventions that are not written down there.
-language: ru-RU
+language: en-US
 
 reviews:
   profile: chill
