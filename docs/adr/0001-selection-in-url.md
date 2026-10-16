@@ -1,6 +1,6 @@
 # The URL says which Friend or Expense a page shows
 
-Pages for one Friend or one Expense used to read the selected entity from the in-memory store, so a reload, the Back button or a footer tap that cleared the store sent the user to the friends list. We put the entity id in the URL as a query parameter (`?friendId=`, `?expenseId=`) and the page loads the entity from that id; the store no longer holds the selected Friend or Expense. Only data that is not an entity yet stays in memory: the participants of a new Expense, and the tutorial's sample Expense, which has no backend id.
+Pages for one Friend or one Expense used to read the selected entity from the in-memory store, so a reload, the Back button or a footer tap that cleared the store sent the user to the friends list. We decided to put the entity id in the URL as a query parameter (`?friendId=`, `?expenseId=`) and have the page load the entity from that id, so the store stops holding the selected Friend or Expense. Only data that is not an entity yet stays in memory: the participants of a new Expense, and the tutorial's sample Expense, which has no backend id.
 
 ## Considered Options
 
