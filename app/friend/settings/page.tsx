@@ -4,7 +4,6 @@ import {useTranslation} from "react-i18next";
 import Header from "@/app/components/header/header";
 import Logo from "@/app/components/header/logo";
 import {Cell, Divider, List, Text, Title} from "@telegram-apps/telegram-ui";
-import {addFriend} from "@/services/addFriend";
 import {deleteFriend} from "@/services/deleteFriend";
 import {useStore} from "@/app/store";
 import useSelectedFriend from "@/hooks/useSelectedFriend";
@@ -22,10 +21,7 @@ function FriendSettings() {
     const mutationInFlight = useRef(false);
 
     const setIsDeleteFriendSnackbarShown = useStore((state) => state.setIsDeleteFriendSnackbarShown);
-    const {data, refetchFriends, friend} = useSelectedFriend();
-    const friends = data?.data;
-
-    const isFriend = !!friends?.find(x => x.id === friend?.id);
+    const {refetchFriends, friend} = useSelectedFriend();
 
     const router = useRouter();
 
@@ -48,26 +44,14 @@ function FriendSettings() {
                     .then(() => setIsDeleteFriendSnackbarShown(true))
                     .then(async () => {
                         await refetchFriends().catch(() => showError(true));
-                        router.push(friendsList);
+                        // Back must not return to the deleted friend. The hook replaces to the same URL too.
+                        router.replace(friendsList);
                     }).catch(() => {
                         mutationInFlight.current = false;
                         showError(true);
                     });
             }
         }
-    };
-
-    const onAddFriend = () => {
-        if (!friend || mutationInFlight.current) return;
-        mutationInFlight.current = true;
-        addFriend(friend.id)
-            .then(async () => {
-                await refetchFriends().catch(() => showError(true));
-                router.push(friendsList);
-            }).catch(() => {
-                mutationInFlight.current = false;
-                showError(true);
-            });
     };
 
     return (
@@ -101,28 +85,17 @@ function FriendSettings() {
                     }
                 </div>
 
-                <List>
-                    {isFriend ?
-                        (<>
-                            <Cell
-                                className="friendSettings_delete"
-                                onClick={openDeleteConfirmPopup}
-                            >
-                                Delete from friends
-                            </Cell>
-                            <Divider/>
-                        </>)
-                        :
-                        (<>
-                            <Cell
-                                onClick={onAddFriend}
-                            >
-                                Add friend
-                            </Cell>
-                            <Divider/>
-                        </>)
-                    }
-                </List>
+                {friend &&
+                    <List>
+                        <Cell
+                            className="friendSettings_delete"
+                            onClick={openDeleteConfirmPopup}
+                        >
+                            Delete from friends
+                        </Cell>
+                        <Divider/>
+                    </List>
+                }
             </Main>
         </>
     );
