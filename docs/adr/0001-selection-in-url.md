@@ -9,5 +9,5 @@ Pages for one Friend or one Expense used to read the selected entity from the in
 
 ## Consequences
 
-- A page that cannot find its entity (missing or malformed id, Friend not in the friends list, Expense answering 404) replaces itself with the friends list. A network error keeps the user on the page.
+- A page that cannot find its entity (missing or malformed id, Friend not in the friends list, Expense answering 404 or marked deleted) replaces itself with the friends list. Only a deleted Expense shows the deleted-expense snackbar; the other cases leave without one, since a malformed id only comes from a hand-edited link. A network error keeps the user on the page.
 - Pages that read search parameters render inside a `<Suspense>` boundary, which Next.js requires for `useSearchParams` in statically built routes.
