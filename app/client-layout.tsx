@@ -63,7 +63,6 @@ export default function ClientLayout({children}: Readonly<{
     const [platform, setPlatform] = useState<PLATFORM_TYPE>(DEFAULT_PLATFORM);
     const [appearance, setAppearance] = useState<THEME_TYPE>(DEFAULT_THEME);
 
-    const searchValue = useStore((state) => state.searchValue);
     const setSearchValue = useStore((state) => state.setSearchValue);
     const setSelectedFriends = useStore((state) => state.setSelectedFriends);
     const setSelectedExpense = useStore((state) => state.setSelectedExpense);
@@ -226,7 +225,8 @@ export default function ClientLayout({children}: Readonly<{
 
     const {t} = useTranslation();
 
-    const {data, refetchFriends} = useFriends(searchValue);
+    // The whole list: the footer and the tour look friends up by id, and search text must not hide them.
+    const {data, refetchFriends} = useFriends("");
     const friends = data?.data;
 
     const onCloseFriendDeleted = useCallback(() => setIsDeleteFriendSnackbarShown(false), [setIsDeleteFriendSnackbarShown]);

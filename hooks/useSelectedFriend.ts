@@ -1,7 +1,6 @@
 import {useEffect} from "react";
 import {useRouter, useSearchParams} from "next/navigation";
 import useFriends from "@/services/useFriends";
-import {useStore} from "@/app/store";
 import {friendsList} from "@/const/urls";
 import {SEARCH_PARAMS} from "@/const/searchParams";
 import {parseId} from "@/utils/parseId";
@@ -12,16 +11,16 @@ export default function useSelectedFriend() {
     const searchParams = useSearchParams();
     const friendId = parseId(searchParams.get(SEARCH_PARAMS.FRIEND_ID));
 
-    const searchValue = useStore((state) => state.searchValue);
-    const friendsResult = useFriends(searchValue);
-    const friends = friendsResult.data?.data;
+    // The whole list: text left in the friends list search must not hide the friend.
+    const {data, loadingFriends, refetchFriends} = useFriends("");
+    const friends = data?.data;
     const friend = friendId === null ? undefined : friends?.find(({id}) => id === friendId);
-    const isMissing = friendId === null || (!friendsResult.loadingFriends && !!friends && !friend);
+    const isMissing = friendId === null || (!loadingFriends && !!friends && !friend);
 
     const router = useRouter();
     useEffect(() => {
         if (isMissing) router.replace(friendsList);
     }, [isMissing, router]);
 
-    return {...friendsResult, friend};
+    return {friend, loadingFriends, refetchFriends};
 }
