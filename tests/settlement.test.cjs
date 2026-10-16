@@ -2,6 +2,8 @@ const {test} = require("node:test");
 const assert = require("node:assert/strict");
 const load = require("./load-typescript.cjs");
 
+const searchParams = load("const/searchParams.ts");
+
 function renderPayment({editing = false, paidByMe = false, amount = 10, mutation, refresh} = {}) {
     const calls = {writes: [], routes: [], errors: [], successes: []};
     const me = {id: 1, name: "Me"};
@@ -39,8 +41,8 @@ function renderPayment({editing = false, paidByMe = false, amount = 10, mutation
         "@/app/store": {useStore: selector => selector(state)},
         "next/navigation": {useRouter: () => ({push: route => calls.routes.push(route)})},
         "@/const/urls": {friend: "/friend"},
-        "@/const/searchParams": load("const/searchParams.ts"),
-        "@/utils/withSearchParams": load("utils/withSearchParams.ts", {"@/const/searchParams": load("const/searchParams.ts")}),
+        "@/const/searchParams": searchParams,
+        "@/utils/withSearchParams": load("utils/withSearchParams.ts", {"@/const/searchParams": searchParams}),
     };
     for (const name of ["header/header", "avatar/Avatar", "main/main", "loader/loader"]) mocks[`@/app/components/${name}`] = name;
     const Page = load("app/settleUpPayment/page.tsx", mocks).default;
