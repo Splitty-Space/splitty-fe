@@ -13,6 +13,8 @@ import FriendsHeader from "@/app/components/friendsHeader/friendsHeader";
 import FriendRow from "@/app/components/friendRow/friendRow";
 import {Arrow} from "@/Icons";
 import {friend} from "@/const/urls";
+import {SEARCH_PARAMS} from "@/const/searchParams";
+import {withSearchParams} from "@/utils/withSearchParams";
 import {useStore} from "@/app/store";
 import useFriends from "@/services/useFriends";
 import useContentHeight from "@/hooks/useContentHeight";
@@ -25,7 +27,6 @@ export default function FriendsList() {
     const router = useRouter();
     const searchValue = useStore((state) => state.searchValue);
     const setSearchValue = useStore((state) => state.setSearchValue);
-    const setSelectedUserId = useStore((state) => state.setSelectedUserId);
     const {data, loadingFriends, error, refetchFriends} = useFriends(searchValue);
     const friends = data?.data ?? [];
     const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -50,10 +51,7 @@ export default function FriendsList() {
             key={key}
             friend={friends[index]}
             style={style}
-            onSelect={(id) => {
-                setSelectedUserId(id);
-                router.push(friend);
-            }}
+            onSelect={(id) => router.push(withSearchParams(friend, {[SEARCH_PARAMS.FRIEND_ID]: id}))}
         />
     );
 

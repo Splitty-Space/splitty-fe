@@ -1,6 +1,6 @@
 "use client"
 
-import {useState, useEffect, useCallback, useRef} from "react";
+import {useState, useEffect, useCallback, useRef, Suspense} from "react";
 import {useTranslation} from "react-i18next";
 import {
     AvatarStack,
@@ -22,8 +22,7 @@ import useMe from "@/services/useMe";
 import {formatDate} from "@/utils/formatDate";
 import Main from "@/app/components/main/main";
 import {useRouter} from "next/navigation";
-import {expenseDetails, friendSettings, friendsList, settleUp, settleUpPayment} from "@/const/urls";
-import useFriends from "@/services/useFriends";
+import {expenseDetails, friendSettings, settleUp, settleUpPayment} from "@/const/urls";
 import {useStore} from "@/app/store";
 import Avatar from "@/app/components/avatar/Avatar";
 import SkeletonCell from "@/app/components/skeletons/skeletonCell";
@@ -34,17 +33,17 @@ import PullToRefresh from "@/app/components/pullToRefresh/pullToRefresh";
 import {listAccessibilityProps} from "@/app/components/listAccessibilityProps";
 import useRefreshToken from "@/utils/useRefreshToken";
 import {currencyToCurrencySymbol} from "@/utils/currencyToCurrencySymbol";
+import useSelectedFriend from "@/hooks/useSelectedFriend";
+import {SEARCH_PARAMS} from "@/const/searchParams";
+import {withSearchParams} from "@/utils/withSearchParams";
 
 
-export default function FriendPage() {
+function FriendPage() {
     const {t} = useTranslation();
 
     const {data: me, loading: loadingMe} = useMe();
 
-    const searchValue = useStore((state) => state.searchValue);
-    const selectedUserId = useStore((state) => state.selectedUserId);
-    const {data, loadingFriends} = useFriends(searchValue);
-    const friend = data?.data?.find(friend => friend.id === selectedUserId);
+    const {friend, loadingFriends} = useSelectedFriend();
     const setSelectedExpense = useStore((state) => state.setSelectedExpense);
     const setSettleUpPaymentInfo = useStore((state) => state.setSettleUpPaymentInfo);
     const router = useRouter();
@@ -52,8 +51,6 @@ export default function FriendPage() {
     const showError = useStore((state) => state.setIsRequestErrorSnackbarShown);
     const listController = useRef<AbortController | null>(null);
     const pendingPages = useRef(new Map<number, Promise<void>>());
-    // Set once a friend has been shown, so clearing the selection on the way out (footer) does not redirect.
-    const hadFriend = useRef(false);
     const pageSize = defaultPageSize;
     const [rowCount, setRowCount] = useState(pageSize);
     const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -77,7 +74,6 @@ export default function FriendPage() {
 
         if (!friend) {
             setLoadingExpenses(false);
-            if (!hadFriend.current) router.replace(friendsList);
 
             return () => {
                 isActive = false;
@@ -85,7 +81,6 @@ export default function FriendPage() {
             };
         }
 
-        hadFriend.current = true;
         setLoadingExpenses(true);
 
         getExpenses({
@@ -117,7 +112,7 @@ export default function FriendPage() {
             isActive = false;
             controller.abort();
         }
-    }, [friend, loadingFriends, pageSize, router, showError, token]);
+    }, [friend, loadingFriends, pageSize, showError, token]);
 
     const isRowLoaded = ({index}: { index: number }) => {
         return expenses && !!expenses[index];
@@ -154,7 +149,7 @@ export default function FriendPage() {
         if (friend) {
             setSelectedExpense(null);
             if (friend.total.length > 1) {
-                router.push(settleUp);
+                router.push(withSearchParams(settleUp, {[SEARCH_PARAMS.FRIEND_ID]: friend.id}));
             } else if (friend.total.length === 1) {
                 setSettleUpPaymentInfo({friend, currency: friend.total[0].currency});
                 router.push(settleUpPayment);
@@ -312,7 +307,7 @@ export default function FriendPage() {
                     aria-label={t("accessibility.EditFriend")}
                     className="absolute top-4 right-4"
                     onClick={() => {
-                        router.push(friendSettings);
+                        if (friend) router.push(withSearchParams(friendSettings, {[SEARCH_PARAMS.FRIEND_ID]: friend.id}));
                     }}
                 >
                     <Icon28Edit/>
@@ -398,5 +393,13 @@ export default function FriendPage() {
                 }
             </Main>
         </div>
+    );
+}
+
+export default function FriendPageRoute() {
+    return (
+        <Suspense>
+            <FriendPage/>
+        </Suspense>
     );
 }
