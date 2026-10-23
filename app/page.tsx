@@ -1,6 +1,7 @@
 "use client"
 
 import {useEffect, useState} from "react";
+import {AxiosError, isCancel} from "axios";
 import classNames from "classnames";
 import {useTranslation} from "react-i18next";
 import {useRouter} from "next/navigation";
@@ -12,6 +13,8 @@ import FriendsHeader from "@/app/components/friendsHeader/friendsHeader";
 import FriendRow from "@/app/components/friendRow/friendRow";
 import {Arrow} from "@/Icons";
 import {friend} from "@/const/urls";
+import {SEARCH_PARAMS} from "@/const/searchParams";
+import {withSearchParams} from "@/utils/withSearchParams";
 import {useStore} from "@/app/store";
 import useFriends from "@/services/useFriends";
 import useContentHeight from "@/hooks/useContentHeight";
@@ -24,7 +27,6 @@ export default function FriendsList() {
     const router = useRouter();
     const searchValue = useStore((state) => state.searchValue);
     const setSearchValue = useStore((state) => state.setSearchValue);
-    const setSelectedUserId = useStore((state) => state.setSelectedUserId);
     const {data, loadingFriends, error, refetchFriends} = useFriends(searchValue);
     const friends = data?.data ?? [];
     const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -49,10 +51,7 @@ export default function FriendsList() {
             key={key}
             friend={friends[index]}
             style={style}
-            onSelect={(id) => {
-                setSelectedUserId(id);
-                router.push(friend);
-            }}
+            onSelect={(id) => router.push(withSearchParams(friend, {[SEARCH_PARAMS.FRIEND_ID]: id}))}
         />
     );
 
@@ -61,8 +60,11 @@ export default function FriendsList() {
     };
 
     const onRetry = () => {
-        void refetchFriends().catch(() => {
-            // The hook exposes the failure through `error`.
+        void refetchFriends().catch((err: AxiosError) => {
+            // A newer refetch or leaving the page cancels this one; that is not a failure.
+            if (!isCancel(err)) {
+                console.warn("Friends list retry failed:", err);
+            }
         });
     };
 

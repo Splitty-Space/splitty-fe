@@ -4,7 +4,7 @@ import {Tabbar} from "@telegram-apps/telegram-ui";
 import useDetectKeyboardOpen from "use-detect-keyboard-open";
 import {Icon24Group, Icon24Person, Icon24Stats, PlusIcon} from "@/Icons";
 import {useTranslation} from "react-i18next";
-import {usePathname, useRouter} from "next/navigation";
+import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {TabIds} from "@/const/tabIds";
 import useMe from "@/services/useMe";
 import {Friend} from "@/entities";
@@ -13,6 +13,8 @@ import {account, activity, addExpense, expenseParticipants, friend, friendsList,
 import {focusOnExpenseNameInput} from "@/app/expense/add/focusOnExpenseNameInput";
 import Avatar from "@/app/components/avatar/Avatar";
 import {useStore} from "@/app/store";
+import {SEARCH_PARAMS} from "@/const/searchParams";
+import {parseId} from "@/utils/parseId";
 import "./footer.css";
 
 interface Tab {
@@ -25,15 +27,11 @@ interface Tab {
 
 export default function Footer({
                                    friends,
-                                   selectedUserId,
-                                   setSelectedUserId,
                                    setSelectedFriends,
                                    setSearchValue,
                                    setSelectedExpense,
                                }: {
     friends: Friend[] | undefined,
-    selectedUserId: number | null,
-    setSelectedUserId: ReturnType<typeof useStore.getState>["setSelectedUserId"],
     setSelectedFriends: ReturnType<typeof useStore.getState>["setSelectedFriends"],
     setSearchValue: ReturnType<typeof useStore.getState>["setSearchValue"],
     setSelectedExpense: ReturnType<typeof useStore.getState>["setSelectedExpense"],
@@ -97,15 +95,16 @@ export default function Footer({
 
     const router = useRouter();
     const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const friendId = parseId(searchParams.get(SEARCH_PARAMS.FRIEND_ID));
 
     const onBarItemClick = useCallback((id: number) => () => {
         if (id === TabIds.AddExpenseParticipants && pathname === friend) {
-            const selectedFriend = friends?.find(x => x.id === selectedUserId);
+            const selectedFriend = friends?.find(x => x.id === friendId);
             if (!selectedFriend) return;
             setSelectedFriends([selectedFriend]);
         } else if (id !== TabIds.Groups) {
             setSelectedFriends([]);
-            setSelectedUserId(null);
         }
 
         if (id !== TabIds.Groups) {
@@ -132,7 +131,7 @@ export default function Footer({
         if (id !== TabIds.Groups) {
             vibration();
         }
-    }, [pathname, friends, setSelectedFriends, selectedUserId, setSelectedUserId, setSearchValue, setSelectedExpense, router, setIsGroupComingSoonSnackbarShown]);
+    }, [pathname, friends, setSelectedFriends, friendId, setSearchValue, setSelectedExpense, router, setIsGroupComingSoonSnackbarShown]);
 
     const isKeyboardOpen = useDetectKeyboardOpen();
 

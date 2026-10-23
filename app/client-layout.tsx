@@ -3,7 +3,7 @@
 // The module enables the Telegram mock only in the development browser.
 import "@/utils/mockTelegramEnv";
 import {usePathname, useRouter} from "next/navigation";
-import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
+import React, {Suspense, useCallback, useEffect, useMemo, useRef, useState} from "react";
 import i18next from "i18next";
 import "@/i18n";
 import dynamic from "next/dynamic"
@@ -38,12 +38,16 @@ import useUpdateUserSettings from "@/services/useUpdateUserSettings";
 import "./globals.css";
 import useAuth from "@/hooks/useAuth";
 import {isTMA} from "@telegram-apps/bridge";
+import {SEARCH_PARAMS} from "@/const/searchParams";
+import {withSearchParams} from "@/utils/withSearchParams";
 
 
 const Tour = dynamic(
     () => import("@/app/components/tour/tour"),
     {ssr: false}
 );
+
+const tutorialFriendUrl = withSearchParams(friend, {[SEARCH_PARAMS.FRIEND_ID]: TUTORIAL_USER_ID});
 
 // Wait for the full mount promise to settle before starting another mount.
 // The SDK clears its concurrency guard asynchronously after cancellation.
@@ -59,10 +63,7 @@ export default function ClientLayout({children}: Readonly<{
     const [platform, setPlatform] = useState<PLATFORM_TYPE>(DEFAULT_PLATFORM);
     const [appearance, setAppearance] = useState<THEME_TYPE>(DEFAULT_THEME);
 
-    const searchValue = useStore((state) => state.searchValue);
     const setSearchValue = useStore((state) => state.setSearchValue);
-    const selectedUserId = useStore((state) => state.selectedUserId);
-    const setSelectedUserId = useStore((state) => state.setSelectedUserId);
     const setSelectedFriends = useStore((state) => state.setSelectedFriends);
     const setSelectedExpense = useStore((state) => state.setSelectedExpense);
     const isTourOpen = useStore((state) => state.isTourOpen);
@@ -224,7 +225,8 @@ export default function ClientLayout({children}: Readonly<{
 
     const {t} = useTranslation();
 
-    const {data, refetchFriends} = useFriends(searchValue);
+    // The whole list: the footer and the tour look friends up by id, and search text must not hide them.
+    const {data, refetchFriends} = useFriends("");
     const friends = data?.data;
 
     const onCloseFriendDeleted = useCallback(() => setIsDeleteFriendSnackbarShown(false), [setIsDeleteFriendSnackbarShown]);
@@ -282,15 +284,14 @@ export default function ClientLayout({children}: Readonly<{
         {
             content: t("tour.FriendPage"),
             action: () => {
-                setSelectedUserId(TUTORIAL_USER_ID);
-                router.push(friend);
+                router.push(tutorialFriendUrl);
             }
         },
         {
             selector: "#plus-icon",
             content: t("tour.Plus"),
             action: () => {
-                router.push(friend);
+                router.push(tutorialFriendUrl);
             }
         },
         {
@@ -373,7 +374,7 @@ export default function ClientLayout({children}: Readonly<{
                 router.push(account);
             }
         },
-    ], [isTestFriendAlreadyExist, me, refetchFriends, router, setIsForceExpenseSaveEnabled, setSelectedExpense, setSelectedUserId, setIsRequestErrorSnackbarShown, t, testFriend]);
+    ], [isTestFriendAlreadyExist, me, refetchFriends, router, setIsForceExpenseSaveEnabled, setSelectedExpense, setIsRequestErrorSnackbarShown, t, testFriend]);
 
     return <>
         {platform && appearance && (
@@ -396,14 +397,14 @@ export default function ClientLayout({children}: Readonly<{
                                 </Snackbar>
                             )}
 
-                            <Footer
-                                friends={friends}
-                                selectedUserId={selectedUserId}
-                                setSelectedUserId={setSelectedUserId}
-                                setSelectedFriends={setSelectedFriends}
-                                setSearchValue={setSearchValue}
-                                setSelectedExpense={setSelectedExpense}
-                            />
+                            <Suspense>
+                                <Footer
+                                    friends={friends}
+                                    setSelectedFriends={setSelectedFriends}
+                                    setSearchValue={setSearchValue}
+                                    setSelectedExpense={setSelectedExpense}
+                                />
+                            </Suspense>
 
                             <Tour
                                 steps={tourConfig}

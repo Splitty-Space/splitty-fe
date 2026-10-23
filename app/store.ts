@@ -16,9 +16,6 @@ interface State {
     searchValue: string,
     setSearchValue: (newSearchValue: string) => void,
 
-    selectedUserId: number | null,
-    setSelectedUserId: (newUserId: number | null) => void,
-
     selectedFriends: Friend[],
     setSelectedFriends: (newFriends: Friend[]) => void,
 
@@ -70,9 +67,6 @@ export const useStore = create<State>()(
 
             searchValue: "",
             setSearchValue: (newSearchValue) => set(() => ({searchValue: newSearchValue})),
-
-            selectedUserId: null,
-            setSelectedUserId: (newUserId) => set(() => ({selectedUserId: newUserId})),
 
             selectedFriends: [],
             setSelectedFriends: (newFriends) => set(() => ({selectedFriends: newFriends})),

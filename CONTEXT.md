@@ -4,6 +4,12 @@ Splitty is a Telegram mini app for sharing expenses with friends: who paid for w
 
 ## Language
 
+### Friends
+
+**Friend**:
+Another Splitty user from your friends list, with whom you share Expenses and settle up.
+_Avoid_: User, contact
+
 ### Expenses
 
 **Expense**:

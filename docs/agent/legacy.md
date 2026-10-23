@@ -18,7 +18,8 @@ documented in [commands.md](commands.md).
   token changes, and direct entry to routes that never mount home.
 
 - **Navigation depends on memory.** [Zustand state](../../app/store.ts) holds the
-  selected friend, expense, participants and settlement data without persistence.
+  selected expense, participants and settlement data without persistence. Friend
+  routes take the friend from the URL instead ([ADR 0001](../adr/0001-selection-in-url.md)).
   [Expense details](../../app/expense/details/page.tsx) immediately fetches using
   `selectedExpense?.id`; [getExpense](../../services/getExpense.ts) interpolates
   that value into the URL without a guard.

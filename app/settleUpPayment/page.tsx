@@ -16,6 +16,8 @@ import {useStore} from "@/app/store";
 import useFriends from "@/services/useFriends";
 import {useRouter} from "next/navigation";
 import {friend as friendURL} from "@/const/urls";
+import {SEARCH_PARAMS} from "@/const/searchParams";
+import {withSearchParams} from "@/utils/withSearchParams";
 import Avatar from "@/app/components/avatar/Avatar";
 import Main from "@/app/components/main/main";
 import Loader from "@/app/components/loader/loader";
@@ -23,7 +25,6 @@ import Loader from "@/app/components/loader/loader";
 export default function SettleUpPayment() {
     const {t} = useTranslation();
 
-    const setSelectedUserId = useStore((state) => state.setSelectedUserId);
     const selectedExpense = useStore((state) => state.selectedExpense);
     const showError = useStore((state) => state.setIsRequestErrorSnackbarShown);
     const saveInFlight = useRef(false);
@@ -116,8 +117,7 @@ export default function SettleUpPayment() {
                 setIsCreateExpenseSnackbarShown(true);
             }
             await refetchFriends().catch(() => showError(true));
-            setSelectedUserId(friend.id);
-            router.push(friendURL);
+            router.push(withSearchParams(friendURL, {[SEARCH_PARAMS.FRIEND_ID]: friend.id}));
         } catch {
             saveInFlight.current = false;
             setIsSaveInProgress(false);
