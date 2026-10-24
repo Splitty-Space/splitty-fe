@@ -7,7 +7,7 @@ import Header from "@/app/components/header/header";
 import {useRouter} from "next/navigation";
 import {settleUpPayment} from "@/const/urls";
 import {useStore} from "@/app/store";
-import useFriends from "@/services/useFriends";
+import useSelectedFriend from "@/hooks/useSelectedFriend";
 import Avatar from "@/app/components/avatar/Avatar";
 import Main from "@/app/components/main/main";
 import Username from "@/app/components/username/username";
@@ -18,18 +18,16 @@ import compactNumber from "@/utils/compactNumber";
 import classNames from "classnames";
 import useContentHeight from "@/hooks/useContentHeight";
 import {listAccessibilityProps} from "@/app/components/listAccessibilityProps";
+import {Suspense} from "react";
 
-export default function SettleUp() {
+function SettleUp() {
     const {t} = useTranslation();
 
     const {data: me} = useMe();
 
     const setSettleUpPaymentInfo = useStore((state) => state.setSettleUpPaymentInfo);
-    const searchValue = useStore((state) => state.searchValue);
 
-    const selectedUserId = useStore((state) => state.selectedUserId);
-    const {data} = useFriends(searchValue);
-    const selectedFriend = data?.data?.find(friend => friend.id === selectedUserId);
+    const {friend: selectedFriend} = useSelectedFriend();
 
     const router = useRouter();
 
@@ -104,4 +102,12 @@ export default function SettleUp() {
                 </AutoSizer>
             </Main>
         </>);
+}
+
+export default function SettleUpRoute() {
+    return (
+        <Suspense>
+            <SettleUp/>
+        </Suspense>
+    );
 }

@@ -4,31 +4,24 @@ import {useTranslation} from "react-i18next";
 import Header from "@/app/components/header/header";
 import Logo from "@/app/components/header/logo";
 import {Cell, Divider, List, Text, Title} from "@telegram-apps/telegram-ui";
-import {addFriend} from "@/services/addFriend";
 import {deleteFriend} from "@/services/deleteFriend";
 import {useStore} from "@/app/store";
-import useFriends from "@/services/useFriends";
+import useSelectedFriend from "@/hooks/useSelectedFriend";
 import {friendsList} from "@/const/urls";
 import {useRouter} from "next/navigation";
 import {popup} from "@telegram-apps/sdk";
 import Avatar from "@/app/components/avatar/Avatar";
 import Main from "@/app/components/main/main";
 import "./friendSettings.css";
-import {useRef} from "react";
+import {Suspense, useRef} from "react";
 
-export default function FriendSettings() {
+function FriendSettings() {
     const {t} = useTranslation();
     const showError = useStore((state) => state.setIsRequestErrorSnackbarShown);
     const mutationInFlight = useRef(false);
 
-    const searchValue = useStore((state) => state.searchValue);
     const setIsDeleteFriendSnackbarShown = useStore((state) => state.setIsDeleteFriendSnackbarShown);
-    const selectedUserId = useStore((state) => state.selectedUserId);
-    const {data, refetchFriends} = useFriends(searchValue);
-    const friend = data?.data?.find(friend => friend.id === selectedUserId);
-    const friends = data?.data;
-
-    const isFriend = !!friends?.find(x => x.id === friend?.id);
+    const {refetchFriends, friend} = useSelectedFriend();
 
     const router = useRouter();
 
@@ -51,26 +44,14 @@ export default function FriendSettings() {
                     .then(() => setIsDeleteFriendSnackbarShown(true))
                     .then(async () => {
                         await refetchFriends().catch(() => showError(true));
-                        router.push(friendsList);
+                        // Back must not return to the deleted friend. The hook replaces to the same URL too.
+                        router.replace(friendsList);
                     }).catch(() => {
                         mutationInFlight.current = false;
                         showError(true);
                     });
             }
         }
-    };
-
-    const onAddFriend = () => {
-        if (!friend || mutationInFlight.current) return;
-        mutationInFlight.current = true;
-        addFriend(friend.id)
-            .then(async () => {
-                await refetchFriends().catch(() => showError(true));
-                router.push(friendsList);
-            }).catch(() => {
-                mutationInFlight.current = false;
-                showError(true);
-            });
     };
 
     return (
@@ -104,29 +85,26 @@ export default function FriendSettings() {
                     }
                 </div>
 
-                <List>
-                    {isFriend ?
-                        (<>
-                            <Cell
-                                className="friendSettings_delete"
-                                onClick={openDeleteConfirmPopup}
-                            >
-                                Delete from friends
-                            </Cell>
-                            <Divider/>
-                        </>)
-                        :
-                        (<>
-                            <Cell
-                                onClick={onAddFriend}
-                            >
-                                Add friend
-                            </Cell>
-                            <Divider/>
-                        </>)
-                    }
-                </List>
+                {friend &&
+                    <List>
+                        <Cell
+                            className="friendSettings_delete"
+                            onClick={openDeleteConfirmPopup}
+                        >
+                            Delete from friends
+                        </Cell>
+                        <Divider/>
+                    </List>
+                }
             </Main>
         </>
+    );
+}
+
+export default function FriendSettingsRoute() {
+    return (
+        <Suspense>
+            <FriendSettings/>
+        </Suspense>
     );
 }
