@@ -20,6 +20,8 @@ import {withSearchParams} from "@/utils/withSearchParams";
 import Avatar from "@/app/components/avatar/Avatar";
 import Main from "@/app/components/main/main";
 import Loader from "@/app/components/loader/loader";
+import PullToRefresh from "@/app/components/pullToRefresh/pullToRefresh";
+import useRefreshToken from "@/utils/useRefreshToken";
 import {useFriend} from "@/hooks/useSelectedFriend";
 import useSelectedExpense from "@/hooks/useSelectedExpense";
 import {parseId} from "@/utils/parseId";
@@ -31,7 +33,8 @@ import type {RefetchFunction} from "axios-hooks";
 function SettleUpPayment() {
     const searchParams = useSearchParams();
     const isEditing = searchParams.has(SEARCH_PARAMS.EXPENSE_ID);
-    const {expense} = useSelectedExpense({required: false});
+    const [refreshKey, refreshExpense] = useRefreshToken();
+    const {expense, isLoading: isExpenseLoading} = useSelectedExpense({required: false, refreshKey});
     const {data: me, loading} = useMe();
 
     const otherUserId = expense?.expense_users.find(({user}) => user.id !== me?.id)?.user.id ?? null;
@@ -41,6 +44,16 @@ function SettleUpPayment() {
     const {friend, refetchFriends} = useFriend(friendId);
     const defaultCurrency = isEditing ? expense?.currency : searchParams.get(SEARCH_PARAMS.CURRENCY) ?? undefined;
 
+    // A failed request leaves nothing to edit; pulling down requests the settlement again.
+    if (isEditing && !isExpenseLoading && !expense) {
+        return (
+            <Main className="px-4 pt-24">
+                <PullToRefresh onRefresh={() => { refreshExpense(); return Promise.resolve(); }}>
+                    <div className="h-full"/>
+                </PullToRefresh>
+            </Main>
+        );
+    }
     if (loading || !me || !friend || (isEditing && !expense)) return <Loader/>;
 
     return (

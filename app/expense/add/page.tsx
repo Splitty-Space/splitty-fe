@@ -6,6 +6,7 @@ import classNames from "classnames";
 import Header from "@/app/components/header/header";
 import Main from "@/app/components/main/main";
 import Loader from "@/app/components/loader/loader";
+import PullToRefresh from "@/app/components/pullToRefresh/pullToRefresh";
 import {
     Button,
     Caption,
@@ -38,6 +39,7 @@ import {TEST_EXPENSE_ID} from "@/const/testExpenseId";
 import {SEARCH_PARAMS} from "@/const/searchParams";
 import {withSearchParams} from "@/utils/withSearchParams";
 import useSelectedExpense from "@/hooks/useSelectedExpense";
+import useRefreshToken from "@/utils/useRefreshToken";
 import {EXPENSE_DRAFT_ACTIONS} from "@/const/expenseDraftActions";
 import {ALLOCATION_SIDES} from "@/const/allocationSides";
 import {
@@ -92,7 +94,8 @@ function AddExpense() {
     const searchValue = useStore((state) => state.searchValue);
     const selectedFriends = useStore((state) => state.selectedFriends);
     // An expense id in the URL means editing that expense; without one the page creates a new expense.
-    const {expenseId, expense: selectedExpense} = useSelectedExpense({required: false});
+    const [refreshKey, refreshExpense] = useRefreshToken();
+    const {expenseId, expense: selectedExpense, isLoading: isExpenseLoading} = useSelectedExpense({required: false, refreshKey});
     const setIsCreateExpenseSnackbarShown = useStore((state) => state.setIsCreateExpenseSnackbarShown);
     const setIsUpdateExpenseSnackbarShown = useStore((state) => state.setIsUpdateExpenseSnackbarShown);
     const isForceExpenseSaveEnabled = useStore((state) => state.isForceExpenseSaveEnabled);
@@ -185,6 +188,16 @@ function AddExpense() {
     }, [isForceExpenseSaveEnabled, onSave, selectedExpense, setIsForceExpenseSaveEnabled]);
 
     if (!draft) {
+        // A failed request leaves nothing to edit; pulling down requests the expense again.
+        if (expenseId !== null && !isExpenseLoading && !selectedExpense) {
+            return (
+                <Main className="px-4 pt-24">
+                    <PullToRefresh onRefresh={() => { refreshExpense(); return Promise.resolve(); }}>
+                        <div className="h-full"/>
+                    </PullToRefresh>
+                </Main>
+            );
+        }
         return <Loader/>;
     }
 

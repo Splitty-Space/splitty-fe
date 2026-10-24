@@ -16,6 +16,8 @@ function editor(currency = "BTC", overrides = {}, {isProfileLoaded = true} = {})
     const writes = [];
     const puts = [];
     const routes = [];
+    const refreshKeys = [];
+    const refreshes = [];
     let cursor = 0;
     const effects = [];
     let dirty = false;
@@ -81,11 +83,18 @@ function editor(currency = "BTC", overrides = {}, {isProfileLoaded = true} = {})
         "@/const/urls": {expenseDetails: "/expense/details"},
         "@/const/searchParams": load("const/searchParams.ts"),
         "@/utils/withSearchParams": load("utils/withSearchParams.ts", {"@/const/searchParams": load("const/searchParams.ts")}),
-        // The URL's expense id, as the page reads it: `expenseId` alone means the expense is still loading.
-        "@/hooks/useSelectedExpense": () => ({
-            expenseId: state.expenseId ?? state.selectedExpense?.id ?? null,
-            expense: state.selectedExpense,
-        }),
+        // The URL's expense id, as the page reads it: `expenseId` alone means the expense is still loading,
+        // unless `isExpenseRequestFailed` says its request failed.
+        "@/hooks/useSelectedExpense": ({refreshKey}) => {
+            refreshKeys.push(refreshKey);
+            const expenseId = state.expenseId ?? state.selectedExpense?.id ?? null;
+            return {
+                expenseId,
+                expense: state.selectedExpense,
+                isLoading: expenseId !== null && !state.selectedExpense && !state.isExpenseRequestFailed,
+            };
+        },
+        "@/utils/useRefreshToken": () => [`refresh-${refreshes.length}`, () => refreshes.push(true)],
         "@/const/testExpenseId": {TEST_EXPENSE_ID: -1},
         "@/const/expenseDraftActions": load("const/expenseDraftActions.ts"),
         "@/const/allocationSides": load("const/allocationSides.ts"),
@@ -99,7 +108,7 @@ function editor(currency = "BTC", overrides = {}, {isProfileLoaded = true} = {})
         "@telegram-apps/telegram-ui": new Proxy({}, {get: (_, name) => name}),
         "./addExpense.css": {},
     };
-    for (const name of ["header/header", "main/main", "avatar/Avatar", "loader/loader"]) mocks[`@/app/components/${name}`] = name;
+    for (const name of ["header/header", "main/main", "avatar/Avatar", "loader/loader", "pullToRefresh/pullToRefresh"]) mocks[`@/app/components/${name}`] = name;
     // The route wraps the page in <Suspense>; render the page itself.
     const Page = load("app/expense/add/page.tsx", mocks).default().props.children.type;
     let tree;
@@ -139,8 +148,10 @@ function editor(currency = "BTC", overrides = {}, {isProfileLoaded = true} = {})
         writes,
         puts,
         routes,
+        refreshKeys,
         render,
         tree: () => tree,
+        find,
         loadProfile: () => {
             me = profile;
             render();
@@ -282,4 +293,13 @@ test("a saved edit opens the edited expense's details page", async () => {
 test("editing waits for the expense from the URL before starting the draft", () => {
     const form = editor("USD", {selectedFriends: [], expenseId: 7});
     assert.equal(form.tree().type, "loader/loader");
+});
+
+test("a failed request for the edited expense can be retried by pulling down", async () => {
+    const form = editor("USD", {selectedFriends: [], expenseId: 7, isExpenseRequestFailed: true});
+    const pull = form.find(node => node.type === "pullToRefresh/pullToRefresh");
+    assert.ok(pull, "pull-to-refresh is not rendered");
+    await pull.props.onRefresh();
+    form.render();
+    assert.deepEqual([...new Set(form.refreshKeys)], ["refresh-0", "refresh-1"]);
 });
