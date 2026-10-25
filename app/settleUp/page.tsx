@@ -6,8 +6,9 @@ import {Friend} from "@/entities";
 import Header from "@/app/components/header/header";
 import {useRouter} from "next/navigation";
 import {settleUpPayment} from "@/const/urls";
-import {useStore} from "@/app/store";
 import useSelectedFriend from "@/hooks/useSelectedFriend";
+import {SEARCH_PARAMS} from "@/const/searchParams";
+import {withSearchParams} from "@/utils/withSearchParams";
 import Avatar from "@/app/components/avatar/Avatar";
 import Main from "@/app/components/main/main";
 import Username from "@/app/components/username/username";
@@ -25,15 +26,15 @@ function SettleUp() {
 
     const {data: me} = useMe();
 
-    const setSettleUpPaymentInfo = useStore((state) => state.setSettleUpPaymentInfo);
-
     const {friend: selectedFriend} = useSelectedFriend();
 
     const router = useRouter();
 
     const onSettleUpPayment = (friend: Friend, currency: string) => () => {
-        setSettleUpPaymentInfo({friend, currency});
-        router.push(settleUpPayment);
+        router.push(withSearchParams(settleUpPayment, {
+            [SEARCH_PARAMS.FRIEND_ID]: friend.id,
+            [SEARCH_PARAMS.CURRENCY]: currency,
+        }));
     };
 
     const [refContainer, height] = useContentHeight();

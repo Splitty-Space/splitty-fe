@@ -44,8 +44,6 @@ function FriendPage() {
     const {data: me, loading: loadingMe} = useMe();
 
     const {friend, loadingFriends} = useSelectedFriend();
-    const setSelectedExpense = useStore((state) => state.setSelectedExpense);
-    const setSettleUpPaymentInfo = useStore((state) => state.setSettleUpPaymentInfo);
     const router = useRouter();
 
     const showError = useStore((state) => state.setIsRequestErrorSnackbarShown);
@@ -147,15 +145,16 @@ function FriendPage() {
 
     const onSettleUp = useCallback(() => {
         if (friend) {
-            setSelectedExpense(null);
             if (friend.total.length > 1) {
                 router.push(withSearchParams(settleUp, {[SEARCH_PARAMS.FRIEND_ID]: friend.id}));
             } else if (friend.total.length === 1) {
-                setSettleUpPaymentInfo({friend, currency: friend.total[0].currency});
-                router.push(settleUpPayment);
+                router.push(withSearchParams(settleUpPayment, {
+                    [SEARCH_PARAMS.FRIEND_ID]: friend.id,
+                    [SEARCH_PARAMS.CURRENCY]: friend.total[0].currency,
+                }));
             }
         }
-    }, [friend, setSelectedExpense, setSettleUpPaymentInfo, router]);
+    }, [friend, router]);
 
     const rowRenderer = ({index, key, style}: { index: number, key: string, style: object }) => {
         const expense = expenses[index];
@@ -277,8 +276,7 @@ function FriendPage() {
                             }
                         </div>}
                     onClick={() => {
-                        setSelectedExpense(expense);
-                        router.push(expenseDetails);
+                        router.push(withSearchParams(expenseDetails, {[SEARCH_PARAMS.EXPENSE_ID]: expense.id}));
                     }}
                 >
                     {payment ? _owe === 0 ?

@@ -4,28 +4,28 @@ const load = require("./load-typescript.cjs");
 
 const searchParams = load("const/searchParams.ts");
 
-function renderPayment({editing = false, paidByMe = false, amount = 10, mutation, refresh} = {}) {
-    const calls = {writes: [], routes: [], errors: [], successes: []};
+function renderPayment({editing = false, paidByMe = false, amount = 10, mutation, refresh, isExpenseRequestFailed = false} = {}) {
+    const calls = {writes: [], routes: [], errors: [], successes: [], refreshKeys: [], refreshes: 0};
     const me = {id: 1, name: "Me"};
     const friend = {id: 2, name: "Friend", total: [{currency: "USD", amount: paidByMe ? -amount : amount}]};
     const state = {
-        selectedExpense: editing ? {id: 3, amount, currency: "USD", date: "2026-09-20", expense_users: [
-            {user: me, lent_amount: paidByMe ? amount : 0},
-            {user: friend, lent_amount: paidByMe ? 0 : amount},
-        ]} : null,
-        settleUpPaymentInfo: {friend, currency: "USD"},
         searchValue: "",
         setIsRequestErrorSnackbarShown: value => calls.errors.push(value),
         setIsCreateExpenseSnackbarShown: value => calls.successes.push(value),
         setIsUpdateExpenseSnackbarShown: value => calls.successes.push(value),
     };
+    const expense = editing && !isExpenseRequestFailed ? {id: 3, amount, currency: "USD", date: "2026-09-20", expense_users: [
+        {user: me, lent_amount: paidByMe ? amount : 0},
+        {user: friend, lent_amount: paidByMe ? 0 : amount},
+    ]} : null;
+    const query = editing ? "expenseId=3" : "friendId=2&currency=USD";
     const write = async payload => {
         calls.writes.push(payload);
         if (mutation) await mutation();
     };
     const jsx = (type, props) => ({type, props});
     const mocks = {
-        react: {useState: value => [value, () => {}], useRef: value => ({current: value})},
+        react: {useState: value => [value, () => {}], useRef: value => ({current: value}), useEffect: () => {}},
         "react/jsx-runtime": {jsx, jsxs: jsx, Fragment: "Fragment"},
         "react-i18next": {useTranslation: () => ({t: key => key})},
         classnames: () => "",
@@ -36,18 +36,34 @@ function renderPayment({editing = false, paidByMe = false, amount = 10, mutation
         "@/services/addExpense": {addExpense: write},
         "@/services/putExpense": {putExpense: write},
         "@/services/useMe": () => ({data: me, loading: false}),
-        "@/services/useFriends": () => ({refetchFriends: refresh ?? (() => Promise.resolve())}),
+        "@/hooks/useSelectedFriend": {useFriend: id => ({
+            friend: id === friend.id ? friend : undefined,
+            refetchFriends: refresh ?? (() => Promise.resolve()),
+        })},
+        "@/hooks/useSelectedExpense": ({refreshKey}) => {
+            calls.refreshKeys.push(refreshKey);
+            return {expense, isLoading: false};
+        },
+        "@/utils/useRefreshToken": () => [`refresh-${calls.refreshes}`, () => { calls.refreshes++; }],
+        "@/utils/parseId": load("utils/parseId.ts"),
         "@/Icons": {Arrow: "Arrow"},
         "@/app/store": {useStore: selector => selector(state)},
-        "next/navigation": {useRouter: () => ({push: route => calls.routes.push(route)})},
+        "next/navigation": {
+            useRouter: () => ({push: route => calls.routes.push(route)}),
+            useSearchParams: () => new URLSearchParams(query),
+        },
         "@/const/urls": {friend: "/friend"},
         "@/const/searchParams": searchParams,
         "@/utils/withSearchParams": load("utils/withSearchParams.ts", {"@/const/searchParams": searchParams}),
     };
-    for (const name of ["header/header", "avatar/Avatar", "main/main", "loader/loader"]) mocks[`@/app/components/${name}`] = name;
-    const Page = load("app/settleUpPayment/page.tsx", mocks).default;
-    const page = Page();
-    const header = page.props.children[0];
+    for (const name of ["header/header", "avatar/Avatar", "main/main", "loader/loader", "pullToRefresh/pullToRefresh"]) mocks[`@/app/components/${name}`] = name;
+    // The route wraps the page in <Suspense>; the page resolves the friend and renders the form.
+    const page = load("app/settleUpPayment/page.tsx", mocks).default().props.children;
+    const form = page.type(page.props);
+    if (isExpenseRequestFailed) return {calls, view: form, render: () => page.type(page.props)};
+    assert.equal(form.props.friend, friend);
+    const view = form.type(form.props);
+    const header = view.props.children[0];
     return {calls, save: header.props.RightComponent().props.onClick};
 }
 
@@ -100,4 +116,13 @@ test("invalid settlement amounts are not sent", async () => {
         await save();
         assert.equal(calls.writes.length, 0);
     }
+});
+
+test("a failed request for the edited settlement can be retried by pulling down", async () => {
+    const {calls, view, render} = renderPayment({editing: true, isExpenseRequestFailed: true});
+    const pull = view.props.children;
+    assert.equal(pull.type, "pullToRefresh/pullToRefresh");
+    await pull.props.onRefresh();
+    render();
+    assert.deepEqual(calls.refreshKeys, ["refresh-0", "refresh-1"]);
 });

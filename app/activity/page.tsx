@@ -15,7 +15,6 @@ import Logo from "@/app/components/header/logo";
 import Main from "@/app/components/main/main";
 import getActivities from "@/services/getActivities";
 import Activity, {ACTIVITY_TYPE, ACTIVITY_TYPE_TO_TEXT} from "@/entities/Activity";
-import getExpense from "@/services/getExpense";
 import {Expense} from "@/entities";
 import {useStore} from "@/app/store";
 import {useRouter} from "next/navigation";
@@ -28,12 +27,13 @@ import useContentHeight from "@/hooks/useContentHeight";
 import Loader from "@/app/components/loader/loader";
 import PullToRefresh from "@/app/components/pullToRefresh/pullToRefresh";
 import {listAccessibilityProps} from "@/app/components/listAccessibilityProps";
+import {SEARCH_PARAMS} from "@/const/searchParams";
+import {withSearchParams} from "@/utils/withSearchParams";
 
 export default function ActivityPage() {
     const {t} = useTranslation();
 
     const setPageData = useStore((state) => state.setPageData);
-    const setSelectedExpense = useStore((state) => state.setSelectedExpense);
     const setIsCantShowDeletedExpenseSnackbarShown = useStore((state) => state.setIsCantShowDeletedExpenseSnackbarShown);
 
     const {data: me, loading: loadingMe} = useMe();
@@ -41,14 +41,12 @@ export default function ActivityPage() {
     const showError = useStore((state) => state.setIsRequestErrorSnackbarShown);
     const listController = useRef<AbortController | null>(null);
     const pendingPages = useRef(new Map<number, Promise<void>>());
-    const expenseController = useRef<AbortController | null>(null);
 
     const pageSize = defaultPageSize;
     const [rowCount, setRowCount] = useState(pageSize);
     const [activities, setActivities] = useState<Activity[]>([]);
     const [isLoaded, setIsLoaded] = useState(false);
     const [isReloadInProgress, setIsReloadInProgress] = useState(false);
-    const [isLoadingExpense, setIsLoadingExpense] = useState(false);
 
     const [refContainer, height] = useContentHeight();
 
@@ -91,37 +89,20 @@ export default function ActivityPage() {
         return () => listController.current?.abort();
     }, [loadPage]);
 
-    useEffect(() => () => expenseController.current?.abort(), []);
-
     const isRowLoaded = ({index}: { index: number }) => !!activities[index];
     const loadMoreRows = ({startIndex}: { startIndex: number }) => loadPage(Math.floor(startIndex / pageSize) + 1);
 
     const router = useRouter();
 
     const onCellClick = useCallback((expense: Expense) => () => {
-        if (expenseController.current) return;
         if (expense.isDeleted) {
             setIsCantShowDeletedExpenseSnackbarShown(true);
             vibration("rigid");
             return;
         }
-        const controller = new AbortController();
-        expenseController.current = controller;
-        setIsLoadingExpense(true);
-        getExpense({expense_id: expense.id, signal: controller.signal}).then(({data}) => {
-            if (controller.signal.aborted) return;
-            setSelectedExpense(data);
-            setPageData({isFromActivity: true});
-            router.push(expenseDetails);
-        }).catch(() => {
-            if (!controller.signal.aborted) showError(true);
-        }).finally(() => {
-            if (!controller.signal.aborted) {
-                expenseController.current = null;
-                setIsLoadingExpense(false);
-            }
-        });
-    }, [setSelectedExpense, setPageData, router, setIsCantShowDeletedExpenseSnackbarShown, showError]);
+        setPageData({isFromActivity: true});
+        router.push(withSearchParams(expenseDetails, {[SEARCH_PARAMS.EXPENSE_ID]: expense.id}));
+    }, [setPageData, router, setIsCantShowDeletedExpenseSnackbarShown]);
 
     const rowRenderer = ({index, key, style}: { index: number, key: string, style: object }) => {
         const activity = activities[index];
@@ -173,9 +154,9 @@ export default function ActivityPage() {
 
             <Main
                 ref={refContainer}
-                center={loadingMe || !isLoaded || isReloadInProgress || isLoadingExpense || activities?.length === 0}
+                center={loadingMe || !isLoaded || isReloadInProgress || activities?.length === 0}
             >
-                {loadingMe || !isLoaded || isReloadInProgress || isLoadingExpense ?
+                {loadingMe || !isLoaded || isReloadInProgress ?
                     <Loader/> :
                     activities?.length > 0 ?
                         <PullToRefresh onRefresh={onRefresh}>

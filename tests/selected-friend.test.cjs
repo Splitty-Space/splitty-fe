@@ -71,3 +71,18 @@ test("finds the friend even when the friends list search hides them", () => {
     assert.equal(page.render().friend.name, "Friend");
     assert.deepEqual(page.replaced, []);
 });
+
+test("a friend id that is not known yet waits without redirecting", () => {
+    const replaced = [];
+    const {useFriend} = load("hooks/useSelectedFriend.ts", {
+        react: {useEffect: effect => effect()},
+        "next/navigation": {useRouter: () => ({replace: url => replaced.push(url)}), useSearchParams: () => new URLSearchParams()},
+        "@/services/useFriends": () => ({data: {data: friends}, loadingFriends: false}),
+        "@/const/urls": load("const/urls.ts"),
+        "@/const/searchParams": searchParams,
+        "@/utils/parseId": load("utils/parseId.ts"),
+    });
+    assert.equal(useFriend(undefined).friend, undefined);
+    assert.equal(useFriend(2).friend.name, "Friend");
+    assert.deepEqual(replaced, []);
+});

@@ -29,12 +29,10 @@ export default function Footer({
                                    friends,
                                    setSelectedFriends,
                                    setSearchValue,
-                                   setSelectedExpense,
                                }: {
     friends: Friend[] | undefined,
     setSelectedFriends: ReturnType<typeof useStore.getState>["setSelectedFriends"],
     setSearchValue: ReturnType<typeof useStore.getState>["setSearchValue"],
-    setSelectedExpense: ReturnType<typeof useStore.getState>["setSelectedExpense"],
 }) {
     const {t} = useTranslation();
 
@@ -109,7 +107,6 @@ export default function Footer({
 
         if (id !== TabIds.Groups) {
             setSearchValue("");
-            setSelectedExpense(null);
         }
 
         if (id === TabIds.Friends) {
@@ -131,7 +128,7 @@ export default function Footer({
         if (id !== TabIds.Groups) {
             vibration();
         }
-    }, [pathname, friends, setSelectedFriends, friendId, setSearchValue, setSelectedExpense, router, setIsGroupComingSoonSnackbarShown]);
+    }, [pathname, friends, setSelectedFriends, friendId, setSearchValue, router, setIsGroupComingSoonSnackbarShown]);
 
     const isKeyboardOpen = useDetectKeyboardOpen();
 

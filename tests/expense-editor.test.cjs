@@ -15,6 +15,9 @@ function editor(currency = "BTC", overrides = {}, {isProfileLoaded = true} = {})
     const slots = [];
     const writes = [];
     const puts = [];
+    const routes = [];
+    const refreshKeys = [];
+    const refreshes = [];
     let cursor = 0;
     const effects = [];
     let dirty = false;
@@ -76,8 +79,22 @@ function editor(currency = "BTC", overrides = {}, {isProfileLoaded = true} = {})
         "@/services/addExpense": {addExpense: async payload => {writes.push(payload); return {data: {id: 3}};}},
         "@/services/putExpense": {putExpense: async payload => {puts.push(payload);}},
         "@/app/store": {useStore: selector => selector(state)},
-        "next/navigation": {useRouter: () => ({replace: () => {}, push: () => {}})},
+        "next/navigation": {useRouter: () => ({replace: url => routes.push(["replace", url]), push: url => routes.push(["push", url])})},
         "@/const/urls": {expenseDetails: "/expense/details"},
+        "@/const/searchParams": load("const/searchParams.ts"),
+        "@/utils/withSearchParams": load("utils/withSearchParams.ts", {"@/const/searchParams": load("const/searchParams.ts")}),
+        // The URL's expense id, as the page reads it: `expenseId` alone means the expense is still loading,
+        // unless `isExpenseRequestFailed` says its request failed.
+        "@/hooks/useSelectedExpense": ({refreshKey}) => {
+            refreshKeys.push(refreshKey);
+            const expenseId = state.expenseId ?? state.selectedExpense?.id ?? null;
+            return {
+                expenseId,
+                expense: state.selectedExpense,
+                isLoading: expenseId !== null && !state.selectedExpense && !state.isExpenseRequestFailed,
+            };
+        },
+        "@/utils/useRefreshToken": () => [`refresh-${refreshes.length}`, () => refreshes.push(true)],
         "@/const/testExpenseId": {TEST_EXPENSE_ID: -1},
         "@/const/expenseDraftActions": load("const/expenseDraftActions.ts"),
         "@/const/allocationSides": load("const/allocationSides.ts"),
@@ -91,8 +108,9 @@ function editor(currency = "BTC", overrides = {}, {isProfileLoaded = true} = {})
         "@telegram-apps/telegram-ui": new Proxy({}, {get: (_, name) => name}),
         "./addExpense.css": {},
     };
-    for (const name of ["header/header", "main/main", "avatar/Avatar", "loader/loader"]) mocks[`@/app/components/${name}`] = name;
-    const Page = load("app/expense/add/page.tsx", mocks).default;
+    for (const name of ["header/header", "main/main", "avatar/Avatar", "loader/loader", "pullToRefresh/pullToRefresh"]) mocks[`@/app/components/${name}`] = name;
+    // The route wraps the page in <Suspense>; render the page itself.
+    const Page = load("app/expense/add/page.tsx", mocks).default().props.children.type;
     let tree;
     const render = () => {
         do {
@@ -118,7 +136,8 @@ function editor(currency = "BTC", overrides = {}, {isProfileLoaded = true} = {})
     const section = id => find(node => node.props?.id === id);
     const change = (predicate, target) => {find(predicate).props.onChange({target}); render();};
     render();
-    if (me) change(node => node.props?.id === "expenseName", {value: "Dinner"});
+    const nameInput = node => node.props?.id === "expenseName";
+    if (me && find(nameInput)) change(nameInput, {value: "Dinner"});
     const inSection = (id, predicate) => {
         const root = section(id);
         assert.ok(root, `${id} is not rendered`);
@@ -128,8 +147,11 @@ function editor(currency = "BTC", overrides = {}, {isProfileLoaded = true} = {})
         state,
         writes,
         puts,
+        routes,
+        refreshKeys,
         render,
         tree: () => tree,
+        find,
         loadProfile: () => {
             me = profile;
             render();
@@ -244,4 +266,40 @@ test("the tour saves the tutorial expense once per request", () => {
     assert.equal(form.writes.length, 1);
     assert.equal(form.writes[0].amount, 70);
     assert.equal(form.state.isForceExpenseSaveEnabled, false);
+});
+
+test("a saved new expense replaces the editor with its details page", async () => {
+    const form = editor("USD");
+    form.amount("10");
+    await form.save().onClick();
+    assert.deepEqual(form.routes, [["replace", "/expense/details?expenseId=3"]]);
+});
+
+test("a saved edit opens the edited expense's details page", async () => {
+    const form = editor("USD", {
+        selectedFriends: [],
+        selectedExpense: {
+            id: 7, description: "Taxi", amount: "30.00", currency: "EUR", date: "2026-10-01",
+            expense_users: [
+                {user: tutorialMe, lent_amount: 30, debt_amount: 10},
+                {user: tutorialFriend, lent_amount: 0, debt_amount: 20},
+            ],
+        },
+    });
+    await form.save().onClick();
+    assert.deepEqual(form.routes, [["push", "/expense/details?expenseId=7"]]);
+});
+
+test("editing waits for the expense from the URL before starting the draft", () => {
+    const form = editor("USD", {selectedFriends: [], expenseId: 7});
+    assert.equal(form.tree().type, "loader/loader");
+});
+
+test("a failed request for the edited expense can be retried by pulling down", async () => {
+    const form = editor("USD", {selectedFriends: [], expenseId: 7, isExpenseRequestFailed: true});
+    const pull = form.find(node => node.type === "pullToRefresh/pullToRefresh");
+    assert.ok(pull, "pull-to-refresh is not rendered");
+    await pull.props.onRefresh();
+    form.render();
+    assert.deepEqual([...new Set(form.refreshKeys)], ["refresh-0", "refresh-1"]);
 });

@@ -33,6 +33,7 @@ import {
 import {DEFAULT_SNACKBAR_DURATION} from "@/const/defaultSnackbarDuration";
 import {addFriend} from "@/services/addFriend";
 import {TUTORIAL_USER_ID} from "@/const/tutorialUserId";
+import {TEST_EXPENSE_ID} from "@/const/testExpenseId";
 import {generateTestExpense, generateTestExpenseWithSplit} from "@/utils/generateTestExpense";
 import useUpdateUserSettings from "@/services/useUpdateUserSettings";
 import "./globals.css";
@@ -48,6 +49,8 @@ const Tour = dynamic(
 );
 
 const tutorialFriendUrl = withSearchParams(friend, {[SEARCH_PARAMS.FRIEND_ID]: TUTORIAL_USER_ID});
+const tutorialExpenseEditUrl = withSearchParams(addExpense, {[SEARCH_PARAMS.EXPENSE_ID]: TEST_EXPENSE_ID});
+const tutorialExpenseDetailsUrl = withSearchParams(expenseDetails, {[SEARCH_PARAMS.EXPENSE_ID]: TEST_EXPENSE_ID});
 
 // Wait for the full mount promise to settle before starting another mount.
 // The SDK clears its concurrency guard asynchronously after cancellation.
@@ -65,7 +68,7 @@ export default function ClientLayout({children}: Readonly<{
 
     const setSearchValue = useStore((state) => state.setSearchValue);
     const setSelectedFriends = useStore((state) => state.setSelectedFriends);
-    const setSelectedExpense = useStore((state) => state.setSelectedExpense);
+    const setTutorialExpense = useStore((state) => state.setTutorialExpense);
     const isTourOpen = useStore((state) => state.isTourOpen);
     const setIsTourOpen = useStore((state) => state.setIsTourOpen);
     const isDeleteFriendSnackbarShown = useStore((state) => state.isDeleteFriendSnackbarShown);
@@ -298,22 +301,20 @@ export default function ClientLayout({children}: Readonly<{
             selector: "#expense-add-name-and-money",
             content: t("tour.Expense"),
             action: () => {
-                router.push(addExpense);
-
                 if (testFriend) {
-                    setSelectedExpense(generateTestExpense(me, testFriend, t));
+                    setTutorialExpense(generateTestExpense(me, testFriend, t));
                 }
+                router.push(testFriend ? tutorialExpenseEditUrl : addExpense);
             }
         },
         {
             selector: "#expense-add-date-and-switches",
             content: t("tour.ExpenseSplit"),
             action: () => {
-                router.push(addExpense);
-
                 if (testFriend) {
-                    setSelectedExpense(generateTestExpenseWithSplit(me, testFriend, t));
+                    setTutorialExpense(generateTestExpenseWithSplit(me, testFriend, t));
                 }
+                router.push(testFriend ? tutorialExpenseEditUrl : addExpense);
             }
         },
         {
@@ -329,9 +330,9 @@ export default function ClientLayout({children}: Readonly<{
             content: t("tour.Save"),
             action: () => {
                 if (testFriend) {
-                    setSelectedExpense(generateTestExpenseWithSplit(me, testFriend, t));
+                    setTutorialExpense(generateTestExpenseWithSplit(me, testFriend, t));
                 }
-                router.push(addExpense);
+                router.push(testFriend ? tutorialExpenseEditUrl : addExpense);
             }
         },
         {
@@ -342,7 +343,7 @@ export default function ClientLayout({children}: Readonly<{
                     isTutorialSaveRequested.current = true;
                     setIsForceExpenseSaveEnabled(true);
                 }
-                router.push(expenseDetails);
+                router.push(tutorialExpenseDetailsUrl);
             }
         },
         {
@@ -374,7 +375,7 @@ export default function ClientLayout({children}: Readonly<{
                 router.push(account);
             }
         },
-    ], [isTestFriendAlreadyExist, me, refetchFriends, router, setIsForceExpenseSaveEnabled, setSelectedExpense, setIsRequestErrorSnackbarShown, t, testFriend]);
+    ], [isTestFriendAlreadyExist, me, refetchFriends, router, setIsForceExpenseSaveEnabled, setTutorialExpense, setIsRequestErrorSnackbarShown, t, testFriend]);
 
     return <>
         {platform && appearance && (
@@ -402,7 +403,6 @@ export default function ClientLayout({children}: Readonly<{
                                     friends={friends}
                                     setSelectedFriends={setSelectedFriends}
                                     setSearchValue={setSearchValue}
-                                    setSelectedExpense={setSelectedExpense}
                                 />
                             </Suspense>
 
