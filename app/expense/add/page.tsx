@@ -139,7 +139,7 @@ function AddExpense() {
 
         try {
             const isNew = !selectedExpense || selectedExpense.id === TEST_EXPENSE_ID;
-            let savedId: number;
+            let createdId: number | null = null;
             if (isNew) {
                 const {data} = await addExpense({
                     payers,
@@ -151,7 +151,7 @@ function AddExpense() {
                     date,
                     description,
                 });
-                savedId = data.id;
+                createdId = data.id;
                 setIsCreateExpenseSnackbarShown(true);
             } else {
                 await putExpense({
@@ -162,14 +162,14 @@ function AddExpense() {
                     amount,
                     description
                 });
-                savedId = selectedExpense.id;
                 setIsUpdateExpenseSnackbarShown(true);
             }
             // A refresh failure must not turn a confirmed write into a retryable write.
             await refetchFriends().catch(() => showError(true));
-            const detailsUrl = withSearchParams(expenseDetails, {[SEARCH_PARAMS.EXPENSE_ID]: savedId});
-            if (isNew) router.replace(detailsUrl);
-            else router.push(detailsUrl);
+            // A new expense replaces the editor with its details page. An edit is opened from the expense's
+            // details page, so going back returns there, and Back from details no longer leads into the editor.
+            if (createdId === null) router.back();
+            else router.replace(withSearchParams(expenseDetails, {[SEARCH_PARAMS.EXPENSE_ID]: createdId}));
         } catch {
             saveInFlight.current = false;
             setIsSaveInProgress(false);
