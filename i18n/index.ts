@@ -420,8 +420,8 @@ void i18n
                         Split: "Розподіляти",
                         PaidBy: "Оплачений",
                         Of: "з",
-                        Filled: "наповнений",
-                        Left: "лівий",
+                        Filled: "заповнено",
+                        Left: "залишилось",
                     },
                     expenseDetails: {
                         ConfirmMessage: "Ви впевнені, що хочете видалити цей рахунок?",
