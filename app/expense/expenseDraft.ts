@@ -78,8 +78,15 @@ const savedAllocations = (expense: Expense, key: "lent_amount" | "debt_amount"):
 const emptyAllocations = (participants: Participant[]): Allocation[] =>
     participants.map(({id}) => ({id, isSelected: true, amount: 0, amountRaw: "0", isDirty: false}));
 
+const currencyPrecision = (currency: string) => EXPENSE_CURRENCY_PRECISION[currency] ?? 2;
+
+const roundToPrecision = (value: number, precision: number) => {
+    const rounded = Number(value.toFixed(precision));
+    return rounded === 0 ? 0 : rounded; // show "0", not "-0"
+};
+
 const equalAllocations = (draft: ExpenseDraft, amount: number, currency: string): Allocation[] => {
-    const precision = EXPENSE_CURRENCY_PRECISION[currency] ?? 2;
+    const precision = currencyPrecision(currency);
     const parts = splitNumberIntoParts(amount, draft.participants.length, precision);
     return draft.participants.map(({id}, index) => ({
         id,
@@ -223,14 +230,30 @@ export function applyToExpenseDraft(draft: ExpenseDraft, action: ExpenseDraftAct
     }
 }
 
-export function canSaveExpenseDraft(draft: ExpenseDraft): boolean {
-    return !!draft.currency && !!draft.name.trim() && dayjs(draft.date).isValid() &&
-        isAllocationBalanced(draft.amount, draft.paidBy) && isAllocationBalanced(draft.amount, draft.split);
+export interface AllocationProgress {
+    /** Sum of the selected Allocations, rounded to the currency precision. */
+    filled: number;
+    /** Expense total minus `filled`, rounded to the currency precision. */
+    left: number;
+    /** Whether this side passes the same balance rule that Save uses. */
+    isBalanced: boolean;
 }
 
-/** Sum of the selected Allocations on one side, as shown against the expense total. */
-export function allocatedTotal(draft: ExpenseDraft, side: ALLOCATION_SIDES): number {
-    return draft[side].reduce((total, {isSelected, amount}) => isSelected && amount ? total + amount : total, 0);
+/** How far one side of the draft is from the expense total, as shown in the editor. */
+export function allocationProgress(draft: ExpenseDraft, side: ALLOCATION_SIDES): AllocationProgress {
+    const total = draft[side].reduce((sum, {isSelected, amount}) => isSelected && amount ? sum + amount : sum, 0);
+    const precision = currencyPrecision(draft.currency);
+    return {
+        filled: roundToPrecision(total, precision),
+        left: roundToPrecision(Number(draft.amount) - total, precision),
+        isBalanced: isAllocationBalanced(draft.amount, draft[side]),
+    };
+}
+
+export function canSaveExpenseDraft(draft: ExpenseDraft): boolean {
+    return !!draft.currency && !!draft.name.trim() && dayjs(draft.date).isValid() &&
+        allocationProgress(draft, ALLOCATION_SIDES.PAID_BY).isBalanced &&
+        allocationProgress(draft, ALLOCATION_SIDES.SPLIT).isBalanced;
 }
 
 export function expenseDraftPayload(draft: ExpenseDraft): ExpenseDraftPayload {

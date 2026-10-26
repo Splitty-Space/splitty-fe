@@ -43,7 +43,7 @@ import useRefreshToken from "@/utils/useRefreshToken";
 import {EXPENSE_DRAFT_ACTIONS} from "@/const/expenseDraftActions";
 import {ALLOCATION_SIDES} from "@/const/allocationSides";
 import {
-    allocatedTotal,
+    allocationProgress,
     applyToExpenseDraft,
     canSaveExpenseDraft,
     createExpenseDraft,
@@ -202,8 +202,11 @@ function AddExpense() {
     }
 
     const {participants} = draft;
-    const currentPaidMoneyAmount = allocatedTotal(draft, ALLOCATION_SIDES.PAID_BY);
-    const currentSplitBetweenMoneyAmount = allocatedTotal(draft, ALLOCATION_SIDES.SPLIT);
+    const paidByProgress = allocationProgress(draft, ALLOCATION_SIDES.PAID_BY);
+    const splitProgress = allocationProgress(draft, ALLOCATION_SIDES.SPLIT);
+    const hasAmount = Number(draft.amount) > 0;
+    const isPaidByOff = hasAmount && !paidByProgress.isBalanced;
+    const isSplitOff = hasAmount && !splitProgress.isBalanced;
     const findAllocation = (side: ALLOCATION_SIDES, id: number) => draft[side].find(x => x.id === id);
 
     const onDateChange = (newDate: Dayjs | null) => {
@@ -391,7 +394,7 @@ function AddExpense() {
 
                         <Divider className="mt-2 border-2"/>
 
-                        {Number(draft.amount) > 0 && (Number(draft.amount) - currentPaidMoneyAmount) !== 0 &&
+                        {isPaidByOff &&
                             <div className="flex items-center bg-surface_dark rounded-lg p-2 mt-4">
                                 <IconContainer className="ml-2 red">
                                     <Icon28Warning/>
@@ -399,10 +402,10 @@ function AddExpense() {
 
                                 <div className="flex flex-col ml-4">
                                     <Caption level="1" weight="3">
-                                        {`${currentPaidMoneyAmount} ${t("expenses.Of")} ${draft.amount} ${draft.currency} ${t("expenses.Filled")}`}
+                                        {`${paidByProgress.filled} ${t("expenses.Of")} ${draft.amount} ${draft.currency} ${t("expenses.Filled")}`}
                                     </Caption>
                                     <Caption level="1" weight="3">
-                                        {`${Number(draft.amount) - currentPaidMoneyAmount} ${draft.currency} ${t("expenses.Left")}`}
+                                        {`${paidByProgress.left} ${draft.currency} ${t("expenses.Left")}`}
                                     </Caption>
                                 </div>
                             </div>}
@@ -443,7 +446,7 @@ function AddExpense() {
                                             value={findAllocation(ALLOCATION_SIDES.PAID_BY, id)?.amountRaw}
                                             onChange={onAllocationAmountChange(ALLOCATION_SIDES.PAID_BY, id)}
                                             className="w-36 ml-auto"
-                                            status={currentPaidMoneyAmount !== draft.amount && isItemSelected ? "error" : undefined}
+                                            status={isPaidByOff && isItemSelected ? "error" : undefined}
                                             disabled={!isItemSelected}
                                             onFocus={handleInputFocus()}
                                             after={
@@ -460,7 +463,7 @@ function AddExpense() {
                                             value={percentOf(findAllocation(ALLOCATION_SIDES.PAID_BY, id), draft.amount)}
                                             onChange={onAllocationPercentChange(ALLOCATION_SIDES.PAID_BY, id)}
                                             className="w-36 ml-auto"
-                                            status={currentPaidMoneyAmount !== draft.amount && isItemSelected ? "error" : undefined}
+                                            status={isPaidByOff && isItemSelected ? "error" : undefined}
                                             disabled={!isItemSelected}
                                             onFocus={handleInputFocus()}
                                             after={
@@ -506,7 +509,7 @@ function AddExpense() {
                         </div>
                         <Divider className="mt-2 border-2"/>
 
-                        {Number(draft.amount) > 0 && (Number(draft.amount) - currentSplitBetweenMoneyAmount) !== 0 &&
+                        {isSplitOff &&
                             <div className="flex items-center bg-surface_dark rounded-lg p-2 mt-4">
                                 <IconContainer className="ml-2 red">
                                     <Icon28Warning/>
@@ -514,10 +517,10 @@ function AddExpense() {
 
                                 <div className="flex flex-col ml-4">
                                     <Caption level="1" weight="3">
-                                        {`${currentSplitBetweenMoneyAmount} ${t("expenses.Of")} ${draft.amount} ${draft.currency} ${t("expenses.Filled")}`}
+                                        {`${splitProgress.filled} ${t("expenses.Of")} ${draft.amount} ${draft.currency} ${t("expenses.Filled")}`}
                                     </Caption>
                                     <Caption level="1" weight="3">
-                                        {`${Number(draft.amount) - currentSplitBetweenMoneyAmount} ${draft.currency} ${t("expenses.Left")}`}
+                                        {`${splitProgress.left} ${draft.currency} ${t("expenses.Left")}`}
                                     </Caption>
                                 </div>
                             </div>}
@@ -557,7 +560,7 @@ function AddExpense() {
                                                 value={findAllocation(ALLOCATION_SIDES.SPLIT, id)?.amountRaw}
                                                 onChange={onAllocationAmountChange(ALLOCATION_SIDES.SPLIT, id)}
                                                 className="w-36 ml-auto"
-                                                status={currentSplitBetweenMoneyAmount !== draft.amount ? "error" : undefined}
+                                                status={isSplitOff ? "error" : undefined}
                                                 disabled={!isItemSelected}
                                                 onFocus={handleInputFocus()}
                                                 after={
@@ -574,7 +577,7 @@ function AddExpense() {
                                                 value={percentOf(findAllocation(ALLOCATION_SIDES.SPLIT, id), draft.amount)}
                                                 onChange={onAllocationPercentChange(ALLOCATION_SIDES.SPLIT, id)}
                                                 className="w-36 ml-auto"
-                                                status={currentSplitBetweenMoneyAmount !== draft.amount ? "error" : undefined}
+                                                status={isSplitOff ? "error" : undefined}
                                                 disabled={!isItemSelected}
                                                 onFocus={handleInputFocus()}
                                                 after={
