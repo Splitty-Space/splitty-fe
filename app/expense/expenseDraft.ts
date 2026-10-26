@@ -8,6 +8,7 @@ import type {Expense} from "@/entities";
 
 const MAX_NAME_LENGTH = 256;
 const MAX_AMOUNT_LENGTH = 15;
+const MAX_DISPLAY_PRECISION = 18;
 
 export interface Allocation {
     id: number;
@@ -233,7 +234,7 @@ export function applyToExpenseDraft(draft: ExpenseDraft, action: ExpenseDraftAct
 export interface AllocationProgress {
     /** Sum of the selected Allocations, rounded to the currency precision. */
     filled: number;
-    /** Expense total minus `filled`, rounded to the currency precision. */
+    /** Expense total minus `filled`, rounded to the currency precision, or finer when that would hide a gap. */
     left: number;
     /** Whether this side passes the same balance rule that Save uses. */
     isBalanced: boolean;
@@ -242,11 +243,18 @@ export interface AllocationProgress {
 /** How far one side of the draft is from the expense total, as shown in the editor. */
 export function allocationProgress(draft: ExpenseDraft, side: ALLOCATION_SIDES): AllocationProgress {
     const total = draft[side].reduce((sum, {isSelected, amount}) => isSelected && amount ? sum + amount : sum, 0);
-    const precision = currencyPrecision(draft.currency);
+    const left = Number(draft.amount) - total;
+    const isBalanced = isAllocationBalanced(draft.amount, draft[side]);
+    let precision = currencyPrecision(draft.currency);
+    // Amounts entered with more decimals than the currency has (3.333 + 6.666 of 10 USD) would
+    // round to "0 left" while Save stays blocked, so show the first non-zero digit of the gap.
+    while (!isBalanced && roundToPrecision(left, precision) === 0 && precision < MAX_DISPLAY_PRECISION) {
+        precision++;
+    }
     return {
         filled: roundToPrecision(total, precision),
-        left: roundToPrecision(Number(draft.amount) - total, precision),
-        isBalanced: isAllocationBalanced(draft.amount, draft[side]),
+        left: roundToPrecision(left, precision),
+        isBalanced,
     };
 }
 

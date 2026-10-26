@@ -131,6 +131,12 @@ test("filled and left amounts are rounded to the currency precision", () => {
     assert.deepEqual(allocationProgress(btc, SPLIT), {filled: 0.10000001, left: 0.19999999, isBalanced: false});
 });
 
+test("an unbalanced side never shows 0 left: extra entered decimals are kept", () => {
+    const draft = apply(newDraft(), amount("10"), splitEqually(false), enter(SPLIT, 1, "3.333"), enter(SPLIT, 2, "6.666"));
+    assert.equal(canSaveExpenseDraft(draft), false);
+    assert.deepEqual(allocationProgress(draft, SPLIT), {filled: 9.999, left: 0.001, isBalanced: false});
+});
+
 test("deselecting a participant zeroes their allocation", () => {
     let draft = apply(newDraft(), amount("10"), splitEqually(false), select(SPLIT, 2, false));
     assert.deepEqual(rawAmountsOf(draft.split), ["5", "0"]);
