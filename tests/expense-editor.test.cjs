@@ -79,7 +79,11 @@ function editor(currency = "BTC", overrides = {}, {isProfileLoaded = true} = {})
         "@/services/addExpense": {addExpense: async payload => {writes.push(payload); return {data: {id: 3}};}},
         "@/services/putExpense": {putExpense: async payload => {puts.push(payload);}},
         "@/app/store": {useStore: selector => selector(state)},
-        "next/navigation": {useRouter: () => ({replace: url => routes.push(["replace", url]), push: url => routes.push(["push", url])})},
+        "next/navigation": {useRouter: () => ({
+            replace: url => routes.push(["replace", url]),
+            push: url => routes.push(["push", url]),
+            back: () => routes.push(["back"]),
+        })},
         "@/const/urls": {expenseDetails: "/expense/details"},
         "@/const/searchParams": load("const/searchParams.ts"),
         "@/utils/withSearchParams": load("utils/withSearchParams.ts", {"@/const/searchParams": load("const/searchParams.ts")}),
@@ -275,7 +279,9 @@ test("a saved new expense replaces the editor with its details page", async () =
     assert.deepEqual(form.routes, [["replace", "/expense/details?expenseId=3"]]);
 });
 
-test("a saved edit opens the edited expense's details page", async () => {
+// The editor is opened from the expense's details page, so going back keeps the history at details,
+// and Back from there leaves the expense instead of returning to the editor.
+test("a saved edit goes back to the edited expense's details page", async () => {
     const form = editor("USD", {
         selectedFriends: [],
         selectedExpense: {
@@ -287,7 +293,7 @@ test("a saved edit opens the edited expense's details page", async () => {
         },
     });
     await form.save().onClick();
-    assert.deepEqual(form.routes, [["push", "/expense/details?expenseId=7"]]);
+    assert.deepEqual(form.routes, [["back"]]);
 });
 
 test("editing waits for the expense from the URL before starting the draft", () => {
