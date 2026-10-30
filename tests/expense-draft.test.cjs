@@ -119,28 +119,46 @@ test("0.10 + 0.20 of 0.30 is balanced on both sides, with nothing left", () => {
         enter(SPLIT, 1, "0.10"), enter(SPLIT, 2, "0.20"));
     assert.equal(canSaveExpenseDraft(draft), true);
     for (const side of [PAID_BY, SPLIT]) {
-        assert.deepEqual(allocationProgress(draft, side), {filled: 0.3, left: 0, isBalanced: true}, side);
+        assert.deepEqual(allocationProgress(draft, side), {filled: 0.3, left: 0, over: 0, isBalanced: true}, side);
     }
 });
 
-test("filled and left amounts are rounded to the currency precision", () => {
+test("filled, left and over amounts are rounded to the currency precision", () => {
     const usd = apply(newDraft(), amount("1"), splitEqually(false), enter(SPLIT, 1, "0.1"), enter(SPLIT, 2, "0.2"));
-    assert.deepEqual(allocationProgress(usd, SPLIT), {filled: 0.3, left: 0.7, isBalanced: false});
+    assert.deepEqual(allocationProgress(usd, SPLIT), {filled: 0.3, left: 0.7, over: 0, isBalanced: false});
     const btc = apply(newDraft("BTC"), amount("0.3"), splitEqually(false),
         enter(SPLIT, 1, "0.1"), enter(SPLIT, 2, "0.00000001"));
-    assert.deepEqual(allocationProgress(btc, SPLIT), {filled: 0.10000001, left: 0.19999999, isBalanced: false});
+    assert.deepEqual(allocationProgress(btc, SPLIT), {filled: 0.10000001, left: 0.19999999, over: 0, isBalanced: false});
+    const usdOver = apply(newDraft(), amount("1"), splitEqually(false), enter(SPLIT, 1, "0.6"), enter(SPLIT, 2, "0.7"));
+    assert.deepEqual(allocationProgress(usdOver, SPLIT), {filled: 1.3, left: 0, over: 0.3, isBalanced: false});
 });
 
 test("an unbalanced side never shows 0 left: extra entered decimals are kept", () => {
     const draft = apply(newDraft(), amount("10"), splitEqually(false), enter(SPLIT, 1, "3.333"), enter(SPLIT, 2, "6.666"));
     assert.equal(canSaveExpenseDraft(draft), false);
-    assert.deepEqual(allocationProgress(draft, SPLIT), {filled: 9.999, left: 0.001, isBalanced: false});
+    assert.deepEqual(allocationProgress(draft, SPLIT), {filled: 9.999, left: 0.001, over: 0, isBalanced: false});
+});
+
+test("an over-allocated side shows how much is over, not a negative amount left", () => {
+    const draft = apply(newDraft(), amount("10"), fullyPaidByMe(false), splitEqually(false),
+        enter(PAID_BY, 1, "6"), enter(PAID_BY, 2, "4.5"),
+        enter(SPLIT, 1, "6"), enter(SPLIT, 2, "4.5"));
+    assert.equal(canSaveExpenseDraft(draft), false);
+    for (const side of [PAID_BY, SPLIT]) {
+        assert.deepEqual(allocationProgress(draft, side), {filled: 10.5, left: 0, over: 0.5, isBalanced: false}, side);
+    }
+});
+
+test("an over-allocated side never shows 0 over: extra entered decimals are kept", () => {
+    const draft = apply(newDraft(), amount("10"), splitEqually(false), enter(SPLIT, 1, "3.334"), enter(SPLIT, 2, "6.667"));
+    assert.equal(canSaveExpenseDraft(draft), false);
+    assert.deepEqual(allocationProgress(draft, SPLIT), {filled: 10.001, left: 0, over: 0.001, isBalanced: false});
 });
 
 test("deselecting a participant zeroes their allocation", () => {
     let draft = apply(newDraft(), amount("10"), splitEqually(false), select(SPLIT, 2, false));
     assert.deepEqual(rawAmountsOf(draft.split), ["5", "0"]);
-    assert.deepEqual(allocationProgress(draft, SPLIT), {filled: 5, left: 5, isBalanced: false});
+    assert.deepEqual(allocationProgress(draft, SPLIT), {filled: 5, left: 5, over: 0, isBalanced: false});
     assert.equal(canSaveExpenseDraft(draft), false);
     draft = apply(draft, enter(SPLIT, 1, "10"), select(SPLIT, 2, true));
     assert.deepEqual(amountsOf(expenseDraftPayload(draft).debtors), [10, 0]);

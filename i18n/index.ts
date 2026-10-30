@@ -118,6 +118,7 @@ void i18n
                         Of: "of",
                         Filled: "filled",
                         Left: "left",
+                        Over: "over",
                     },
                     expenseDetails: {
                         ConfirmMessage: "Are you sure you want to delete this expense?",
@@ -270,6 +271,7 @@ void i18n
                         Of: "из",
                         Filled: "заполнено",
                         Left: "осталось",
+                        Over: "сверх суммы",
                     },
                     expenseDetails: {
                         ConfirmMessage: "Вы уверены, что хотите удалить этот расход?",
@@ -422,6 +424,7 @@ void i18n
                         Of: "з",
                         Filled: "заповнено",
                         Left: "залишилось",
+                        Over: "понад суму",
                     },
                     expenseDetails: {
                         ConfirmMessage: "Ви впевнені, що хочете видалити цей рахунок?",

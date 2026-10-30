@@ -234,8 +234,13 @@ export function applyToExpenseDraft(draft: ExpenseDraft, action: ExpenseDraftAct
 export interface AllocationProgress {
     /** Sum of the selected Allocations, rounded to the currency precision. */
     filled: number;
-    /** Expense total minus `filled`, rounded to the currency precision, or finer when that would hide a gap. */
+    /**
+     * How much is still missing to reach the expense total, or 0 when the side is over it.
+     * Rounded to the currency precision, or finer when that would hide a gap.
+     */
     left: number;
+    /** How much `filled` exceeds the expense total, or 0 when it does not. Rounded like `left`. */
+    over: number;
     /** Whether this side passes the same balance rule that Save uses. */
     isBalanced: boolean;
 }
@@ -243,17 +248,19 @@ export interface AllocationProgress {
 /** How far one side of the draft is from the expense total, as shown in the editor. */
 export function allocationProgress(draft: ExpenseDraft, side: ALLOCATION_SIDES): AllocationProgress {
     const total = draft[side].reduce((sum, {isSelected, amount}) => isSelected && amount ? sum + amount : sum, 0);
-    const left = Number(draft.amount) - total;
+    const gap = Number(draft.amount) - total;
     const isBalanced = isAllocationBalanced(draft.amount, draft[side]);
     let precision = currencyPrecision(draft.currency);
     // Amounts entered with more decimals than the currency has (3.333 + 6.666 of 10 USD) would
     // round to "0 left" while Save stays blocked, so show the first non-zero digit of the gap.
-    while (!isBalanced && roundToPrecision(left, precision) === 0 && precision < MAX_DISPLAY_PRECISION) {
+    while (!isBalanced && roundToPrecision(gap, precision) === 0 && precision < MAX_DISPLAY_PRECISION) {
         precision++;
     }
+    const shownGap = roundToPrecision(gap, precision);
     return {
         filled: roundToPrecision(total, precision),
-        left: roundToPrecision(left, precision),
+        left: shownGap > 0 ? shownGap : 0,
+        over: shownGap < 0 ? -shownGap : 0,
         isBalanced,
     };
 }
