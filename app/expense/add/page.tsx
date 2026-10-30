@@ -405,7 +405,9 @@ function AddExpense() {
                                         {`${paidByProgress.filled} ${t("expenses.Of")} ${draft.amount} ${draft.currency} ${t("expenses.Filled")}`}
                                     </Caption>
                                     <Caption level="1" weight="3">
-                                        {`${paidByProgress.left} ${draft.currency} ${t("expenses.Left")}`}
+                                        {paidByProgress.over > 0
+                                            ? `${paidByProgress.over} ${draft.currency} ${t("expenses.Over")}`
+                                            : `${paidByProgress.left} ${draft.currency} ${t("expenses.Left")}`}
                                     </Caption>
                                 </div>
                             </div>}
@@ -520,7 +522,9 @@ function AddExpense() {
                                         {`${splitProgress.filled} ${t("expenses.Of")} ${draft.amount} ${draft.currency} ${t("expenses.Filled")}`}
                                     </Caption>
                                     <Caption level="1" weight="3">
-                                        {`${splitProgress.left} ${draft.currency} ${t("expenses.Left")}`}
+                                        {splitProgress.over > 0
+                                            ? `${splitProgress.over} ${draft.currency} ${t("expenses.Over")}`
+                                            : `${splitProgress.left} ${draft.currency} ${t("expenses.Left")}`}
                                     </Caption>
                                 </div>
                             </div>}
