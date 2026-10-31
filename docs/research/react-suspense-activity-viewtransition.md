@@ -29,9 +29,9 @@
 ## 1. Suspense
 
 ### 1.0 Как сейчас
-- Ни один компонент не приостанавливает рендер ради данных. Данные приходят через `axios-hooks` (`services/*.ts`) и через `useEffect` с ручными запросами (`app/activity/page.tsx:83-90`, `app/friend/page.tsx:60-113`, `hooks/useSelectedExpense.ts:70-100`).
+- Ни один компонент не приостанавливает рендер ради данных. Данные приходят через `axios-hooks` (`services/*.ts`) и через `useEffect` с ручными запросами (`app/activity/page.tsx:83-90`, `app/friend/page.tsx:60-113`, `hooks/useSelectedExpense.ts:41-71`).
 - В `axios-hooks@5.1.1` вообще нет режима Suspense. Опций всего четыре: `manual`, `useCache`, `ssr`, `autoCancel` (`axios-hooks@5.1.1 src/index.d.ts:18-23`). Слово «suspense» не встречается ни в `src/index.js`, ни в README. Состояние загрузки хранится в `useReducer` (`src/index.js:145-163`).
-- Все `<Suspense>` в коде стоят без `fallback`: `app/client-layout.tsx:401`, `app/friend/page.tsx:399`, `app/friend/settings/page.tsx:106`, `app/settleUp/page.tsx:110`, `app/settleUpPayment/page.tsx:263`, `app/expense/add/page.tsx:608`, `app/expense/details/page.tsx:324`. Причина одна, она записана в ADR: `docs/adr/0001-selection-in-url.md` (раздел Consequences, последний пункт). Страницы читают `?friendId=`/`?expenseId=` через `useSearchParams` (`hooks/useSelectedFriend.ts:27`, `hooks/useSelectedExpense.ts:51`, `app/settleUpPayment/page.tsx:34`, `app/components/footer/footer.tsx:96`).
+- Все `<Suspense>` в коде стоят без `fallback`: `app/client-layout.tsx:401`, `app/friend/page.tsx:399`, `app/friend/settings/page.tsx:106`, `app/settleUp/page.tsx:110`, `app/settleUpPayment/page.tsx:263`, `app/expense/add/page.tsx:608`, `app/expense/details/page.tsx:324`. Причина одна, она записана в ADR: `docs/adr/0001-selection-in-url.md` (раздел Consequences, последний пункт). Страницы читают `?friendId=`/`?expenseId=` через `useSearchParams` (`hooks/useSelectedFriend.ts:27`, `hooks/useSelectedExpense.ts:22`, `app/settleUpPayment/page.tsx:34`, `app/components/footer/footer.tsx:96`).
 - Почему граница обязательна. На пререндеренном маршруте `useSearchParams` заставляет рендерить на клиенте всё дерево до ближайшей `<Suspense>`. Без такой границы `next build` падает (`next@16.3.6 dist/docs/01-app/03-api-reference/04-functions/use-search-params.md:82-86,181`, https://nextjs.org/docs/app/api-reference/functions/use-search-params). Без `cacheComponents` это `BailoutToCSRError` (`next@16.3.6 dist/server/app-render/dynamic-rendering.js:606-616`). С `cacheComponents` это промис, который никогда не разрешается: `ClientHookDynamicError` (`dynamic-rendering.js:601-605`, `dist/server/dynamic-rendering-utils.js:90-93`). В обоих случаях в HTML попадает fallback, то есть сейчас пустота.
 
 ### 1.1 Футер — главное место (`app/client-layout.tsx:401-407`)
@@ -80,7 +80,7 @@
   ```
   В `enter`/`exit`: `NAV_FORWARD` → слайд справа, `TAB` → короткий cross-fade или `"none"`, `REDIRECT` → `"none"`, `default` → слайд слева (Back). Отдельный тип `NAV_BACK` нам не нужен, потому что Back всё равно приходит без типа.
 - **Что изменить:**
-  1. Все переходы приложения должны передавать тип. Иначе любой нетипизированный `push`/`replace` попадёт в `default` и проиграется как Back. `router.push/replace` вызывается в 37 местах; например, редиректы в `hooks/useSelectedFriend.ts:19`, `hooks/useSelectedExpense.ts:67,75` и шаги тура в `app/client-layout.tsx:266-375`. Ссылок `next/link` в приложении нет. Проще всего завести один хук (например, `hooks/useAppNavigation.ts`) с методами `forward(url)`, `tab(url)`, `redirect(url)` и заменить прямые вызовы.
+  1. Все переходы приложения должны передавать тип. Иначе любой нетипизированный `push`/`replace` попадёт в `default` и проиграется как Back. `router.push/replace` вызывается в 37 местах; например, редиректы в `hooks/useSelectedFriend.ts:19`, `hooks/useSelectedExpense.ts:38,46` и шаги тура в `app/client-layout.tsx:266-375`. Ссылок `next/link` в приложении нет. Проще всего завести один хук (например, `hooks/useAppNavigation.ts`) с методами `forward(url)`, `tab(url)`, `redirect(url)` и заменить прямые вызовы.
   2. CSS в `app/globals.css`: классы слайдов; `::view-transition { pointer-events: none; }`, иначе тапы во время анимации теряются (`view-transitions.md:362-370`); блок `prefers-reduced-motion` (`:372-387`).
   3. Футер, снекбары и тур уже вне `{children}` (`client-layout.tsx:388-413`), поэтому вместе со страницей не поедут. Чтобы корневой снимок не перекрывал фиксированный таббар, футеру можно дать `viewTransitionName` с `animation: none`, как шапке в гайде (`view-transitions.md:329-354`).
 - **Риски:** при переходе только по search params (например, `/friend?friendId=1` → `?friendId=2`) обёртка не перемонтируется, и enter/exit не будет; сейчас таких переходов в UI нет. Ещё нужно проверить на устройстве, что раскрытие клиентской Suspense-границы при первой гидрации не проигрывает анимацию `default`.
@@ -92,7 +92,7 @@
 - **Риски:** имя должно быть уникальным среди смонтированных. Поэтому **не** именовать аватары в ленте Activity (`app/activity/page.tsx:125`) и в истории расхода (`app/expense/details/ExpenseHistory*.tsx`): там один человек встречается много раз. Если элемент вне экрана (строка проскроллена), пара не образуется (react.dev ViewTransition).
 
 ### 2.3 Строка расхода → заголовок деталей — пока не делать
-`app/expense/details/page.tsx:139-181` рендерит содержимое только при `selectedExpense`, а расход приходит из эффекта (`hooks/useSelectedExpense.ts:70-100`). В первом коммите навигации заголовка нет, поэтому пары не будет, и сработает только обычный enter (`view-transitions.md:112`). Положить расход в store ради анимации противоречит ADR 0001: вариант «store как кеш» там отклонён. Вернуться к этому после 1.4, когда появится кеш по id.
+`app/expense/details/page.tsx:139-181` рендерит содержимое только при `selectedExpense`, а расход приходит из эффекта (`hooks/useSelectedExpense.ts:41-71`). В первом коммите навигации заголовка нет, поэтому пары не будет, и сработает только обычный enter (`view-transitions.md:112`). Положить расход в store ради анимации противоречит ADR 0001: вариант «store как кеш» там отклонён. Вернуться к этому после 1.4, когда появится кеш по id.
 
 ### 2.4 Блоки «Paid by» и «Split» в форме расхода (низкий приоритет)
 - **Места:** `app/expense/add/page.tsx:369-370` и `:487-488` появляются по переключателям `:342-347` и `:358-362`.
@@ -127,7 +127,7 @@
   1. **Эффекты запускаются заново при показе.**
      - `app/activity/page.tsx:83-90` очищает ленту (`setActivities([])`) и грузит первую страницу заново, так что выгода пропадает.
      - `app/friend/page.tsx:60-113` ставит `setLoadingExpenses(true)` (`:82`), из-за чего вместо списка показывается `<Loader/>` (`:354-355`), а затем список заменяется первой страницей (`:95`).
-     - `hooks/useSelectedExpense.ts:77` ставит `setIsRequestInFlight(true)`, и в деталях и редакторе мигает лоадер.
+     - `hooks/useSelectedExpense.ts:48` ставит `setIsRequestInFlight(true)`, и в деталях и редакторе мигает лоадер.
      - Хуки `axios-hooks` с `useCache: false` (`services/useExpenses.ts:42`, `services/useActivity.ts:32`, `services/useExpense.ts:25`) при повторном запуске шлют `REQUEST_START` и выставляют `loading: true` (`axios-hooks@5.1.1 src/index.js:147-152,180-183,200-205,252-262`).
      - **Поправка:** `useFriends` и `useMe` (кеш включён) при показе берут ответ из кеша (`src/index.js:165-178`). Лоадер они **не** показывают, но и с сервера не обновляются, показывают закешированные данные.
      - Правило «лоадер только когда данных ещё нет» плюс фоновое обновление. Отличать первый монтаж от повторного показа можно через ref (`preserving-ui-state.md:518-543`).
