@@ -83,6 +83,7 @@ export default function ActivityPage() {
     useEffect(() => {
         listController.current = new AbortController();
         pendingPages.current.clear();
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- list reset before loading page 1, waits for the data-loading design, #23
         setActivities([]);
         setIsLoaded(false);
         void loadPage(1);

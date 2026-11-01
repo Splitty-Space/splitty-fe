@@ -14,6 +14,7 @@ export function useUserPhoto(user_id?: number) {
     const [photo, setPhoto] = useState<{url: string, userId?: number, token: string, data: Blob}>();
     useEffect(() => {
         if (!hasUserId || !token || !data || loading || error) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect -- looks redundant, photoUrl already hides a stale photo, #21
             setPhoto(undefined);
             return;
         }

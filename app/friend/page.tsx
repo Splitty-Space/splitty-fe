@@ -71,6 +71,7 @@ function FriendPage() {
         }
 
         if (!friend) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect -- loading flag in a data-loading effect, waits for the data-loading design, #23
             setLoadingExpenses(false);
 
             return () => {

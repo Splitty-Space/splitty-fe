@@ -45,6 +45,7 @@ export default function useSelectedExpense({required = true, refreshKey}: { requ
             showDeleted(true);
             router.replace(friendsList);
         };
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- loading flag in a data-loading effect, waits for the data-loading design, #23
         setIsRequestInFlight(true);
         getExpense({expense_id: expenseId, signal: controller.signal})
             .then(({data}: { data: Expense }) => {
