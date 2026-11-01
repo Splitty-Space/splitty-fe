@@ -15,6 +15,8 @@ Do not manually edit generated artifacts or installed dependencies. Fix their so
 
 ## Agent skills
 
+The skills are vendored in `.claude/skills/` (Matt Pocock's skills, see `.claude/skills/README.md`).
+
 ### Issue tracker
 
 Issues live in GitHub Issues for `Splitty-Space/splitty-fe`. See `docs/agents/issue-tracker.md`.
