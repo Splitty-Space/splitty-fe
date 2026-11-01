@@ -15,6 +15,8 @@ reviews:
     - "!package-lock.json"
     - "!next-env.d.ts"
     - "!public/**"
+    # Vendored upstream skills (see .claude/skills/README.md); report issues upstream.
+    - "!.claude/skills/**"
   pre_merge_checks:
     # The codebase does not use docstrings; an 80% coverage warning would fire on every PR.
     docstrings:
