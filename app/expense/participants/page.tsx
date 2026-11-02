@@ -59,6 +59,7 @@ export default function AddExpenseParticipants() {
     };
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- derived from selectedUserIds, belongs in render, #21
         setIsNextDisabled(selectedUserIds.length === 0);
     }, [selectedUserIds]);
 
@@ -80,6 +81,7 @@ export default function AddExpenseParticipants() {
 
     useEffect(() => {
         if (friends) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect -- derived from friends, belongs in render, #21
             setRowCount(friends?.length);
         }
     }, [friends]);

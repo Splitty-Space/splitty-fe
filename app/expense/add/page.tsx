@@ -183,6 +183,7 @@ function AddExpense() {
         if (!isForceExpenseSaveEnabled) return;
         setIsForceExpenseSaveEnabled(false);
         if (selectedExpense?.id === TEST_EXPENSE_ID) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect -- tour save request reaches onSave through an effect, #22
             void onSave();
         }
     }, [isForceExpenseSaveEnabled, onSave, selectedExpense, setIsForceExpenseSaveEnabled]);

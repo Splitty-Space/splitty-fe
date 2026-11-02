@@ -101,6 +101,7 @@ export default function ClientLayout({children}: Readonly<{
     }, [me, setIsTourOpen, setIsRequestErrorSnackbarShown]);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- no-op, the state already starts with these values, #21
         setAppearance(DARK);
         setPlatform(IOS);
     }, []);

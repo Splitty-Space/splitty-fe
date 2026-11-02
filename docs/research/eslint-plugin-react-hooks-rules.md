@@ -134,3 +134,20 @@ import reactHooks from "eslint-plugin-react-hooks";
 1. Вариант A одним маленьким PR: `void-use-memo` сразу на `"error"`, `set-state-in-effect` на `"warn"`.
 2. Исправить 8 мест. Два производных значения в `expense/participants` перенести в рендер. Остальные эффекты загрузки рассмотреть вместе с пунктом 1.4 из `docs/research/react-suspense-activity-viewtransition.md`: там тоже говорится о `useSelectedExpense.ts:48`. После этого поставить `"error"`.
 3. При обновлении `eslint-plugin-react-hooks` сверять пресеты: Next берёт только `recommended` (`dist/index.js:168`), поэтому правила, которые добавляют в `recommended-latest`, сами в проект не попадут.
+
+---
+
+## Решение (01.11.2026)
+
+Принято после разбора документа с Michael.
+
+1. **`set-state-in-effect` сразу `"error"`.** Текущие 8 мест помечены `// eslint-disable-next-line react-hooks/set-state-in-effect -- <причина>, #NN`, код не менялся. React Compiler из-за этих комментариев функции не пропускает: он учитывает только подавления `exhaustive-deps` и `rules-of-hooks` (`babel-plugin-react-compiler` 1.0.0, `DEFAULT_ESLINT_SUPPRESSIONS`).
+2. **Пресет `recommended-latest` целиком (вариант B)** с `files: ["**/*.{js,jsx,mjs,ts,tsx,mts,cts}"]`. Строка `"react-hooks/set-state-in-effect": "off"` удалена. Пункт 3 раздела 5 («сверять пресеты») больше не нужен: правила из `recommended-latest` приходят с обновлением плагина.
+3. **`npm run lint` с `--max-warnings 0`.** Предупреждения (`exhaustive-deps`, `incompatible-library`, `unsupported-syntax`) теперь роняют CI. Ненужный `eslint-disable` ESLint 9 тоже считает предупреждением, поэтому после исправления места комментарий придётся удалить.
+4. **Исправления отдельными PR по трём задачам:**
+   - #21: `expense/participants` (два производных значения в рендер), пустой эффект в `client-layout` (значения по умолчанию уже `DARK` и `IOS`), `useUserPhoto`.
+   - #22: сохранение тура в `expense/add`.
+   - #23: флаги загрузки в `activity`, `friend`, `useSelectedExpense` и лишний `pageSize` в зависимостях `activity`. Ждёт ADR по Suspense для данных (пункт 4 `docs/research/react-suspense-activity-viewtransition.md`).
+5. ADR не нужен: решение легко откатить.
+
+**Уточнение к разделу 3.** Правило сообщает только о первом `setState` в эффекте. За 8 сообщениями стоят 12 вызовов: ещё `activity/page.tsx` (`setIsLoaded(false)`), `friend/page.tsx` (`setLoadingExpenses(true)`), `client-layout.tsx` (`setPlatform(IOS)`) и `useUserPhoto.ts` (`setPhoto({url, …})`). Проверено так: первый вызов заменялся на `void 0`, и линт запускался снова.
