@@ -6,14 +6,21 @@ import {toDataUrl} from "@/utils/toDataUrl";
 interface UserPhoto {
     url: string;
     userId?: number;
+    authorization?: string;
 }
 
+const authorizationFor = (token: string) => `Bearer ${token}`;
+
 // The photo is cached as a data URL, so the hook keeps no state and needs no cleanup.
-// It carries its user id: when an avatar switches users, the previous user's photo stays in
-// `data` until the new request starts, and must not be shown for the new user.
+// It carries the user id and token it was requested with: when either changes, the previous
+// photo stays in `data` until the new request starts, and must not be shown meanwhile.
 function toUserPhoto(this: InternalAxiosRequestConfig, data: ArrayBuffer, headers: AxiosResponseHeaders, status?: number) {
     if (status !== undefined && status >= 400) return data;
-    return {url: toDataUrl(data, headers.getContentType()?.toString()), userId: this.params?.user_id};
+    return {
+        url: toDataUrl(data, headers.getContentType()?.toString()),
+        userId: this.params?.user_id,
+        authorization: this.headers?.get("Authorization")?.toString(),
+    };
 }
 
 export function useUserPhoto(user_id?: number) {
@@ -24,8 +31,9 @@ export function useUserPhoto(user_id?: number) {
         responseType: "arraybuffer",
         transformResponse: toUserPhoto,
         params: {user_id},
-        headers: {Authorization: `Bearer ${token}`},
+        headers: {Authorization: authorizationFor(token)},
     }, {manual: !token || !hasUserId});
-    const photoUrl = hasUserId && token && data?.userId === user_id && !loading && !error ? data.url : "";
+    const isCurrentPhoto = data?.userId === user_id && data?.authorization === authorizationFor(token);
+    const photoUrl = hasUserId && token && isCurrentPhoto && !loading && !error ? data.url : "";
     return {photoUrl, loading, error, refetch};
 }

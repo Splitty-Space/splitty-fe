@@ -7,6 +7,7 @@ const {toDataUrl} = dataUrl;
 
 const bytes = (...values) => new Uint8Array(values).buffer;
 const headers = (contentType) => ({getContentType: () => contentType});
+const requestConfig = {params: {user_id: 2}, headers: {get: (name) => (name === "Authorization" ? "Bearer token" : undefined)}};
 
 function userPhoto(options) {
     const {token = "token", state = {}} = options;
@@ -46,29 +47,31 @@ test("encodes a photo larger than one chunk without losing bytes", () => {
 test("requests the photo as bytes and caches it as a data URL", () => {
     const {request} = userPhoto({});
     assert.equal(request.config.responseType, "arraybuffer");
-    const photo = request.config.transformResponse.call({params: {user_id: 2}}, bytes(1, 2, 3), headers("image/png"), 200);
-    assert.deepEqual(photo, {url: "data:image/png;base64,AQID", userId: 2});
+    const photo = request.config.transformResponse.call(requestConfig, bytes(1, 2, 3), headers("image/png"), 200);
+    assert.deepEqual(photo, {url: "data:image/png;base64,AQID", userId: 2, authorization: "Bearer token"});
     assert.equal(request.options.manual, false);
 });
 
 test("leaves an error response as it came", () => {
     const {request} = userPhoto({});
     const body = bytes(1);
-    assert.equal(request.config.transformResponse.call({params: {user_id: 2}}, body, headers("application/json"), 404), body);
+    assert.equal(request.config.transformResponse.call(requestConfig, body, headers("application/json"), 404), body);
 });
 
 const url = "data:image/png;base64,AQID";
 
 test("shows the cached photo once it has loaded", () => {
-    assert.equal(userPhoto({state: {data: {url, userId: 2}}}).result.photoUrl, url);
+    assert.equal(userPhoto({state: {data: {url, userId: 2, authorization: "Bearer token"}}}).result.photoUrl, url);
 });
 
-test("hides the previous user's photo when the avatar switches users", () => {
-    assert.equal(userPhoto({userId: 3, state: {data: {url, userId: 2}}}).result.photoUrl, "");
+test("hides a photo requested for another user or with another token", () => {
+    const data = {url, userId: 2, authorization: "Bearer token"};
+    assert.equal(userPhoto({userId: 3, state: {data}}).result.photoUrl, "", "other user");
+    assert.equal(userPhoto({token: "new token", state: {data}}).result.photoUrl, "", "other token");
 });
 
 test("hides the photo while it loads, after an error, or without a user or token", () => {
-    const data = {url, userId: 2};
+    const data = {url, userId: 2, authorization: "Bearer token"};
     for (const [name, options] of [
         ["loading", {state: {data, loading: true}}],
         ["error", {state: {data, error: new Error("failed")}}],
