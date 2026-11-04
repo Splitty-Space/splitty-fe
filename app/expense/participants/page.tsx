@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useEffect, useMemo, useState} from "react";
+import React, {useMemo, useState} from "react";
 import {useTranslation} from "react-i18next";
 import classNames from "classnames";
 import {Friend} from "@/entities";
@@ -24,7 +24,6 @@ import Username from "@/app/components/username/username";
 import {AutoSizer, InfiniteLoader, List} from "react-virtualized";
 import SkeletonCell from "@/app/components/skeletons/skeletonCell";
 import useMe from "@/services/useMe";
-import {defaultPageSize} from "@/const/defaultPageSize";
 import useContentHeight from "@/hooks/useContentHeight";
 import {focusOnExpenseNameInput} from "@/app/expense/add/focusOnExpenseNameInput";
 import Loader from "@/app/components/loader/loader";
@@ -42,8 +41,6 @@ export default function AddExpenseParticipants() {
 
     const {t} = useTranslation();
 
-    const [isNextDisabled, setIsNextDisabled] = useState(true);
-
     const [selectedUserIds, setSelectedUserIds] = useState<Array<number>>(selectedFriends.map(({id}) => id));
 
     const [searchValue, setSearchValue] = useState("");
@@ -58,10 +55,7 @@ export default function AddExpenseParticipants() {
         focusOnExpenseNameInput();
     };
 
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect -- derived from selectedUserIds, belongs in render, #21
-        setIsNextDisabled(selectedUserIds.length === 0);
-    }, [selectedUserIds]);
+    const isNextDisabled = selectedUserIds.length === 0;
 
     const onUserChange = (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
         vibration();
@@ -77,14 +71,8 @@ export default function AddExpenseParticipants() {
 
     const [refContainer, height] = useContentHeight();
 
-    const [rowCount, setRowCount] = useState(defaultPageSize);
-
-    useEffect(() => {
-        if (friends) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect -- derived from friends, belongs in render, #21
-            setRowCount(friends?.length);
-        }
-    }, [friends]);
+    // The list is drawn only once friends have loaded.
+    const rowCount = friends.length;
 
     const isRowLoaded = ({index}: { index: number }) => {
         return friends && !!friends[index];
