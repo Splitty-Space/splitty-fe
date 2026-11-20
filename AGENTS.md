@@ -6,6 +6,7 @@ Splitty is a single Next.js App Router frontend for a Telegram expense-sharing m
 - [Commands](docs/agent/commands.md): scripts, configuration, dependencies, checks, and deployment.
 - [Legacy notes](docs/agent/legacy.md): verified implementation issues, inferred risks, and open questions.
 - Read [Generated files](docs/agent/generated.md) before editing: excluded paths, tool-managed lockfiles, and source/configuration boundaries.
+- [Browser debugging](docs/agent/browser-debugging.md): open the running app in Chrome and inspect its React tree through the `chrome-devtools` MCP server in `.mcp.json`.
 
 For a feature, trace its `app/` route through `app/store.ts` and the relevant `services/` calls. Friend, expense, and settlement routes take their entity from query parameters (`friendId`, `expenseId`, `currency`; see `docs/adr/0001-selection-in-url.md`). Only the participants of a new expense and the tutorial expense are held in memory.
 
