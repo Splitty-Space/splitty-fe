@@ -3,7 +3,7 @@
 // The module enables the Telegram mock only in the development browser.
 import "@/utils/mockTelegramEnv";
 import {usePathname, useRouter} from "next/navigation";
-import React, {Suspense, useCallback, useEffect, useMemo, useRef, useState} from "react";
+import React, {Suspense, useCallback, useEffect, useMemo, useRef} from "react";
 import i18next from "i18next";
 import "@/i18n";
 import dynamic from "next/dynamic"
@@ -11,8 +11,8 @@ import {AppRoot, Snackbar} from "@telegram-apps/telegram-ui";
 import "@telegram-apps/telegram-ui/dist/styles.css";
 import "@/API/axiosConfig";
 import useMe from "@/services/useMe";
-import {DARK, DEFAULT_THEME, THEME_TYPE} from "@/const/theme";
-import {DEFAULT_PLATFORM, IOS, PLATFORM_TYPE} from "@/const/platform";
+import {DEFAULT_THEME} from "@/const/theme";
+import {DEFAULT_PLATFORM} from "@/const/platform";
 import {AppRootContext} from "./AppRootContext";
 import {backButton, closingBehavior, miniApp, swipeBehavior, viewport, postEvent} from "@telegram-apps/sdk";
 import Footer from "@/app/components/footer/footer";
@@ -56,6 +56,9 @@ const tutorialExpenseDetailsUrl = withSearchParams(expenseDetails, {[SEARCH_PARA
 // The SDK clears its concurrency guard asynchronously after cancellation.
 let viewportMountTask: Promise<void> = Promise.resolve();
 
+// The app has one look: dark, with the iOS style of the Telegram UI kit.
+const appRootValue = {platform: DEFAULT_PLATFORM, appearance: DEFAULT_THEME} as const;
+
 export default function ClientLayout({children}: Readonly<{
     children: React.ReactNode;
 }>) {
@@ -63,8 +66,6 @@ export default function ClientLayout({children}: Readonly<{
 
     const isRequestErrorSnackbarShown = useStore((state) => state.isRequestErrorSnackbarShown);
     const setIsRequestErrorSnackbarShown = useStore((state) => state.setIsRequestErrorSnackbarShown);
-    const [platform, setPlatform] = useState<PLATFORM_TYPE>(DEFAULT_PLATFORM);
-    const [appearance, setAppearance] = useState<THEME_TYPE>(DEFAULT_THEME);
 
     const setSearchValue = useStore((state) => state.setSearchValue);
     const setSelectedFriends = useStore((state) => state.setSelectedFriends);
@@ -99,12 +100,6 @@ export default function ClientLayout({children}: Readonly<{
             void i18next.changeLanguage().catch(() => setIsRequestErrorSnackbarShown(true));
         }
     }, [me, setIsTourOpen, setIsRequestErrorSnackbarShown]);
-
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect -- no-op, the state already starts with these values, #21
-        setAppearance(DARK);
-        setPlatform(IOS);
-    }, []);
 
     useEffect(() => {
         if (closingBehavior.mount.isAvailable()) {
@@ -378,12 +373,11 @@ export default function ClientLayout({children}: Readonly<{
         },
     ], [isTestFriendAlreadyExist, me, refetchFriends, router, setIsForceExpenseSaveEnabled, setTutorialExpense, setIsRequestErrorSnackbarShown, t, testFriend]);
 
-    return <>
-        {platform && appearance && (
-            <AppRootContext.Provider value={{platform, appearance}}>
+    return (
+            <AppRootContext.Provider value={appRootValue}>
                         <AppRoot
-                            platform={platform}
-                            appearance={appearance}
+                            platform={appRootValue.platform}
+                            appearance={appRootValue.appearance}
                             className="app-root"
                         >
                             {children}
@@ -490,7 +484,6 @@ export default function ClientLayout({children}: Readonly<{
                                 </Snackbar>
                             )}
                         </AppRoot>
-            </AppRootContext.Provider>)
-        }
-    </>;
+            </AppRootContext.Provider>
+    );
 }
