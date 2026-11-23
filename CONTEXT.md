@@ -42,6 +42,20 @@ _Avoid_: Form state
 An Expense that records one Participant paying another back, rather than a shared purchase.
 _Avoid_: Payment, settle-up payment
 
+### Activity
+
+**Activity**:
+A record that someone created, edited or deleted an Expense or a Settlement.
+_Avoid_: Event, log entry
+
+**Activity feed**:
+The list of Activity on all Expenses and Settlements the user takes part in, newest first.
+_Avoid_: Activity page, history
+
+**Expense history**:
+The Activity of one Expense or Settlement, shown on its details.
+_Avoid_: Log, audit
+
 ### Tutorial
 
 **Tutorial**:
