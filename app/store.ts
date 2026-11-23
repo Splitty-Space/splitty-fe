@@ -49,9 +49,6 @@ interface State {
 
     isGroupComingSoonSnackbarShown: boolean,
     setIsGroupComingSoonSnackbarShown: (newIsGroupComingSoonSnackbarShown: boolean) => void,
-
-    isForceExpenseSaveEnabled: boolean,
-    setIsForceExpenseSaveEnabled: (newIsForceExpenseSaveEnabled: boolean) => void,
 }
 
 export const useStore = create<State>()(
@@ -100,9 +97,6 @@ export const useStore = create<State>()(
 
             isGroupComingSoonSnackbarShown: false,
             setIsGroupComingSoonSnackbarShown: (newIsGroupComingSoonSnackbarShown) => set(() => ({isGroupComingSoonSnackbarShown: newIsGroupComingSoonSnackbarShown})),
-
-            isForceExpenseSaveEnabled: false,
-            setIsForceExpenseSaveEnabled: (newIsForceExpenseSaveEnabled) => set(() => ({isForceExpenseSaveEnabled: newIsForceExpenseSaveEnabled})),
         }),
     ),
 )

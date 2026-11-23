@@ -3,7 +3,7 @@
 // The module enables the Telegram mock only in the development browser.
 import "@/utils/mockTelegramEnv";
 import {usePathname, useRouter} from "next/navigation";
-import React, {Suspense, useCallback, useEffect, useMemo, useRef} from "react";
+import React, {Suspense, useCallback, useEffect, useMemo} from "react";
 import i18next from "i18next";
 import "@/i18n";
 import dynamic from "next/dynamic"
@@ -16,6 +16,7 @@ import {DEFAULT_PLATFORM} from "@/const/platform";
 import {AppRootContext} from "./AppRootContext";
 import {backButton, closingBehavior, miniApp, swipeBehavior, viewport, postEvent} from "@telegram-apps/sdk";
 import Footer from "@/app/components/footer/footer";
+import useTutorialExpenseSave from "@/app/components/tour/useTutorialExpenseSave";
 import {useStore} from "@/app/store";
 import useFriends from "@/services/useFriends";
 import {Icon28Bin, Icon28Check, Icon28Warning} from "@/Icons";
@@ -86,7 +87,6 @@ export default function ClientLayout({children}: Readonly<{
     const setIsFriendRequestSentSnackbarShown = useStore((state) => state.setIsFriendRequestSentSnackbarShown);
     const isGroupComingSoonSnackbarShown = useStore((state) => state.isGroupComingSoonSnackbarShown);
     const setIsGroupComingSoonSnackbarShown = useStore((state) => state.setIsGroupComingSoonSnackbarShown);
-    const setIsForceExpenseSaveEnabled = useStore((state) => state.setIsForceExpenseSaveEnabled);
 
     const {data: me, refetch: refetchMe} = useMe();
 
@@ -238,18 +238,16 @@ export default function ClientLayout({children}: Readonly<{
 
     const {updateUserSettings} = useUpdateUserSettings();
 
-    // The tutorial expense is saved once per tour, however often its save step is re-entered.
-    const isTutorialSaveRequested = useRef(false);
+    const {saveTutorialExpense, resetTutorialExpenseSave} = useTutorialExpenseSave(refetchFriends);
 
     const closeTour = useCallback(() => {
         setIsTourOpen(false);
-        setIsForceExpenseSaveEnabled(false);
-        isTutorialSaveRequested.current = false;
+        resetTutorialExpenseSave();
 
         updateUserSettings({
             isGuideShown: true
         }).then(() => refetchMe()).catch(() => setIsRequestErrorSnackbarShown(true));
-    }, [refetchMe, setIsTourOpen, setIsForceExpenseSaveEnabled, updateUserSettings, setIsRequestErrorSnackbarShown]);
+    }, [refetchMe, setIsTourOpen, resetTutorialExpenseSave, updateUserSettings, setIsRequestErrorSnackbarShown]);
 
     const testFriend = friends?.find((friend) => friend.id === TUTORIAL_USER_ID);
     const isTestFriendAlreadyExist = testFriend;
@@ -335,9 +333,10 @@ export default function ClientLayout({children}: Readonly<{
             selector: "#expense-details",
             content: t("tour.NewExpenseAdded"),
             action: () => {
-                if (!isTutorialSaveRequested.current) {
-                    isTutorialSaveRequested.current = true;
-                    setIsForceExpenseSaveEnabled(true);
+                // The save step stored the Tutorial expense the editor showed; read it at step entry.
+                const {tutorialExpense} = useStore.getState();
+                if (me && tutorialExpense) {
+                    saveTutorialExpense(me, tutorialExpense);
                 }
                 router.push(tutorialExpenseDetailsUrl);
             }
@@ -347,7 +346,6 @@ export default function ClientLayout({children}: Readonly<{
             content: t("tour.SeveralFriends"),
             action: () => {
                 router.push(friendsList);
-                setIsForceExpenseSaveEnabled(false);
             }
         },
         {
@@ -371,7 +369,7 @@ export default function ClientLayout({children}: Readonly<{
                 router.push(account);
             }
         },
-    ], [isTestFriendAlreadyExist, me, refetchFriends, router, setIsForceExpenseSaveEnabled, setTutorialExpense, setIsRequestErrorSnackbarShown, t, testFriend]);
+    ], [isTestFriendAlreadyExist, me, refetchFriends, router, saveTutorialExpense, setTutorialExpense, setIsRequestErrorSnackbarShown, t, testFriend]);
 
     return (
             <AppRootContext.Provider value={appRootValue}>

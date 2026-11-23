@@ -43,9 +43,10 @@ documented in [commands.md](commands.md).
 
 - **Layout controls feature workflows.** [Layout](../../app/layout.tsx) combines
   Telegram lifecycle/back-button behavior, profile loading, tour steps, navigation
-  and global snackbars. Tour actions write `tutorialExpense` and enable
-  `isForceExpenseSaveEnabled`; [expense editing](../../app/expense/add/page.tsx)
-  watches that flag and calls save. [Footer](../../app/components/footer/footer.tsx)
+  and global snackbars. Tour actions write `tutorialExpense`, and the step after
+  the save button saves it through
+  [useTutorialExpenseSave](../../app/components/tour/useTutorialExpenseSave.ts)
+  without the expense editor. [Footer](../../app/components/footer/footer.tsx)
   also sets or clears new-expense participants during navigation.
   **Risk to verify:** isolated page changes can break tour or back-navigation
   behavior; inspect these shared controllers before changing workflow state.
