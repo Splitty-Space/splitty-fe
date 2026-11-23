@@ -33,7 +33,7 @@ export default function useTutorialExpenseSave(refetchFriends: UseFriends["refet
                 () => refetchFriends().catch((err: AxiosError) => {
                     if (isCancel(err)) return;
                     console.warn("Friends refresh after the tutorial save failed:", err);
-                    showError(true);
+                    if (saveRun === run.current) showError(true);
                 }),
                 (err: AxiosError) => {
                     console.warn("Tutorial expense save failed:", err);

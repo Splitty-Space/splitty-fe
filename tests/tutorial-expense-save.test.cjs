@@ -164,3 +164,17 @@ test("a failed friends refresh after the save shows the request error but keeps 
     save.hook.saveTutorialExpense(me);
     assert.equal(save.writes.length, 1);
 });
+
+test("a failed friends refresh from a closed tutorial is not reported", async () => {
+    let failRefresh;
+    const save = tutorialSave({refreshResult: () => new Promise((_, reject) => {
+        failRefresh = () => reject(new Error("network"));
+    })});
+    save.hook.saveTutorialExpense(me);
+    await save.settle("succeed");
+    save.hook.resetTutorialExpenseSave();
+    failRefresh();
+    for (let i = 0; i < 5; i++) await Promise.resolve();
+    assert.deepEqual(save.errors, []);
+    assert.equal(save.refetches.length, 1);
+});
