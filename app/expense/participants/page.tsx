@@ -21,9 +21,7 @@ import {addExpense} from "@/const/urls";
 import Avatar from "@/app/components/avatar/Avatar";
 import {vibration} from "@/utils/vibration";
 import Username from "@/app/components/username/username";
-import {AutoSizer, InfiniteLoader, List} from "react-virtualized";
-import SkeletonCell from "@/app/components/skeletons/skeletonCell";
-import useMe from "@/services/useMe";
+import {AutoSizer, List, type ListRowProps} from "react-virtualized";
 import useContentHeight from "@/hooks/useContentHeight";
 import {focusOnExpenseNameInput} from "@/app/expense/add/focusOnExpenseNameInput";
 import Loader from "@/app/components/loader/loader";
@@ -31,8 +29,6 @@ import PullToRefresh from "@/app/components/pullToRefresh/pullToRefresh";
 import {listAccessibilityProps} from "@/app/components/listAccessibilityProps";
 
 export default function AddExpenseParticipants() {
-    const {data: me} = useMe();
-
     const selectedFriends = useStore((state) => state.selectedFriends);
     const setSelectedFriends = useStore((state) => state.setSelectedFriends);
 
@@ -71,28 +67,12 @@ export default function AddExpenseParticipants() {
 
     const [refContainer, height] = useContentHeight();
 
-    // The list is drawn only once friends have loaded.
-    const rowCount = friends.length;
-
-    const isRowLoaded = ({index}: { index: number }) => {
-        return friends && !!friends[index];
-    };
-
-    const loadMoreRows = () => {
-        return;
-    };
-
     const filteredFriends = friends.filter((friend: Friend) =>
         friend.name.toLowerCase().includes(searchValue.toLowerCase()) ||
         (friend.username ?? "").toLowerCase().includes(searchValue.toLowerCase()));
 
-    const rowRenderer = ({index, key, style}: { index: number, key: string, style: object }) => {
-        const _friend = filteredFriends[index];
-        if (!_friend) {
-            return (<SkeletonCell key={key} style={style} me={me}/>);
-        }
-
-        const {id, name, username} = _friend;
+    const rowRenderer = ({index, style}: ListRowProps) => {
+        const {id, name, username} = filteredFriends[index];
 
         return (
             <div key={id} style={style} role="listitem">
@@ -153,33 +133,18 @@ export default function AddExpenseParticipants() {
                     <Loader/> :
                     filteredFriends?.length > 0 ?
                         <PullToRefresh onRefresh={onRefresh}>
-                            {/* @ts-ignore */}
-                            <InfiniteLoader
-                                isRowLoaded={isRowLoaded}
-                                // @ts-ignore
-                                loadMoreRows={loadMoreRows}
-                                rowCount={rowCount}
-                            >
-                                { // @ts-ignore
-                                    ({onRowsRendered, registerChild}) => (
-                                        // @ts-ignore
-                                        <AutoSizer>
-                                            {({width}) => (
-                                                // @ts-ignore
-                                                <List
-                                                    {...listAccessibilityProps}
-                                                    ref={registerChild}
-                                                    width={width}
-                                                    height={height}
-                                                    rowHeight={68}
-                                                    rowCount={filteredFriends?.length}
-                                                    rowRenderer={rowRenderer}
-                                                    onRowsRendered={onRowsRendered}
-                                                />
-                                            )}
-                                        </AutoSizer>
-                                    )}
-                            </InfiniteLoader>
+                            <AutoSizer>
+                                {({width}) => (
+                                    <List
+                                        {...listAccessibilityProps}
+                                        width={width}
+                                        height={height}
+                                        rowHeight={68}
+                                        rowCount={filteredFriends.length}
+                                        rowRenderer={rowRenderer}
+                                    />
+                                )}
+                            </AutoSizer>
                         </PullToRefresh>
                         :
                         (<Placeholder header={t("friendsList.FriendNotFound")}/>)
