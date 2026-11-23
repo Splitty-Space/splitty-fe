@@ -11,7 +11,7 @@ export default defineConfig([
   // Next only applies the plugin's `recommended` preset; `recommended-latest` adds the rules React ships ahead of it.
   // See docs/research/eslint-plugin-react-hooks-rules.md.
   { ...reactHooks.configs.flat["recommended-latest"], files: REACT_HOOKS_FILES },
-  globalIgnores([".next/**", "node_modules/**", "out/**", "build/**", "coverage/**", "next-env.d.ts", ".npm-cache/**"]),
+  globalIgnores([".next/**", "node_modules/**", "out/**", "build/**", "coverage/**", "test-results/**", "playwright-report/**", "blob-report/**", "next-env.d.ts", ".npm-cache/**"]),
   {
     rules: {
       quotes: ["error", "double", { avoidEscape: true }],
