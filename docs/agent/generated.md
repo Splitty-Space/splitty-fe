@@ -25,7 +25,7 @@ Keep `out/`, `build/`, and `coverage/` out of manual source edits. They are igno
 - `build/`: listed under production output exclusions; no separate producer for this directory was found.
 - `coverage/`: listed under testing exclusions; no test/coverage runner or script was found.
 
-Do not assume these directories need to be created or regenerated. Their current producer is **unverified**; [next.config.mjs](../../next.config.mjs) is empty and the declared scripts are in [package.json](../../package.json).
+Do not assume these directories need to be created or regenerated. Their current producer is **unverified**; [next.config.mjs](../../next.config.mjs) sets no output or export options, and the declared scripts are in [package.json](../../package.json).
 
 ## Tool-managed lockfiles
 
