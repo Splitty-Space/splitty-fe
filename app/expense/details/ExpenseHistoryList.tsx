@@ -62,10 +62,14 @@ export default function ExpenseHistoryList({
 
                                 const numberOfExpenseHistoryItems = countExpenseHistoryItems(data);
 
+                                const editedTitle = `${t(activity_type === ACTIVITY_TYPE.EXPENSE_EDITED ?
+                                    "expenseDetails.Expense" : "expenseDetails.Payment")} ${t("expenseDetails.wasEditedBy")} ${user.name}`;
+
                                 return activity_type === ACTIVITY_TYPE.EXPENSE_EDITED || activity_type === ACTIVITY_TYPE.PAYMENT_EDITED ?
                                     (
                                         <ExpenseHistoryModal
                                             key={id}
+                                            title={editedTitle}
                                             selectedExpense={selectedExpense}
                                             activity={activityData.data.find((activity) => activity.id === id)}
                                             trigger={
@@ -80,8 +84,7 @@ export default function ExpenseHistoryList({
                                                             </Badge>)
                                                         }
                                                     >
-                                                        {`${t(activity_type === ACTIVITY_TYPE.EXPENSE_EDITED ?
-                                                            "expenseDetails.Expense" : "expenseDetails.Payment")} ${t("expenseDetails.wasEditedBy")} ${user.name}`}
+                                                        {editedTitle}
                                                     </Cell>
                                                     <Divider className="ml-16 border-2"/>
                                                 </div>}
