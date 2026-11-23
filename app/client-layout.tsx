@@ -333,10 +333,10 @@ export default function ClientLayout({children}: Readonly<{
             selector: "#expense-details",
             content: t("tour.NewExpenseAdded"),
             action: () => {
-                // The save step stored the Tutorial expense the editor showed; read it at step entry.
-                const {tutorialExpense} = useStore.getState();
-                if (me && tutorialExpense) {
-                    saveTutorialExpense(me, tutorialExpense);
+                // Like the steps before it, only with the Tutorial friend: without them the stored
+                // Tutorial expense may be left over from an earlier run of the tutorial.
+                if (me && testFriend) {
+                    saveTutorialExpense(me);
                 }
                 router.push(tutorialExpenseDetailsUrl);
             }

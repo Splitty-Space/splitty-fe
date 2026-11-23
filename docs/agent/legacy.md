@@ -43,7 +43,7 @@ documented in [commands.md](commands.md).
 
 - **Layout controls feature workflows.** [Layout](../../app/layout.tsx) combines
   Telegram lifecycle/back-button behavior, profile loading, tour steps, navigation
-  and global snackbars. Tour actions write `tutorialExpense`, and the step after
+  and global snackbars. Tutorial steps write `tutorialExpense`, and the step after
   the save button saves it through
   [useTutorialExpenseSave](../../app/components/tour/useTutorialExpenseSave.ts)
   without the expense editor. [Footer](../../app/components/footer/footer.tsx)
