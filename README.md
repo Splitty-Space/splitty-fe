@@ -19,6 +19,20 @@ npm test
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+In `next dev` the Telegram environment is mocked, so the app opens in a plain browser. A production build is not mocked: outside Telegram it cannot authenticate and the friends list keeps loading. To try a production build in a plain browser, build it with the mock turned on (local use only, never for a build that users get):
+
+```bash
+# bash
+NEXT_PUBLIC_MOCK_TELEGRAM_ENV=true npm run build && npm start
+```
+
+```powershell
+# PowerShell
+$env:NEXT_PUBLIC_MOCK_TELEGRAM_ENV="true"; npm run build; npm start
+```
+
+The variable is read at build time, so rebuild without it to get a normal build (in PowerShell, clear it first with `Remove-Item Env:NEXT_PUBLIC_MOCK_TELEGRAM_ENV`). You can also put it in `.env.production.local`, which only `next build` reads; keep that file out of any Docker image you deploy, because the Dockerfile copies the whole folder.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
