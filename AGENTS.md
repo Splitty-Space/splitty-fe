@@ -12,7 +12,9 @@ For a feature, trace its `app/` route through `app/store.ts` and the relevant `s
 
 The installed Next.js may be newer than your training data. Before writing Next.js code, read the matching guide in `node_modules/next/dist/docs/` (start at `index.md`; present after `npm ci`).
 
-npm is the package manager (`package-lock.json`, installed with `npm ci`); Node 24 is pinned in `.nvmrc` and the Dockerfile. Pull requests run `npm run lint`, `npm run typecheck`, `npm test` and a Docker build in `.github/workflows/checks.yml`. Do not report unrun or blocked checks as passing.
+npm is the package manager (`package-lock.json`, installed with `npm ci`); Node 24 is pinned in `.nvmrc` and the Dockerfile. Pull requests run `npm run lint`, `npm run typecheck`, `npm test`, `npm run test:e2e` and a Docker build in `.github/workflows/checks.yml`. Do not report unrun or blocked checks as passing.
+
+End-to-end tests live in `e2e/` and run with `npm run test:e2e` (Playwright, Chromium only; `npx playwright install chromium` once). Playwright starts `next dev`, or reuses one already running on port 3000, and every backend request must be answered by a mock in `e2e/mockBackend.ts`.
 
 Do not manually edit generated artifacts or installed dependencies. Fix their source/configuration instead; use the owning tool for required regeneration or lockfile updates, as described in the generated-files guide.
 
