@@ -1,7 +1,7 @@
 "use client"
 
 // The module mocks Telegram in the browser in `next dev`, and in a production build
-// made with NEXT_PUBLIC_MOCK_TELEGRAM_ENV=true.
+// made by `npm run start:local` (NEXT_PUBLIC_MOCK_TELEGRAM_ENV=true).
 import "@/utils/mockTelegramEnv";
 import {usePathname, useRouter} from "next/navigation";
 import React, {Suspense, useCallback, useEffect, useMemo} from "react";

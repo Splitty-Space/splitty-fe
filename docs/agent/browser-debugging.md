@@ -17,7 +17,7 @@ This setup targets a local Claude Code session. Cloud sessions have no backend, 
 ## Before you start
 
 1. Run the backend locally (`splitty-backend`, FastAPI on `http://127.0.0.1:8000`).
-2. Run `npm run dev`. In development the Telegram environment is mocked, so the app opens in a plain browser. A production build is mocked only when built with `NEXT_PUBLIC_MOCK_TELEGRAM_ENV=true` (see the README).
+2. Run `npm run dev`. In development the Telegram environment is mocked, so the app opens in a plain browser. `npm run start:local` runs a production build with the same mock.
 3. Claude Code asks once to approve the `chrome-devtools` and `next-devtools` servers from `.mcp.json`. Run `npm ci` first, because both servers start from `node_modules`.
 
 `.mcp.json` is shared through the repository. Keep machine-specific servers, such as an IDE's MCP server on a local port, out of it: add them with `claude mcp add --scope local …`, which stores them in your own `~/.claude.json`.

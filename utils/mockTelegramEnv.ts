@@ -25,8 +25,8 @@ const themeParams = {
 
 // Outside Telegram the app has no launch parameters, so it cannot authenticate.
 // This mock supplies them: always in `next dev`, and in a production build only when
-// NEXT_PUBLIC_MOCK_TELEGRAM_ENV=true was set at build time, for running
-// `npm run build && npm start` in a plain browser. Never set the variable for a
+// NEXT_PUBLIC_MOCK_TELEGRAM_ENV=true was set at build time, which `npm run start:local`
+// does to run a production build in a plain browser. Never set the variable for a
 // build that users get: the mock logs everyone in as the same user.
 // NEXT_PUBLIC_ variables are inlined at build time, so the name must stay a literal;
 // next.config.mjs defaults it to "false" so that a normal build drops the mock.
