@@ -31,7 +31,9 @@ NEXT_PUBLIC_MOCK_TELEGRAM_ENV=true npm run build && npm start
 $env:NEXT_PUBLIC_MOCK_TELEGRAM_ENV="true"; npm run build; npm start
 ```
 
-The variable is read at build time, so rebuild without it to get a normal build (in PowerShell, clear it first with `Remove-Item Env:NEXT_PUBLIC_MOCK_TELEGRAM_ENV`). You can also put it in `.env.production.local`, which only `next build` reads; keep that file out of any Docker image you deploy, because the Dockerfile copies the whole folder.
+The variable is read at build time, so rebuild without it to get a normal build (in PowerShell, clear it first with `Remove-Item Env:NEXT_PUBLIC_MOCK_TELEGRAM_ENV`). You can also put it in `.env.production.local`, which `next build` and `next start` read but `next dev` does not; while that file exists, every local production build is mocked. `.dockerignore` excludes `.env*`, so the file never reaches a Docker image.
+
+The mock signs in with an empty hash and signature, so `/auth` only accepts it on a local backend that skips init data validation, the same one `next dev` uses. If `NEXT_PUBLIC_SERVER_URL` (for example in `.env.local`) points at stage, authentication fails and the friends list keeps loading.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
