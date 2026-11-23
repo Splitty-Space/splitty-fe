@@ -36,8 +36,9 @@ reviews:
           with the library's guard (for example `isAxiosError(err)`) before using
           library-specific fields.
         - Use the domain terms from `CONTEXT.md` (Expense, Participant, Paid by, Split,
-          Allocation, Expense draft, Settlement, Tutorial, Tutorial friend, Tutorial
-          expense) and avoid the synonyms it lists.
+          Allocation, Expense draft, Settlement, Activity, Activity feed, Expense
+          history, Tutorial, Tutorial friend, Tutorial expense) and avoid the
+          synonyms it lists.
     - path: "app/expense/expenseDraft.ts"
       instructions: |
         Expense draft allocation rules live here as pure functions consumed through
