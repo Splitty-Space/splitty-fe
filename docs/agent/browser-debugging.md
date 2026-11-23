@@ -1,11 +1,16 @@
-# Debugging React in the browser
+# Debugging the running app
 
-An agent can open the running app in Chrome and inspect its React tree: components, props, hooks, owners, and render timing. Two pieces make this work:
+An agent can inspect the app while `next dev` runs, through two MCP servers in [.mcp.json](../../.mcp.json):
 
-- [Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp) is the MCP server. It is configured in [.mcp.json](../../.mcp.json) and installed as a pinned devDependency.
+- `chrome-devtools` opens the app in Chrome and inspects its React tree: components, props, hooks, owners, and render timing. See [Calling the React tools](#calling-the-react-tools).
+- `next-devtools` asks the dev server itself for build and runtime errors, routes, and compilation issues. See [Asking the dev server](#asking-the-dev-server).
+
+The React tools need two pieces:
+
+- [Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp) is the MCP server. It is installed as a pinned devDependency.
 - [react-devtools-cdt-mcp](https://react.dev/reference/dev-tools/react-devtools-cdt-mcp) is a browser library, not an MCP server. [instrumentation-client.ts](../../instrumentation-client.ts) registers it in `next dev` only. Chrome DevTools MCP discovers its React tools from the page.
 
-Both packages are experimental. Their tools and output can change between versions, so they are pinned to exact versions.
+All three packages are experimental. Their tools and output can change between versions, so they are pinned to exact versions.
 
 This setup targets a local Claude Code session. Cloud sessions have no backend, so pages there render without data.
 
@@ -13,7 +18,7 @@ This setup targets a local Claude Code session. Cloud sessions have no backend, 
 
 1. Run the backend locally (`splitty-backend`, FastAPI on `http://127.0.0.1:8000`).
 2. Run `npm run dev`. In development the Telegram environment is mocked, so the app opens in a plain browser.
-3. Claude Code asks once to approve the `chrome-devtools` server from `.mcp.json`. Run `npm ci` first, because the server starts from `node_modules`.
+3. Claude Code asks once to approve the `chrome-devtools` and `next-devtools` servers from `.mcp.json`. Run `npm ci` first, because both servers start from `node_modules`.
 
 `.mcp.json` is shared through the repository. Keep machine-specific servers, such as an IDE's MCP server on a local port, out of it: add them with `claude mcp add --scope local …`, which stores them in your own `~/.claude.json`.
 
@@ -49,6 +54,31 @@ The tools:
 - **Short minified names.** Next.js framework components show up as short names such as `Forget(m)`. Search for your own components by name instead of walking the tree from the root.
 - **uids reset on reload.** A uid such as `r5` is stable across re-renders but not across page reloads or navigations that reload the page. Look components up again after a reload.
 - **Empty owner stack for top-level components.** Components rendered by server components have no client owner.
+
+## Asking the dev server
+
+Next.js 16 serves its own MCP endpoint at `/_next/mcp` in `next dev`; nothing has to be turned on. The `next-devtools` server ([next-devtools-mcp](https://github.com/vercel/next-devtools-mcp)) finds running dev servers and forwards calls to that endpoint. It looks for them on each call, so it works when `npm run dev` starts after the agent session.
+
+Call `nextjs_index` to list the running dev servers, their ports, and their tools. Then call `nextjs_call` with the port and a tool name:
+
+```json
+{"port": 3000, "toolName": "get_errors"}
+```
+
+Pass `args` only when the tool takes arguments. The useful tools:
+
+| Tool | Returns |
+| --- | --- |
+| `get_errors` | Build errors, `next.config` errors, and browser runtime errors with source-mapped stacks. It needs the app open in a browser, for example through `chrome-devtools`; otherwise it answers "No browser sessions connected". |
+| `get_compilation_issues` | Compiles every route and returns resolve and transform errors, without opening a page. Takes a few seconds. |
+| `compile_route` | Compiles one route (`routeSpecifier` such as `/expense/details`, or `path`) and returns its issues. |
+| `get_routes` | All App Router routes. |
+| `get_page_metadata` | The layouts, pages, and boundaries behind the page open in the browser. |
+| `get_logs` | Only the path of the dev log, `.next/dev/logs/next-development.log`. Read the file yourself. |
+
+Two other tools come with the server. `nextjs_docs` points to the bundled docs in `node_modules/next/dist/docs/`, which AGENTS.md already names. `browser_eval` tells the agent to install the `agent-browser` CLI globally, so it is denied in [.claude/settings.json](../../.claude/settings.json); use `chrome-devtools` for the browser instead.
+
+The server's anonymous usage telemetry is turned off with `NEXT_TELEMETRY_DISABLED=1` in `.mcp.json`. It still writes a debug log to `~/.next-devtools-mcp/mcp.log`.
 
 ## Production builds
 
