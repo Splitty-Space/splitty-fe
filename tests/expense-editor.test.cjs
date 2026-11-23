@@ -27,11 +27,6 @@ function editor(currency = "BTC", overrides = {}, {isProfileLoaded = true} = {})
         selectedFriends: [{id: 2, name: "Friend"}],
         selectedExpense: null,
         searchValue: "",
-        isForceExpenseSaveEnabled: false,
-        setIsForceExpenseSaveEnabled: value => {
-            if (state.isForceExpenseSaveEnabled !== value) dirty = true;
-            state.isForceExpenseSaveEnabled = value;
-        },
         setIsCreateExpenseSnackbarShown: () => {},
         setIsUpdateExpenseSnackbarShown: () => {},
         setSelectedExpense: () => {},
@@ -251,25 +246,6 @@ test("a newly selected expense replaces the draft", () => {
     form.render();
     assert.deepEqual(form.values(PAID_BY), ["20", "50"]);
     assert.deepEqual(form.values(SPLIT), ["40", "30"]);
-});
-
-test("a save request left over from the tour does not save a real expense", () => {
-    const form = editor("USD", {isForceExpenseSaveEnabled: true});
-    assert.equal(form.state.isForceExpenseSaveEnabled, false);
-    form.amount("1");
-    assert.equal(form.save().disabled, false);
-    assert.equal(form.writes.length, 0);
-});
-
-test("the tour saves the tutorial expense once per request", () => {
-    const form = editor("USD", {selectedExpense: tutorialExpense()});
-    assert.equal(form.writes.length, 0);
-    form.state.isForceExpenseSaveEnabled = true;
-    form.render();
-    form.render();
-    assert.equal(form.writes.length, 1);
-    assert.equal(form.writes[0].amount, 70);
-    assert.equal(form.state.isForceExpenseSaveEnabled, false);
 });
 
 test("a saved new expense replaces the editor with its details page", async () => {

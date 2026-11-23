@@ -1,6 +1,6 @@
 "use client"
 
-import React, {Suspense, useCallback, useEffect, useReducer, useRef, useState} from "react";
+import React, {Suspense, useCallback, useReducer, useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
 import classNames from "classnames";
 import Header from "@/app/components/header/header";
@@ -98,8 +98,6 @@ function AddExpense() {
     const {expenseId, expense: selectedExpense, isLoading: isExpenseLoading} = useSelectedExpense({required: false, refreshKey});
     const setIsCreateExpenseSnackbarShown = useStore((state) => state.setIsCreateExpenseSnackbarShown);
     const setIsUpdateExpenseSnackbarShown = useStore((state) => state.setIsUpdateExpenseSnackbarShown);
-    const isForceExpenseSaveEnabled = useStore((state) => state.isForceExpenseSaveEnabled);
-    const setIsForceExpenseSaveEnabled = useStore((state) => state.setIsForceExpenseSaveEnabled);
     const showError = useStore((state) => state.setIsRequestErrorSnackbarShown);
     const saveInFlight = useRef(false);
 
@@ -133,7 +131,6 @@ function AddExpense() {
 
         saveInFlight.current = true;
         setIsSaveInProgress(true);
-        setIsForceExpenseSaveEnabled(false);
 
         const {payers, debtors, users, amount, description, currency, date} = expenseDraftPayload(draft);
 
@@ -175,18 +172,7 @@ function AddExpense() {
             setIsSaveInProgress(false);
             showError(true);
         }
-    }, [draft, isSaveDisabled, refetchFriends, router, selectedExpense, setIsCreateExpenseSnackbarShown, setIsUpdateExpenseSnackbarShown, setIsForceExpenseSaveEnabled, showError]);
-
-    // The tour's save request is consumed on first sight and only ever saves the tutorial expense,
-    // so a leftover request cannot save a real expense while the user is still typing it.
-    useEffect(() => {
-        if (!isForceExpenseSaveEnabled) return;
-        setIsForceExpenseSaveEnabled(false);
-        if (selectedExpense?.id === TEST_EXPENSE_ID) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect -- tour save request reaches onSave through an effect, #22
-            void onSave();
-        }
-    }, [isForceExpenseSaveEnabled, onSave, selectedExpense, setIsForceExpenseSaveEnabled]);
+    }, [draft, isSaveDisabled, refetchFriends, router, selectedExpense, setIsCreateExpenseSnackbarShown, setIsUpdateExpenseSnackbarShown, showError]);
 
     if (!draft) {
         // A failed request leaves nothing to edit; pulling down requests the expense again.

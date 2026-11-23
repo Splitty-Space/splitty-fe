@@ -41,3 +41,17 @@ _Avoid_: Form state
 **Settlement**:
 An Expense that records one Participant paying another back, rather than a shared purchase.
 _Avoid_: Payment, settle-up payment
+
+### Tutorial
+
+**Tutorial**:
+The guided walkthrough of the app, shown on every visit until the user finishes or closes it once. It adds the Tutorial friend and creates a Tutorial expense with them.
+_Avoid_: Tour, guide, onboarding
+
+**Tutorial friend**:
+The fixed Splitty account that the Tutorial adds as a Friend, so the user has someone to share the Tutorial expense with.
+_Avoid_: Test friend
+
+**Tutorial expense**:
+The Expense with the Tutorial friend that the Tutorial walks the user through. Until the Tutorial saves it, it exists only on the user's device.
+_Avoid_: Test expense, sample expense
