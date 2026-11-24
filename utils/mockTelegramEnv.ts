@@ -23,8 +23,22 @@ const themeParams = {
     text_color: "#f5f5f5",
 } as const;
 
+// Outside Telegram the app has no launch parameters, so it cannot authenticate.
+// This mock supplies them: always in `next dev`, and in a production build only when
+// NEXT_PUBLIC_MOCK_TELEGRAM_ENV=true was set at build time, which `npm run start:local`
+// does to run a production build in a plain browser. Never set the variable for a
+// build that users get: the mock logs everyone in as the same user.
+// NEXT_PUBLIC_ variables are inlined at build time, so the name must stay a literal;
+// next.config.mjs defaults it to "false" so that a normal build drops the mock.
+export const isTelegramEnvMocked =
+    process.env.NODE_ENV === "development" ||
+    process.env.NEXT_PUBLIC_MOCK_TELEGRAM_ENV === "true";
+
 // Client components are also evaluated during Next.js server rendering.
-if (process.env.NODE_ENV === "development" && typeof window !== "undefined") {
+if (isTelegramEnvMocked && typeof window !== "undefined") {
+    if (process.env.NODE_ENV === "production") {
+        console.warn("Telegram environment is mocked (NEXT_PUBLIC_MOCK_TELEGRAM_ENV=true). This build is for local use only.");
+    }
     mockTelegramEnv({
         launchParams: {
             tgWebAppThemeParams: themeParams,

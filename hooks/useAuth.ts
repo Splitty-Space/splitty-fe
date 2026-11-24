@@ -1,5 +1,6 @@
 import {useEffect} from "react";
 import {init, retrieveRawInitData} from "@telegram-apps/sdk";
+import {isAxiosError} from "axios";
 import {apiClient} from "@/API/client";
 import {useStore} from "@/app/store";
 
@@ -16,6 +17,7 @@ const useAuth = () => {
                 cleanup = init();
                 const initDataRaw = retrieveRawInitData();
                 if (!initDataRaw) {
+                    console.error("Telegram authentication failed: no init data.");
                     showError(true);
                     return;
                 }
@@ -28,8 +30,19 @@ const useAuth = () => {
                     return;
                 }
                 setToken(data.token);
-            } catch {
-                if (!controller.signal.aborted) showError(true);
+            } catch (err) {
+                // Leaving the page aborts the request; that is not a failure.
+                if (controller.signal.aborted) return;
+                // Outside Telegram the SDK throws here because there are no launch
+                // parameters; see utils/mockTelegramEnv.ts.
+                // An AxiosError carries the signed init data in config.data, so log only
+                // its status and message.
+                if (isAxiosError(err)) {
+                    console.error("Telegram authentication failed:", err.response?.status, err.message);
+                } else {
+                    console.error("Telegram authentication failed:", err);
+                }
+                showError(true);
             }
         };
         void authenticate();

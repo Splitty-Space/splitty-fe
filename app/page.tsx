@@ -15,6 +15,7 @@ import {Arrow} from "@/Icons";
 import {friend} from "@/const/urls";
 import {SEARCH_PARAMS} from "@/const/searchParams";
 import {withSearchParams} from "@/utils/withSearchParams";
+import {isTelegramEnvMocked} from "@/utils/mockTelegramEnv";
 import {useStore} from "@/app/store";
 import useFriends from "@/services/useFriends";
 import useContentHeight from "@/hooks/useContentHeight";
@@ -33,8 +34,9 @@ export default function FriendsList() {
     const [refContainer, height] = useContentHeight();
 
     useEffect(() => {
-        // Analytics uses SDK v1 and cannot read the SDK v3 development mock.
-        if (process.env.NODE_ENV !== "production") {
+        // Analytics uses SDK v1 and cannot read the SDK v3 mock; a mocked build
+        // also must not send events for the fake user.
+        if (process.env.NODE_ENV !== "production" || isTelegramEnvMocked) {
             return;
         }
 

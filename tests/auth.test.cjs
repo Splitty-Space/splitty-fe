@@ -30,6 +30,7 @@ test("late auth response cannot write a token after unmount", async () => {
     const errors = [];
     const useAuth = load("hooks/useAuth.ts", {
         react: {useEffect: callback => { effect = callback; }},
+        axios: require("axios"),
         "@telegram-apps/sdk": {init: () => () => { cleanedUp = true; }, retrieveRawInitData: () => "test-data"},
         "@/API/client": {apiClient: {post: (_url, _data, options) => {
             signal = options.signal;
@@ -46,4 +47,35 @@ test("late auth response cannot write a token after unmount", async () => {
     assert.equal(cleanedUp, true);
     assert.deepEqual(tokens, []);
     assert.deepEqual(errors, []);
+});
+
+test("a failed auth request is logged without the signed init data", async (t) => {
+    const {AxiosError} = require("axios");
+    let effect;
+    const errors = [];
+    const logged = [];
+    t.mock.method(console, "error", (...args) => logged.push(args));
+    const useAuth = load("hooks/useAuth.ts", {
+        react: {useEffect: callback => { effect = callback; }},
+        axios: require("axios"),
+        "@telegram-apps/sdk": {init: () => () => {}, retrieveRawInitData: () => "signed-init-data"},
+        "@/API/client": {apiClient: {post: (url, data) => Promise.reject(new AxiosError(
+            "Request failed with status code 401",
+            AxiosError.ERR_BAD_REQUEST,
+            {url, data: JSON.stringify(data)},
+            null,
+            {status: 401, data: {}},
+        ))}},
+        "@/app/store": {useStore: selector => selector({token: "", setToken: () => {}, setIsRequestErrorSnackbarShown: error => errors.push(error)})},
+    }).default;
+    useAuth();
+    effect();
+    await new Promise(done => setImmediate(done));
+    assert.deepEqual(errors, [true]);
+    assert.equal(logged.length, 1);
+    assert.ok(logged[0].includes(401));
+    for (const arg of logged[0]) {
+        assert.ok(!String(arg).includes("signed-init-data"));
+        assert.ok(!(arg instanceof Error));
+    }
 });
