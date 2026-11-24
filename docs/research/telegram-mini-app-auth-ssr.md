@@ -4,12 +4,12 @@
 
 **Коротко (5 строк)**
 1. **Сейчас всё происходит на клиенте и последовательно.** Сервер отдаёт статический HTML с лоадером. Дальше загружается JS, React гидрирует страницу, эффект `useAuth` вызывает `init()` и `retrieveRawInitData()` и делает `POST /auth`. Только после того как токен попадает в zustand, стартуют `/me` и `/friends`. Получается два последовательных сетевых круга (RTT) после гидрации. Токен хранится только в памяти, поэтому каждый запуск и каждый reload снова идут через `/auth`.
-2. **Жёсткий предел для SSR.** Telegram передаёт `tgWebAppData` (initData) во фрагменте URL (`#…`), а фрагмент не уходит на сервер. Поэтому первый HTML-запрос каждого запуска нельзя аутентифицировать по initData ни в `proxy.ts`, ни в Server Component. Сервер видит только query (в нём есть `tgWebAppStartParam`, но он не подписан) и cookie.
-3. **SSR с данными возможен только со второго рендера.** Клиент передаёт initData в Route Handler или Server Action, тот ставит httpOnly-cookie, а Server Components читают её через `cookies()`. На следующих запусках SSR сработает с первого запроса, только если WebView сохранил cookie (по платформам это не проверено). В Telegram Web мини-апп работает в iframe, поэтому cookie там сторонняя. Нужно `SameSite=None; Secure; Partitioned`. В Safari до 18.4 такая cookie не сохранится совсем. Официальный Next-шаблон Telegram-Mini-Apps SSR не использует: на сервере он рисует «Loading».
+2. **Жёсткий предел для SSR.** Telegram передаёт `tgWebAppData` (initData) во фрагменте URL (`#…`), а фрагмент не уходит на сервер. Поэтому первый HTML-запрос каждого запуска нельзя аутентифицировать по initData ни в `proxy.ts`, ни в Server Component. Сервер видит только query (в нём есть `tgWebAppStartParam`, но он не подписан) и cookie. Подписанные данные в query кладёт только `LoginUrl` (Seamless Web Bots), но это inline-кнопка, которая открывает обычную веб-страницу, а не мини-апп (раздел 10).
+3. **SSR с данными возможен только со второго рендера.** Клиент передаёт initData в Route Handler или Server Action, тот ставит httpOnly-cookie, а Server Components читают её через `cookies()`. На следующих запусках SSR сработает с первого запроса, только если WebView сохранил cookie (по платформам это не проверено). В Telegram Web мини-апп работает в iframe, поэтому cookie там сторонняя. Нужно `SameSite=None; Secure; Partitioned`. В Safari до 18.4 такая cookie не сохранится совсем. Официальный Next-шаблон Telegram-Mini-Apps SSR не использует: на сервере он рисует «Loading». Новый `@tma.js` 4.0 (пока rc) про SSR тоже ничего не говорит и читает параметры запуска только из браузерных источников (раздел 11).
 4. **Ускорить можно и без SSR, причём дешевле.** Варианты: (A) отправлять initData в каждом запросе (`Authorization: tma …`) и убрать `/auth` из цепочки; (D) начинать `/auth` до гидрации в `instrumentation-client.ts` и добавить `preconnect` к бэкенду; (B) хранить токен в `sessionStorage` и не ходить в `/auth` при reload; (G) хранить последние данные на устройстве и показывать их сразу. Последний вариант относится к ADR о слое данных.
 5. **Рекомендация.** Сначала замерить. Потом сделать (D) и (B): это только фронтенд, около 50 строк. Затем договориться с бэкендом о (A) или о TTL токена. SSR через cookie (вариант E) делать только после ADR о слое данных и только если замер покажет, что повторные запуски действительно сохраняют cookie. Подробности в разделах 5–6, вопросы в разделе 7.
 
-**Источники.** Документация Telegram: https://core.telegram.org/bots/webapps и https://core.telegram.org/bots/api (получены через WebFetch). Официальный клиентский скрипт Telegram https://telegram.org/js/telegram-web-app.js (WebFetch; `curl` из контейнера к telegram.org прокси отклоняет). Документация SDK: https://docs.telegram-mini-apps.com (WebFetch). Исходники SDK из `npm pack`: `@telegram-apps/bridge@2.8.2`, `@telegram-apps/sdk@3.9.2`, `@telegram-apps/toolkit@2.1.2`, `@tma.js/sdk@3.3.0`, `@tma.js/bridge@2.3.3`, `@tma.js/init-data-node@2.0.8`, `@telegram-apps/init-data-node@2.0.10`. Статус пакетов взят из `npm view`. Шаблон https://github.com/Telegram-Mini-Apps/nextjs-template, ветка `master`: файлы скачаны с raw.githubusercontent.com. GitHub API для этого репозитория в сессии закрыт, поэтому дату коммита я не видел. Документация Next.js — копия, которая поставляется в пакете: `next@16.3.6 dist/docs/…`. Из этих файлов собирается nextjs.org/docs, и для каждого файла указан URL на сайте. Cookie и браузеры: MDN, WebKit blog, Safari 18.4 Release Notes, блог Privacy Sandbox. Номера строк репозитория указаны по `7d78f6a`. Issues #23, #34, #38 через REST API отдают `410 This issue was deleted`. Что такое #23 и #34, видно из PR #35 и из `docs/`. Про #38 в репозитории ничего нет.
+**Источники.** Документация Telegram: https://core.telegram.org/bots/webapps и https://core.telegram.org/bots/api (получены через WebFetch). Официальный клиентский скрипт Telegram https://telegram.org/js/telegram-web-app.js (WebFetch; `curl` из контейнера к telegram.org прокси отклоняет). Документация SDK: https://docs.telegram-mini-apps.com (WebFetch). Исходники SDK из `npm pack`: `@telegram-apps/bridge@2.8.2`, `@telegram-apps/sdk@3.9.2`, `@telegram-apps/toolkit@2.1.2`, `@tma.js/sdk@3.3.0`, `@tma.js/bridge@2.3.3`, `@tma.js/init-data-node@2.0.8`, `@telegram-apps/init-data-node@2.0.10`. Статус пакетов взят из `npm view`. Шаблон https://github.com/Telegram-Mini-Apps/nextjs-template, ветка `master`: файлы скачаны с raw.githubusercontent.com. GitHub API для этого репозитория в сессии закрыт, поэтому дату коммита я не видел. Документация Next.js — копия, которая поставляется в пакете: `next@16.3.6 dist/docs/…`. Из этих файлов собирается nextjs.org/docs, и для каждого файла указан URL на сайте. Cookie и браузеры: MDN, WebKit blog, Safari 18.4 Release Notes, блог Privacy Sandbox. Номера строк репозитория указаны по `7d78f6a`. Issues #23, #34, #38 через REST API отдают `410 This issue was deleted`. Что такое #23 и #34, видно из PR #35 и из `docs/`. Про #38 в репозитории ничего нет. Для дополнения в разделах 10 и 11 (24.11.2026, ветка `claude/project-thread-v13uuq`): блог https://telegram.org/blog/privacy-discussions-web-bots, страницы Bot API https://core.telegram.org/bots/api/types/loginurl.md, …/inlinekeyboardbutton.md, …/webappinfo.md, https://core.telegram.org/bots/features.md, https://core.telegram.org/widgets/login, https://core.telegram.org/widgets/login-legacy и https://core.telegram.org/bots/serverless.md (всё через WebFetch, `curl` к core.telegram.org прокси тоже отклоняет). Монорепо https://github.com/Telegram-Mini-Apps/tma.js, ветка `master`: `README.md`, `V4_CHANGES.md`, `pnpm-workspace.yaml`, `packages/*/package.json` и исходники документации `apps/docs/…` с raw.githubusercontent.com. Корень репозитория на github.com прочитан через WebFetch, GitHub API и `curl` к github.com отдают 403, поэтому дат коммитов я не видел. Документация https://docs.telegram-mini-apps.com (разделы `packages/tma-js-sdk`, `…/initializing`, `…/migrate-from-telegram-apps`, `packages/upgrading`, `packages/tma-js-init-data`, `platform/init-data`, `platform/authorizing-user`) получена через WebFetch. Исходники из `npm pack`: `@tma.js/sdk@4.0.0-rc.1`, `@tma.js/bridge@4.0.0-rc.1`, `@tma.js/init-data@4.0.0-rc.1`, `@tma.js/sdk-react@4.0.0-rc.1` и `@3.0.23`, `@telegram-apps/sdk@3.11.8`. Версии и даты взяты из `npm view`.
 
 ---
 
@@ -222,8 +222,14 @@
    - (а) Да, но после ADR о слое данных и замера cookie. **[рекомендую]**
    - (б) Да, сейчас: это переписывание всех страниц в Server Components.
    - (в) Нет, остаёмся SPA с A, B, D, G.
-6. **Переходить ли с `@telegram-apps/*` на `@tma.js/*`?** `@telegram-apps/bridge` уже deprecated, а `DeviceStorage`/`SecureStorage` есть только в `@tma.js/sdk`. Это отдельная задача, но она влияет на B(б).
+6. **Переходить ли с `@telegram-apps/*` на `@tma.js/*`?** `@telegram-apps/bridge` уже deprecated, а `DeviceStorage`/`SecureStorage` есть только в `@tma.js/sdk`. Это отдельная задача, но она влияет на B(б). С 28.10.2026 на npm есть `@tma.js/*@4.0.0-rc.1`, и документация уже описывает 4.x (раздел 11.5).
+   - (а) Ждать стабильной 4.0 и переходить сразу на неё, одним PR. **[рекомендую]**
+   - (б) Перейти сейчас на стабильную 3.x, а потом ещё раз на 4.x. Получится две миграции.
+   - (в) Перейти сейчас на `4.0.0-rc.1`. API ещё может поменяться.
 7. **Есть ли пользователи в Telegram Web на Safari?** Если да, cookie-сессия (E) у них не сработает на Safari < 18.4, и клиентский путь обязателен.
+8. **Нужна ли Splitty веб-версия вне мини-аппа (вход по `LoginUrl` из сообщений бота или через Telegram Login/OIDC)?** Только там SSR возможен с первого запроса, но API мини-аппа там нет (раздел 10).
+   - (а) Нет, остаёмся только мини-аппом. **[рекомендую]**
+   - (б) Да, как дополнительная точка входа. Понадобятся второй путь авторизации, новый эндпоинт бэкенда и замены для BackButton, popup, invoice и т. д. (раздел 10.4).
 
 ## 8. Какие задачи и ADR это затрагивает
 
@@ -242,3 +248,184 @@
 - Сколько реально длятся гидрация и `/auth` в Telegram на устройствах. Замеров нет.
 - Обрабатывает ли Telegram собственный query в URL кнопки бота так же, как query в обычном URL (вариант F).
 - Дата последнего коммита `Telegram-Mini-Apps/nextjs-template`: GitHub API в этой сессии закрыт, файлы взяты с ветки `master` через raw.githubusercontent.com.
+- Где клиенты Telegram открывают ссылку `login_url` (встроенный браузер или внешний), есть ли там `TelegramWebviewProxy` и сохраняются ли cookie между открытиями. В документации этого нет (раздел 10).
+- Когда Telegram ставит `auth_date` в данных `LoginUrl` (в момент нажатия или раньше) и подписывает ли он что-то кроме полей Login Widget.
+- Бросает ли `@tma.js/sdk@4` ошибку при чтении `viewport.isFullscreen()` до `init()` и во время серверного пререндера (раздел 11.5). Я читал исходники, но не запускал их.
+- Когда выйдет стабильная `@tma.js/*` 4.0. Релизов на GitHub нет, на npm есть только rc.
+
+## 10. Seamless Web Bots и LoginUrl (дополнение от 24.11.2026)
+
+Вопрос: позволяют ли Seamless Web Bots и `LoginUrl` аутентифицировать пользователя уже на первом HTML-запросе и можно ли так запускать мини-апп.
+
+**Коротко.** Аутентифицировать первый HTML-запрос можно: Telegram добавляет подписанные данные пользователя в **query**, и сервер их видит. Но это работает только для inline-кнопки с полем `login_url` в сообщении бота, и такая кнопка открывает обычную веб-страницу, а не мини-апп. У кнопки может быть только один тип, а `WebAppInfo`, через который запускаются мини-аппы, не содержит полей для логина. На странице, открытой по `login_url`, нет initData и, судя по всему, нет моста к клиенту Telegram. Поэтому BackButton, haptics, popup, invoice и остальное, чем пользуется Splitty, там работать не будет. Для текущей точки входа (мини-апп) вывод разделов 2 и 5 не меняется.
+
+### 10.1 Что проверено
+
+| Факт | Источник |
+|---|---|
+| Пост «Focused Privacy, Discussion Groups, Seamless Web Bots and More» от 31.05.2019. В разделе «Meet Seamless Web Bots»: «Bots can now help you log in with your Telegram account on a website when you open a link. If you allow them to, you'll be logged in by the time the page loads in the browser». В примере @discussbot добавляет под постами канала кнопку «comments», которая «opens a website where you are already logged in». Клиенты и платформы в разделе не названы. Mini Apps, `LoginUrl` и `/setdomain` в нём не упоминаются | https://telegram.org/blog/privacy-discussions-web-bots#meet-seamless-web-bots |
+| `LoginUrl`: «This object represents a parameter of the inline keyboard button used to automatically authorize a user. It serves as a great replacement for the Telegram Login Widget when the user is coming from Telegram.» | https://core.telegram.org/bots/api#loginurl (текст взят из https://core.telegram.org/bots/api/types/loginurl.md) |
+| Поля `LoginUrl`. `url`: «An HTTPS URL to be opened with user authorization data added to the query string when the button is pressed». Если пользователь отказался, открывается исходный URL без данных. В примечании сказано: «You must always check the hash of the received data». `forward_text` задаёт новый текст кнопки в пересланных сообщениях. `bot_username` указывает бота для авторизации. Если поле не задано, используется текущий бот, и тогда «The url's domain must be the same as the domain linked with the bot». `request_write_access` запрашивает у пользователя разрешение, чтобы бот мог ему писать | там же |
+| `InlineKeyboardButton.login_url`: «An HTTPS URL used to automatically authorize the user», «Not supported for ephemeral messages». Про тип кнопки: «Exactly one of the fields other than text, icon_custom_emoji_id, and style must be used to specify the type of the button». Поле `web_app` той же кнопки «Available only in private chats between a user and the bot». В `Message.reply_markup` «login_url buttons are represented as ordinary url buttons» | https://core.telegram.org/bots/api/types/inlinekeyboardbutton.md ; https://core.telegram.org/bots/api (Message) |
+| У `WebAppInfo` одно поле, `url`: «An HTTPS URL of a Web App to be opened with additional data as specified in Initializing Web Apps». Документация Mini Apps перечисляет «seven different ways of launching Mini Apps»: Main Mini App, keyboard button, inline button, menu button, inline mode, direct link, attachment menu. `login_url` в ней не упоминается | https://core.telegram.org/bots/api/types/webappinfo.md ; https://core.telegram.org/bots/webapps |
+| В обзоре возможностей ботов `login_url` описан «as an alternative to login widgets». Он позволяет «seamlessly authorize them on your website or app before the page even loads». Домен привязывается командой `/setdomain` в @BotFather. Где открывается URL-кнопка, во встроенном браузере или во внешнем, страница не говорит | https://core.telegram.org/bots/features.md |
+| Формат данных и проверка (старый Login Widget). Поля: `id, first_name, last_name, username, photo_url, auth_date, hash`. `data_check_string` составляется из всех полученных полей, кроме `hash`: пары `key=value` сортируются по ключу и склеиваются через `\n`. Ключ: `secret_key = SHA256(<bot_token>)`. Проверка: `hex(HMAC_SHA256(data_check_string, secret_key)) == hash`. Про свежесть: «To prevent the use of outdated data, you can additionally check the auth_date field». Конкретный срок не назван | https://core.telegram.org/widgets/login-legacy |
+| Ссылки из `LoginUrl` («Receiving authorization data», «Checking authorization», «Linking your domain to the bot») ведут на `/widgets/login`. Эта страница теперь описывает «the Telegram Login library and the new OpenID Connect login flow», а документация старого виджета «is archived» на `/widgets/login-legacy`. В новой схеме домены и redirect URI регистрируются как «Allowed URLs» в мини-аппе @BotFather (раздел Login Widget), `/setdomain` не упоминается. Есть Authorization Code Flow с PKCE: `https://oauth.telegram.org/auth`, `…/token`, JWKS `…/.well-known/jwks.json`, `iss = https://oauth.telegram.org`, `aud` = id бота. Даты изменения на странице нет | https://core.telegram.org/widgets/login |
+| Официальный `telegram-web-app.js` без `tgWebAppData` в hash оставляет `initData = ''`, `initDataUnsafe = {}`, `platform = 'unknown'`, `version = '6.0'`. `postEvent` по очереди пробует `TelegramWebviewProxy`, `window.external.notify` и `postMessage` родителю в iframe. Если ничего из этого нет, он вызывает callback с `{notAvailable: true}` | https://telegram.org/js/telegram-web-app.js |
+| SDK: «Outside Telegram there are no launch parameters, so `init` throws» | https://docs.telegram-mini-apps.com/packages/tma-js-sdk/initializing |
+| Next 16.3.6. Route Handlers «are not cached by default». Query читается через `request.nextUrl.searchParams`. `NextResponse.redirect(url)` строит редирект, а `response.cookies.set(...)` записывает `Set-Cookie` в этот ответ. `cookies().set` разрешён в Server Function и Route Handler. Если статус не указан, `NextResponse.redirect` отдаёт 307 и принимает также 301, 302, 303 и 308 | `dist/docs/01-app/01-getting-started/15-route-handlers.md:51` (https://nextjs.org/docs/app/getting-started/route-handlers); `…/03-api-reference/03-file-conventions/route.md:353` (https://nextjs.org/docs/app/api-reference/file-conventions/route); `…/04-functions/next-response.md:10-25,96-116` (https://nextjs.org/docs/app/api-reference/functions/next-response); `…/04-functions/cookies.md:153`; `next@16.3.6 dist/server/web/spec-extension/response.js:17-23,98-100` |
+
+### 10.2 Ответы на вопросы
+
+1. **Первый HTML-запрос.** Да. Данные приходят в query (`LoginUrl.url` прямо говорит «added to the query string»), поэтому Route Handler или Server Component получает их в первом же запросе. Здесь нет ограничения раздела 2, которое создаёт фрагмент `#tgWebAppData`. Это и есть настоящий SSR с первого запроса.
+2. **Можно ли так запустить мини-апп.** Нет. `login_url` — отдельный тип inline-кнопки, и у кнопки может быть ровно один тип, так что `web_app` и `login_url` не совмещаются. Menu button (`MenuButtonWebApp`), `KeyboardButton.web_app`, Main Mini App, прямая ссылка `t.me/<bot>/<app>` и attachment menu принимают только `WebAppInfo` с одним `url`, и параметры запуска Telegram кладёт во фрагмент. Значит, `LoginUrl` подходит только для inline-кнопок в сообщениях бота (в личке, в группах и в каналах, как у @discussbot), и открывает он обычную страницу.
+3. **Клиенты.** В блоге они не названы. Где открывается ссылка, во встроенном браузере Telegram или во внешнем, документация не говорит. Не проверено.
+4. **API мини-аппа на такой странице.** Это не запуск мини-аппа, поэтому initData Telegram не передаёт. Если подключить `telegram-web-app.js`, `initData` будет пустой. `postEvent` вернёт `{notAvailable: true}`, если встроенный браузер не предоставляет `TelegramWebviewProxy`, а предоставляет ли он его, не задокументировано (не проверено). `init()` из SDK `@telegram-apps`/`@tma.js` без параметров запуска бросает ошибку. На практике BackButton, MainButton, тема Telegram, haptics, CloudStorage, DeviceStorage, popup, invoice и `shareURL` на такой странице надо считать недоступными.
+5. **Проверка подписи отличается от initData.** Для данных `LoginUrl` ключ — `SHA256(bot_token)`, а для initData мини-аппа — `HMAC_SHA256(<bot_token>, "WebAppData")` (раздел 0). Поэтому `validate` из `@tma.js/init-data` эти данные не проверит: он всегда выводит ключ через `"WebAppData"` (`@tma.js/init-data@4.0.0-rc.1 dist/index.js:130`). Нужен свой код примерно на 15 строк. Сравнивать подпись нужно в постоянное время. Подписи Ed25519 для третьих сторон у `LoginUrl` нет, документация о ней не упоминает.
+6. **Свежесть и повтор.** Подписанные данные лежат прямо в URL: в истории браузера, в логах сервера, прокси и CDN, а при загрузке сторонних ресурсов ещё и в `Referer`. Подпись не привязана ни к сессии, ни к nonce, поэтому любой, у кого есть этот URL, может войти повторно, пока сервер принимает такой `auth_date`. Документация лишь советует проверять `auth_date` и срок не называет. Дальше мои предложения, а не требования Telegram: окно 60–300 секунд, однократное использование `hash` (хранить его до конца окна), сразу редирект на URL без query с `Referrer-Policy: no-referrer` и не писать query этого маршрута в логи. Когда именно Telegram ставит `auth_date`, при нажатии кнопки или раньше, не проверено.
+
+### 10.3 Как это выглядело бы в Next 16
+
+Набросок, который я не запускал. Отдельный маршрут проверяет query, ставит httpOnly-cookie и делает редирект на чистый URL. Следующий запрос уже несёт cookie, и Server Component читает её через `cookies()` (раздел 3).
+
+```ts
+// app/auth/telegram/route.ts
+import {createHash, createHmac, timingSafeEqual} from "node:crypto";
+import {NextResponse, type NextRequest} from "next/server";
+
+const MAX_AGE_S = 300;
+// Поля Telegram из раздела 10.1. Собственный query бота (`next`) в подпись не входит.
+const AUTH_FIELDS = ["auth_date", "first_name", "id", "last_name", "photo_url", "username"];
+
+function verifyLoginUrl(params: URLSearchParams, botToken: string): boolean {
+    const hash = params.get("hash");
+    const authDate = Number(params.get("auth_date"));
+    if (!hash || !Number.isInteger(authDate) || Date.now() / 1000 - authDate > MAX_AGE_S) {
+        return false;
+    }
+    const dataCheckString = AUTH_FIELDS
+        .filter((key) => params.has(key))
+        .map((key) => `${key}=${params.get(key)}`)
+        .join("\n");
+    const secretKey = createHash("sha256").update(botToken).digest();
+    const expected = createHmac("sha256", secretKey).update(dataCheckString).digest();
+    const received = Buffer.from(hash, "hex");
+    return received.length === expected.length && timingSafeEqual(received, expected);
+}
+
+export async function GET(request: NextRequest) {
+    const params = request.nextUrl.searchParams;
+    const next = params.get("next")?.startsWith("/") && !params.get("next")?.startsWith("//")
+        ? params.get("next")!
+        : "/";
+    if (!verifyLoginUrl(params, process.env.BOT_TOKEN!)) {
+        return NextResponse.redirect(new URL("/", request.url), 302);
+    }
+    // Такого эндпоинта у бэкенда нет: сейчас `/auth` принимает только `init_data_raw`.
+    const token = await exchangeLoginForBackendToken(params);
+    const response = NextResponse.redirect(new URL(next, request.url), 302);
+    response.cookies.set("__Host-session", token, {
+        httpOnly: true, secure: true, sameSite: "lax", path: "/", maxAge: 60 * 60,
+    });
+    response.headers.set("Referrer-Policy", "no-referrer");
+    return response;
+}
+```
+
+- Список `AUTH_FIELDS` и исключение собственного query бота — моё допущение. Документация говорит «all received fields» и не объясняет, как отделить параметры, которые уже были в URL кнопки. Не проверено. Если Telegram добавит новое поле, проверка с белым списком начнёт отказывать, поэтому надёжнее не класть свой query в URL кнопки и строить строку из всех параметров, кроме `hash`.
+- `sameSite: "lax"` здесь достаточно. Страница открыта как документ верхнего уровня, а не в iframe, и редирект ведёт на тот же сайт. Сохраняет ли встроенный браузер Telegram cookie между открытиями, не проверено.
+- Для GET-запроса неважно, будет редирект 302, 303 или 307 (по умолчанию 307, раздел 10.1).
+- Бэкенду понадобится новый эндпоинт или доверие к Next (вариант C), потому что FastAPI сейчас умеет авторизовать только по initData (`hooks/useAuth.ts:24-32`).
+
+### 10.4 Что Splitty потеряет, если открывать его через LoginUrl
+
+| Возможность мини-аппа | Где используется | Что будет на странице из `login_url` |
+|---|---|---|
+| `init()` и `retrieveRawInitData()` → `POST /auth` | `hooks/useAuth.ts:2,12-32` | initData нет. Нужен второй путь авторизации (cookie из раздела 10.3) |
+| `initData.user()` для `user_id` | `utils/getCurrentUserId.ts:1-12` | Брать id из сессии или из `/me` |
+| `backButton` | `app/client-layout.tsx:188-216` | Нативной кнопки нет. Нужна своя кнопка «назад» в шапке |
+| `closingBehavior.enableConfirmation()` | `app/client-layout.tsx:106-110` | Нет. `beforeunload` заменяет это только частично |
+| `swipeBehavior.disableVertical()` | `app/client-layout.tsx:114-118` | Не нужно: в браузере нет жеста закрытия мини-аппа |
+| `viewport.mount()`, `expand()`, `isFullscreen()` | `app/client-layout.tsx:128-150`, `app/components/header/header.tsx:31`, `app/components/main/main.tsx:29` | Нет. Отступы считать через CSS `env(safe-area-inset-*)` |
+| `miniApp.setBackgroundColor()`, `setHeaderColor()` | `app/client-layout.tsx:154-174` | Нет. Цвет панели браузера можно задать только через `theme-color`, и то если браузер его учитывает (не проверено) |
+| `postEvent("web_app_toggle_orientation_lock")` | `app/client-layout.tsx:178-181` | Нет |
+| `hapticFeedback` | `app/components/header/headerWithSearch.tsx:76-77`, `utils/vibration.ts:6-7` | Нет |
+| `shareURL` (реферальная ссылка) | `app/components/friendsHeader/friendsHeader.tsx:24-26` | Web Share API или ссылка `https://t.me/share/url?…` |
+| `popup.open` (подтверждение удаления) | `app/friend/settings/page.tsx:29-30`, `app/expense/details/page.tsx:68-69` | Свой модальный диалог, например `Modal` из Telegram UI |
+| `invoice.open` (донат) | `app/account/page.tsx:52-55` | Оплаты внутри страницы нет. Можно только дать ссылку на инвойс, которая откроется в Telegram (не проверено) |
+| `TelegramAnalytics.init` | `app/page.tsx:10,43` | Пакет рассчитан на окружение мини-аппа (зависит от `@telegram-apps/sdk`). Будет ли работать, не проверено |
+| Тема Telegram | `app/client-layout.tsx:62` | Ничего не теряется: `AppRoot` и так получает константы `DEFAULT_PLATFORM` и `DEFAULT_THEME`, а не тему из Telegram |
+
+Кроме того, пользователь попадёт на такую страницу, только если бот пришлёт ему сообщение с inline-кнопкой. Main Mini App, menu button и прямые ссылки по-прежнему откроют мини-апп с initData во фрагменте. Получится две точки входа, два пути авторизации и две версии UI для одних и тех же функций.
+
+**Вывод.** `LoginUrl` не заменяет запуск мини-аппа и не ускоряет его. Он имеет смысл только для отдельной веб-версии, например для ссылок в уведомлениях бота. Для такой веб-версии вне Telegram сейчас есть и вход через OpenID Connect (`/widgets/login`): одноразовый `code` в redirect URI и ID token со сроком, а не данные, которые можно повторно использовать прямо из URL. Это вопрос 8 в разделе 7, рекомендация — пока не делать.
+
+## 11. tma.js (дополнение от 24.11.2026)
+
+### 11.1 Пакеты и версии
+
+Монорепо https://github.com/Telegram-Mini-Apps/tma.js (`apps/*` и `packages/*` в `pnpm-workspace.yaml`). В `README.md` только общее описание и ссылка на документацию. На ветке `master` пакеты уже имеют версию `4.0.0-rc.1` (`packages/sdk/package.json`, `packages/bridge/package.json`, `packages/sdk-react/package.json`, `packages/init-data/package.json`), а `packages/init-data-node` на `master` отсутствует. Раздел Releases на github.com пуст. Документация docs.telegram-mini-apps.com уже описывает 4.x: CDN-ссылки ведут на `@tma.js/sdk@4`, в боковом меню `@tma.js/init-data` вместо `init-data-node`. В `V4_CHANGES.md` (§9) ещё сказано, что документация описывает старые версии, то есть сам этот файл отстаёт от сайта.
+
+| Пакет | `latest` на npm | `rc` | Что заменяет и пометки (`npm view … deprecated`) |
+|---|---|---|---|
+| `@tma.js/bridge` | 2.3.3 | 4.0.0-rc.1 (28.10.2026) | Заменяет `@telegram-apps/bridge` (последняя 2.11.0): «This package is not supported anymore. Use @tma.js/bridge instead» |
+| `@tma.js/sdk` | 3.3.0 (14.07.2026) | 4.0.0-rc.1 | Заменяет `@telegram-apps/sdk` (последняя 3.11.8 от 05.12.2025, пометки нет). Документация: «`@tma.js/sdk` 3.x was the direct successor of `@telegram-apps/sdk`. The current major version changed the API once more» |
+| `@tma.js/sdk-react` | 3.0.23 | 4.0.0-rc.1 | Заменяет `@telegram-apps/sdk-react` (3.3.9, пометки нет). В 4.x `@tma.js/sdk` стал peer-зависимостью, React 17 не поддерживается |
+| `@tma.js/sdk-vue`, `-svelte`, `-solid` | 1.0.23, 1.0.23, 3.0.23 | 4.0.0-rc.1 | Не нужны |
+| `@tma.js/init-data-node` | 2.0.8 | — | Заменяет `@telegram-apps/init-data-node` (2.0.10, «Use @tma.js/init-data-node instead»). В 4.x сам заменяется на `@tma.js/init-data` |
+| `@tma.js/init-data` | 0.2.22 (старый пакет, «This package content was moved to @tma.js/sdk…») | 4.0.0-rc.1 | Новый серверный пакет 4.x (раздел 11.3) |
+| `@tma.js/transformers`, `toolkit`, `signals`, `types` | 1.2.0, 1.0.4, 1.0.1, 1.0.2 | — | Внутренние зависимости 3.x. В 4.x удалены. `@telegram-apps/transformers` помечен «Use @tma.js/transfomers instead» (опечатка в оригинале) |
+| `@tma.js/create-mini-app` | 1.0.1 | — | Помечен «Package no longer supported. Contact Support at https://www.npmjs.com/support for more info». Это стандартный текст npm, причина не указана |
+| `@telegram-apps/telegram-ui` | 2.1.13 | — | Замены в `@tma.js` нет, пометки нет. Официальный Next-шаблон по-прежнему использует его вместе с `@tma.js/sdk-react` ^3.0.11 |
+| `@telegram-apps/analytics` | 1.6.4 | — | Замены в `@tma.js` нет. 1.6.4 зависит от `@telegram-apps/sdk` ^3.9.2, а в нашем lock-файле стоит 1.4.3 с вложенным `@telegram-apps/sdk` 1.1.3. Пока аналитика остаётся, `@telegram-apps/sdk` останется в дереве транзитивно |
+
+Таблица соответствия из https://docs.telegram-mini-apps.com/packages/upgrading: bridge 2.x, sdk 3.x, sdk-react 3.x → те же имена новой версии; `@tma.js/init-data-node` 2.x → `@tma.js/init-data`; signals, toolkit, transformers, types → «Removed». Там же: «Packages of the previous and the current major versions are not compatible with each other».
+
+### 11.2 SSR
+
+- Ни README, ни разделы документации об инициализации, init data и авторизации, ни `V4_CHANGES.md` не говорят о SSR, Next.js или работе SDK на сервере. Официальный Next-шаблон (раздел 0) остаётся единственным примером, и он на сервере рисует лоадер.
+- В `@tma.js/bridge@4` у параметров запуска четыре источника: `window.location.href`, navigation entry из `performance`, `sessionStorage['tma.js/launch-params']` и новый — `sessionStorage['__telegram__initParams']` официального `telegram-web-app.js` (`@tma.js/bridge@4.0.0-rc.1 dist/index.js:125-146`). Все они браузерные. На сервере каждый источник упадёт, и `retrieveLaunchParams` вернёт ошибку (`dist/index.js:153-174`; вывод по коду, я его не запускал).
+- В `@tma.js/sdk-react@4` нет директивы `"use client"` и нет отдельной ветки для сервера. `useLaunchParams` и `useRawInitData` вызывают `retrieve*` прямо при рендере (в `useMemo`). `useComputed` — это `useSyncExternalStore(subscribe, get, get)`, то есть серверный снимок совпадает с клиентским (`dist/index.js:1-30`). Компоненты с этими хуками нельзя рендерить на сервере, как и сейчас.
+- На сервере работают только `@tma.js/init-data` и `parseLaunchParams` из bridge, то есть разбор и проверка строки, которую клиент сам прислал. Это варианты A, C и E из раздела 5, ничего нового.
+
+Итог: tma.js не обходит ограничение раздела 2. initData на первом запросе по-прежнему нет.
+
+### 11.3 Серверная проверка
+
+- **`@tma.js/init-data@4.0.0-rc.1`.** Пакет построен только на WebCrypto, без `node:crypto` и `Buffer`, и работает в Node 20+, Bun, Deno и Cloudflare Workers (`package.json` `engines`, https://docs.telegram-mini-apps.com/packages/tma-js-init-data). Все функции подписи асинхронные. `validate(value, secret, {expiresIn})` возвращает `Promise<InitData>`, `safeValidate` возвращает `Result`, `isValid` возвращает `Promise<boolean>`. `validate3rd(value, botId, {expiresIn, test})` проверяет Ed25519-подпись `signature` по публичным ключам Telegram для prod и test, зашитым в пакет (`dist/index.js:150-153`). По умолчанию `expiresIn = 86400`, `0` выключает проверку (`dist/dts/validation.d.ts:5-19`, `dist/index.js:154-164`). `createSecretKey(token)` один раз создаёт `CryptoKey`, чтобы не хешировать токен на каждом запросе. `sign(data, secret)` подписывает тестовые данные. HMAC сравнивается в постоянное время через `crypto.subtle.verify` (`V4_CHANGES.md` §5).
+- **Схема `tma`.** Документация советует отправлять `Authorization: tma <initData>` в каждом запросе и проверять на сервере схему и подпись. Пример на Node использует `@tma.js/init-data` с `expiresIn: 3600`, пример на Go — `init-data-golang` с `time.Hour`, есть ещё пример на C# (https://docs.telegram-mini-apps.com/platform/authorizing-user). Пакета для Python в монорепо нет, так что FastAPI проверяет подпись сам, как, вероятно, уже делает в `/auth`.
+- **Telegram Serverless.** В `@tma.js/sdk@4` появился компонент `serverless`. Он отправляет `POST /api/<name>` с заголовком `Authorization: TMA ${btoa(initData)}` и `credentials: "omit"` (`@tma.js/sdk@4.0.0-rc.1 dist/index.js:1314-1333`). Это клиент для Telegram Serverless (https://core.telegram.org/bots/serverless.md, Recent changes от 06.10.2026). Telegram хостит статическую сборку мини-аппа на `app<app_id>.tgcloud.ai` и проверяет initData до вызова кода эндпоинта: «A call without valid init data is rejected with `401`». Эндпоинты отдают JSON, SSR не описан, код работает в V8-песочнице без npm-пакетов. Splitty (Next плюс FastAPI) это не подходит. Но выбор самой платформы подтверждает модель «initData в каждом запросе», то есть вариант A. Формат заголовка в официальном описании не указан: `TMA` с base64 — это деталь реализации tma.js, и она отличается от схемы `tma <raw>` из документации tma.js.
+
+### 11.4 DeviceStorage и SecureStorage
+
+- Компоненты `deviceStorage` и `secureStorage` есть в `@tma.js/sdk` 3.3.0 (раздел 0) и в 4.0.0-rc.1 (`dist/dts/index.d.ts:16,27`). В 4.x у них появились `isSupported()` и опции `{signal, timeout}`, ошибки — `XMethodError | TimeoutError` (`V4_CHANGES.md` §4.6).
+- В `@telegram-apps/sdk` их нет ни в 3.9.2, ни в последней 3.11.8 (`grep` по `dist/index.js` даёт 0 совпадений). Вариант B(б) без перехода на `@tma.js/sdk` возможен только через прямой `postEvent`.
+- Работают ли они на Desktop и Web, по-прежнему не проверено (раздел 9).
+
+### 11.5 Оценка миграции splitty-fe
+
+`@telegram-apps/sdk` и `@telegram-apps/bridge` импортируются в 12 файлах. `@telegram-apps/sdk-react` в коде не импортируется: его достаточно удалить, как и предлагает `docs/technical-audit.md:154`. `@telegram-apps/telegram-ui` (26 файлов) и `@telegram-apps/analytics` остаются как есть.
+
+| Файл | Сейчас | `@tma.js/*` 3.x | Дополнительно в 4.x |
+|---|---|---|---|
+| `hooks/useAuth.ts:2` | `init`, `retrieveRawInitData` | Те же имена из `@tma.js/sdk` | `init()` обязателен до любого вызова SDK. Его лучше перенести в `instrumentation-client.ts`, как в шаблоне (это совпадает с вариантом D) |
+| `app/client-layout.tsx:18,43` | `backButton`, `closingBehavior`, `miniApp`, `swipeBehavior`, `viewport`, `postEvent`; `isTMA` из bridge | `miniApp.mountSync()` → `mount()`, `setBackgroundColor` → `setBgColor` | 20 вызовов `isAvailable()` в 7 файлах → `isSupported()` (плюс `isMounted()` там, где нужен смонтированный компонент). `postEvent` из SDK в 4.x — это `postEvent` из bridge, который не использует функцию, переданную в `init()` (`V4_CHANGES.md` §4.7), и бросает `UnknownEnvError` вне Telegram (`@tma.js/bridge@4.0.0-rc.1 dist/dts/post-event.d.ts:37-40`), поэтому проверку `isTMA()` надо оставить. `onClick(fn)` возвращает функцию отписки, как и сейчас |
+| `app/components/header/header.tsx:6`, `app/components/main/main.tsx:5` | `viewport.isFullscreen()` при рендере | Без изменений | Вызов при рендере идёт до `init()` и при пререндере на сервере. Бросит ли он `NotInitializedError`, не проверено |
+| `app/components/header/headerWithSearch.tsx:10`, `utils/vibration.ts:1` | `hapticFeedback` | Без изменений | `isAvailable()` → `isSupported()` |
+| `app/components/friendsHeader/friendsHeader.tsx:9` | `shareURL` | Без изменений | `shareURL.isSupported()` |
+| `app/friend/settings/page.tsx:12`, `app/expense/details/page.tsx:19` | `popup.open` | `popup.show`, возвращает `string \| undefined` вместо `string \| null` | — |
+| `app/account/page.tsx:23` | `invoice.open(slug)` | `invoice.openSlug(slug)` (или `openUrl`) | — |
+| `utils/getCurrentUserId.ts:1-2` | `isTMA`, `initData.restore()`, `initData.user()` | Ключи `user` в snake_case. Нужен только `id`, так что изменений нет | `initData.restore()` до `init()` бросает `NotInitializedError` |
+| `utils/mockTelegramEnv.ts:1` | `mockTelegramEnv({onEvent(e) { e[0] … }})`, `emitEvent` | `onEvent` получает объект `{event, params}`, а не кортеж (по документации миграции bridge) | `onEvent` → `onMethod(call, next)`, функция возвращает restore. `tgWebAppData` можно передать строкой или `URLSearchParams` |
+
+Источники для таблицы: `apps/docs/packages/tma-js-sdk/migrate-from-telegram-apps.md`, `apps/docs/packages/tma-js-bridge/migrate-from-telegram-apps.md`, `V4_CHANGES.md` §3–4 и `dist/dts` пакетов `@telegram-apps/sdk@3.9.2`, `@tma.js/sdk@3.3.0` и `@tma.js/sdk@4.0.0-rc.1`. Ключ `sessionStorage` меняется с `tapps/launchParams` на `tma.js/launch-params`, но bridge 4.x читает и ключ официального SDK, а наш код и e2e эти ключи не используют (`grep tapps` пуст).
+
+**Оценка.** Переход на 3.x займёт около полудня: 12 файлов, переименования из таблицы, мок и прогон e2e. Переход на 4.x займёт 1–1,5 дня: всё то же плюс замена `isAvailable()`, перенос `init()` раньше всех вызовов и проверка рендера до `init()`. Две миграции подряд (3.x, потом 4.x) дороже одной. Поэтому я рекомендую ждать стабильной 4.0 (вопрос 6 в разделе 7), если только `DeviceStorage` для варианта B(б) не понадобится раньше.
+
+### 11.6 Помогает ли tma.js ускорить авторизацию или сделать SSR
+
+Почти ничем сверх уже описанного. Что даёт tma.js:
+- `@tma.js/init-data` для вариантов A, C и E: асинхронная проверка на WebCrypto, Ed25519 без токена бота, `createSecretKey` для повторного использования ключа. Это обновлённая версия того, что раздел 5 уже предлагает.
+- `deviceStorage` и `secureStorage` для варианта B(б).
+- Четвёртый источник параметров запуска (`__telegram__initParams`) немного повышает шанс найти initData после reload, но это та же старая initData, о которой говорит раздел 1.3.
+- Ничего для SSR: ни серверного получения параметров запуска, ни шаблона с SSR, ни описания cookie-сессий.
