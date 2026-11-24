@@ -19,13 +19,7 @@ npm test
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-In `next dev` the Telegram environment is mocked, so the app opens in a plain browser. To try a production build in a plain browser, run:
-
-```bash
-npm run start:local
-```
-
-It builds with the Telegram mock turned on and starts the app on [http://localhost:3000](http://localhost:3000). The mock signs in only on a local backend, the same one `next dev` uses. This build is for local use only: deploy with `npm run build`, which never includes the mock.
+To run a production build in a plain browser, use `npm run start:local`: it builds with the Telegram mock and is for local use only, not for deployment.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
