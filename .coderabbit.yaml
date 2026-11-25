@@ -35,7 +35,7 @@ reviews:
           `try { } catch (err)` block TypeScript only allows `unknown`, so narrow it
           with the library's guard (for example `isAxiosError(err)`) before using
           library-specific fields.
-        - Use the domain terms from `CONTEXT.md` (Launch, Session, Expense, Participant, Paid by, Split,
+        - Use the domain terms from `CONTEXT.md` (Launch, Session, Session expired, Expense, Participant, Paid by, Split,
           Allocation, Expense draft, Settlement, Activity, Activity feed, Expense
           history, Tutorial, Tutorial friend, Tutorial expense) and avoid the
           synonyms it lists.

@@ -14,6 +14,10 @@ _Avoid_: Start, open, visit
 The time during which Splitty knows who the user is and can load their data. It begins when Telegram's signed launch data is accepted.
 _Avoid_: Login, auth (when meaning this state)
 
+**Session expired**:
+The state when Telegram's launch data is too old to be accepted. The user has to close Splitty and open it again to start a new Launch.
+_Avoid_: Logged out, token expired
+
 ### Friends
 
 **Friend**:
