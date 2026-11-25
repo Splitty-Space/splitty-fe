@@ -4,6 +4,16 @@ Splitty is a Telegram mini app for sharing expenses with friends: who paid for w
 
 ## Language
 
+### Access
+
+**Launch**:
+One opening of Splitty from Telegram, from a bot button, a link or the menu. Reloading the page inside it does not start a new Launch.
+_Avoid_: Start, open, visit
+
+**Session**:
+The time during which Splitty knows who the user is and can load their data. It begins when Telegram's signed launch data is accepted.
+_Avoid_: Login, auth (when meaning this state)
+
 ### Friends
 
 **Friend**:
