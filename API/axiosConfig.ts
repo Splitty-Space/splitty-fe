@@ -1,5 +1,6 @@
 import {configure} from "axios-hooks";
 import {apiClient} from "./client";
+import {AxiosHooksCache} from "./axiosHooksCache";
 
-// Use axios-hooks' own bounded cache to avoid incompatible LRU major versions.
-configure({axios: apiClient, defaultOptions: {ssr: false}});
+// A cache whose keys ignore the AbortSignal axios-hooks adds to every request; see AxiosHooksCache.
+configure({axios: apiClient, cache: new AxiosHooksCache(), defaultOptions: {ssr: false}});
